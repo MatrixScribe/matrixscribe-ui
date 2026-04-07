@@ -52,9 +52,19 @@ export type RelatedEntity = {
 
 // ---------- PUBLISHER STAT ----------
 export type PublisherStat = {
-  publisher: string;
+  // dataset format
+  publisher?: string;
+  avgSentiment?: number;
+
+  // mock entity format
+  name?: string;
+  sentiment?: number;
+  sentiment_change_7d?: number;
+  bias_score?: number;
+  reliability_score?: number;
+
+  // shared
   articles: number;
-  avgSentiment: number;
 };
 
 // ---------- FORECAST POINT ----------
