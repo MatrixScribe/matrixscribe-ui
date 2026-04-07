@@ -9,19 +9,27 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
+    if (!API_BASE) {
+      console.error("❌ NEXT_PUBLIC_BACKEND_URL is missing");
+      setError("Configuration error. Backend URL missing.");
+      return;
+    }
+
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const loginUrl = `${API_BASE}/api/auth/login`;
+      console.log("🔗 Login URL:", loginUrl);
+
+      const res = await fetch(loginUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       if (!res.ok) {
         setError("Invalid email or password");
@@ -38,6 +46,7 @@ export default function LoginPage() {
 
       router.push("/dashboard");
     } catch (err) {
+      console.error("❌ Login failed:", err);
       setError("Login failed");
     }
   }
