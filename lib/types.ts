@@ -10,9 +10,18 @@ export type Alert = {
   }[];
 };
 
+export type Article = {
+  id: string;
+  title: string;
+  url: string;
+  publisher: string;
+  publishedAt: string;
+  sentiment: number;
+};
+
 export type Entity = {
   id: string;
-  slug: string;        // required for API route
+  slug: string;
   name: string;
   type: string;
   region?: string;
@@ -56,13 +65,7 @@ export type Entity = {
     articles: number;
   }[];
 
-  top_articles: {
-    title: string;
-    url: string;
-    sentiment: number;
-    timestamp: string;
-    publisher: string;
-  }[];
+  top_articles: Article[];
 
   related_entities: {
     id: string;
