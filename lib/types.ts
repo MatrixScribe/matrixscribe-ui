@@ -1,3 +1,15 @@
+export type Alert = {
+  id: string;
+  severity: string;
+  message: string;
+  timestamp: string;
+  triggers?: {
+    type: string;
+    value: number;
+    threshold: number;
+  }[];
+};
+
 export type Entity = {
   id: string;
   slug: string;        // required for API route
@@ -112,13 +124,7 @@ export type Entity = {
     sentiment: number;
   }[];
 
-  alerts: {
-    message: string;
-    timestamp: string;
-    severity: string;
-    severity_score: number;
-    triggers: { type: string; value: number; threshold: number }[];
-  }[];
+  alerts: Alert[];
 
   ingestedAt: string;
   pipelineVersion: string;
