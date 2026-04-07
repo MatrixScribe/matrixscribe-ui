@@ -157,3 +157,10 @@ export type Entity = {
   pipelineVersion?: string;
   missing_sources?: string[];
 };
+
+// ---------- TOPIC CLUSTER ----------
+export type TopicCluster = {
+  topic: string;
+  weight: number;
+  sentiment: number;
+};
