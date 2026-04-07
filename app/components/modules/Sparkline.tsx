@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "recharts";
 
-import Card from "@/app/components/card";
+import Card from "@/app/components/Card";
 import { sentimentColors } from "@/app/styles/sentimentColors";
 
 export default function Sparkline({
