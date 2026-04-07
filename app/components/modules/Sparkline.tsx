@@ -6,36 +6,35 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import Card from "@/app/components/ui/Card";
+
+import Card from "@/app/components/Card";
 import { sentimentColors } from "@/app/styles/sentimentColors";
 
 export default function Sparkline({
   data,
+  label,
 }: {
-  data: { date: string; sentiment: number }[];
+  data: number[];
+  label: string;
 }) {
+  const chartData = data.map((value, index) => ({
+    name: index.toString(),
+    value,
+  }));
+
   return (
     <Card>
+      <div className="text-xs text-charcoal-light mb-2">{label}</div>
       <div className="h-20 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart data={chartData}>
+            <Tooltip />
             <Line
               type="monotone"
-              dataKey="sentiment"
-              stroke={sentimentColors.positive}
+              dataKey="value"
+              stroke={sentimentColors.primary}
               strokeWidth={2}
               dot={false}
-              strokeLinecap="round"
-            />
-            <Tooltip
-              contentStyle={{
-                background: "#fff",
-                border: "1px solid #ddd",
-                borderRadius: "6px",
-                fontSize: "12px",
-              }}
-              labelFormatter={(v) => `Date: ${v}`}
-              formatter={(v) => [`${(v * 100).toFixed(1)}%`, "Sentiment"]}
             />
           </LineChart>
         </ResponsiveContainer>
