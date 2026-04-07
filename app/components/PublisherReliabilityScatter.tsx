@@ -1,9 +1,17 @@
 import React from "react";
 
+type PublisherPoint = {
+  name: string;
+  reliability: number;
+  sentiment: number;
+  x: number;
+  y: number;
+};
+
 export default function PublisherReliabilityScatter({ entity }: any) {
   if (!entity || !entity.publishers) return null;
 
-  const points = entity.publishers.slice(0, 10).map((p: any, i: number) => ({
+  const points: PublisherPoint[] = entity.publishers.slice(0, 10).map((p: any, i: number) => ({
     name: p.name,
     reliability: p.reliability_score ?? Math.random() * 0.5 + 0.5,
     sentiment: p.sentiment ?? (Math.random() * 2 - 1),
@@ -38,7 +46,7 @@ export default function PublisherReliabilityScatter({ entity }: any) {
             opacity="0.4"
           />
 
-          {points.map((p, i) => (
+          {points.map((p: PublisherPoint, i: number) => (
             <g key={i}>
               <circle
                 cx={p.x}
