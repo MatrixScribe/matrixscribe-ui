@@ -1,3 +1,4 @@
+// ---------- ALERT ----------
 export type Alert = {
   id: string;
   severity: string;
@@ -10,6 +11,7 @@ export type Alert = {
   }[];
 };
 
+// ---------- ARTICLE ----------
 export type Article = {
   id: string;
   title: string;
@@ -19,117 +21,124 @@ export type Article = {
   sentiment: number;
 };
 
+// ---------- TOPIC CLUSTER ----------
+export type TopicCluster = {
+  topic: string;
+  weight: number;
+  sentiment: number;
+};
+
+// ---------- TIMELINE POINT ----------
+export type TimelinePoint = {
+  date: string;
+  sentiment: number;
+  volume: number;
+};
+
+// ---------- RELATED ENTITY ----------
+export type RelatedEntity = {
+  slug: string;
+  name: string;
+  sentiment: number;
+};
+
+// ---------- PUBLISHER STAT ----------
+export type PublisherStat = {
+  publisher: string;
+  articles: number;
+  avgSentiment: number;
+};
+
+// ---------- FORECAST POINT ----------
+export type ForecastPoint = {
+  date: string;
+  predictedSentiment: number;
+};
+
+// ---------- ENTITY ----------
 export type Entity = {
   id: string;
   slug: string;
   name: string;
   type: string;
+
+  // optional fields used in /lib/data/entities.ts
+  sector?: string;
+  country?: string;
+
+  // optional fields used in full entity.ts mock
   region?: string;
 
-  sentiment: number;
-  confidence: number;
-  sources: number;
-  updatedAt: string;
+  // optional because dataset entities.ts does not include them
+  sentiment?: number;
+  confidence?: number;
+  sources?: number;
+  updatedAt?: string;
 
-  sentiment_7d_avg: number;
-  sentiment_30d_avg: number;
-  sentiment_volatility: number;
-  sentiment_zscore: number;
+  sentiment_7d_avg?: number;
+  sentiment_30d_avg?: number;
+  sentiment_volatility?: number;
+  sentiment_zscore?: number;
 
-  article_count_24h: number;
-  article_count_7d: number;
-  velocity: number;
-  publisher_diversity_score: number;
+  article_count_24h?: number;
+  article_count_7d?: number;
+  velocity?: number;
+  publisher_diversity_score?: number;
 
-  sparkline: number[];
+  sparkline?: number[];
 
-  timeline: {
-    date: string;
-    value: number;
-    volume: number;
-    anomaly: boolean;
-    label?: string;
-  }[];
+  timeline?: TimelinePoint[];
+  timeline_confidence?: { lower: number; upper: number }[];
 
-  timeline_confidence: {
-    lower: number;
-    upper: number;
-  }[];
+  publishers?: PublisherStat[];
+  top_articles?: Article[];
 
-  publishers: {
-    name: string;
-    sentiment: number;
-    sentiment_change_7d: number;
-    bias_score: number;
-    reliability_score: number;
-    articles: number;
-  }[];
+  related_entities?: RelatedEntity[];
+  topics?: string[];
 
-  top_articles: Article[];
-
-  related_entities: {
-    id: string;
-    name: string;
-    sentiment: number;
-    strength: number;
-  }[];
-
-  topics: string[];
-
-  sentiment_drivers: {
+  sentiment_drivers?: {
     positive: { keyword: string; weight: number }[];
     negative: { keyword: string; weight: number }[];
   };
 
-  topic_heatmap: {
-    topic: string;
-    intensity: number;
-  }[];
+  topic_heatmap?: { topic: string; intensity: number }[];
 
-  event_timeline: {
-    date: string;
-    event: string;
-    impact: number;
-  }[];
+  event_timeline?: { date: string; event: string; impact: number }[];
 
-  article_tone: {
+  article_tone?: {
     positive: number;
     neutral: number;
     negative: number;
   };
 
-  risk_indicators: {
+  risk_indicators?: {
     policy_risk: number;
     market_risk: number;
     reputational_risk: number;
   };
 
-  forecast: {
+  forecast?: {
     next_7d: { date: string; value: number }[];
     confidence: number;
   };
 
-  publisher_bias: {
-    name: string;
-    bias: number;
-    reliability: number;
-  }[];
+  publisher_bias?: { name: string; bias: number; reliability: number }[];
 
-  source_geography: {
+  source_geography?: {
     local: number;
     regional: number;
     international: number;
   };
 
-  entity_comparison: {
+  entity_comparison?: {
     id: string;
     name: string;
     sentiment: number;
   }[];
 
-  alerts: Alert[];
+  alerts?: Alert[];
 
-  ingestedAt: string;
-  pipelineVersion: string;
-  missing_sources: string[];
+  ingestedAt?: string;
+  pipelineVersion?: string;
+  missing_sources?: string[];
 };
