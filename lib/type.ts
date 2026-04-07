@@ -1,8 +1,9 @@
 export interface Entity {
   id: string;
+  slug: string;
   name: string;
   type: string;
-  region: string;
+  region?: string;
 
   sentiment: number;
   confidence: number;

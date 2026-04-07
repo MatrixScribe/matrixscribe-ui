@@ -1,8 +1,9 @@
 export type Entity = {
   id: string;
+  slug: string;        // required for API route
   name: string;
   type: string;
-  region?: string; // ← ADD THIS LINE
+  region?: string;
 
   sentiment: number;
   confidence: number;
