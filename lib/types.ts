@@ -1,9 +1,10 @@
 // ---------- ALERT ----------
 export type Alert = {
-  id: string;
+  id?: string; // optional: mock entity alerts don't include id
   severity: string;
   message: string;
   timestamp: string;
+  severity_score?: number; // used in lib/entity.ts
   triggers?: {
     type: string;
     value: number;
@@ -13,14 +14,14 @@ export type Alert = {
 
 // ---------- ARTICLE ----------
 export type Article = {
-  id?: string;               // now optional
+  id?: string;
   title: string;
   url: string;
   publisher: string;
 
   // Support both dataset + mock entity formats
-  publishedAt?: string;      // dataset
-  timestamp?: string;        // mock entity
+  publishedAt?: string; // /lib/data/articles.ts
+  timestamp?: string;   // lib/entity.ts
 
   sentiment: number;
 };
@@ -30,8 +31,8 @@ export type TimelinePoint = {
   date: string;
 
   // Support both dataset + mock entity formats
-  sentiment?: number;   // used in /lib/data/timeline.ts
-  value?: number;       // used in lib/entity.ts
+  sentiment?: number; // /lib/data/timeline.ts
+  value?: number;     // lib/entity.ts
 
   volume: number;
 
@@ -42,9 +43,14 @@ export type TimelinePoint = {
 
 // ---------- RELATED ENTITY ----------
 export type RelatedEntity = {
-  slug: string;
+  // Support both dataset + mock entity formats
+  id?: string;   // lib/entity.ts
+  slug?: string; // /lib/data/related.ts
+
   name: string;
   sentiment: number;
+
+  strength?: number; // lib/entity.ts
 };
 
 // ---------- PUBLISHER STAT ----------
@@ -70,6 +76,13 @@ export type ForecastPoint = {
   predictedSentiment: number;
 };
 
+// ---------- TOPIC CLUSTER ----------
+export type TopicCluster = {
+  topic: string;
+  weight: number;
+  sentiment: number;
+};
+
 // ---------- ENTITY ----------
 export type Entity = {
   id: string;
@@ -77,14 +90,12 @@ export type Entity = {
   name: string;
   type: string;
 
-  // optional fields used in /lib/data/entities.ts
+  // optional fields used in /lib/data/entities.ts and mock
   sector?: string;
   country?: string;
-
-  // optional fields used in full entity.ts mock
   region?: string;
 
-  // optional because dataset entities.ts does not include them
+  // core metrics (present in mock, optional for datasets)
   sentiment?: number;
   confidence?: number;
   sources?: number;
@@ -156,11 +167,4 @@ export type Entity = {
   ingestedAt?: string;
   pipelineVersion?: string;
   missing_sources?: string[];
-};
-
-// ---------- TOPIC CLUSTER ----------
-export type TopicCluster = {
-  topic: string;
-  weight: number;
-  sentiment: number;
 };
