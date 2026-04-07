@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "@/app/components/ui/Card";
+import Card from "@/app/components/Card";
 import { sentimentColors } from "@/app/styles/sentimentColors";
 
 export default function SentimentHeader({
