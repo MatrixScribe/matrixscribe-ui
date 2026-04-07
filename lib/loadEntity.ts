@@ -1,7 +1,7 @@
 // lib/loadEntity.ts
 import { Entity } from "./types";
 
-const BASE_URL = process.env.postgresql://sentiment_platform_db_u24w_user_main:39B4iggoVgur533SMR34gg3BPsPjsLGH@dpg-d6uh1dvdiees73dhi76g-a.oregon-postgres.render.com/sentiment_platform_db_u24w!; // your Render backend URL
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL!; // your backend URL
 
 export async function loadEntity(slug: string) {
   const res = await fetch(`${BASE_URL}/api/entity/${slug}`, {
