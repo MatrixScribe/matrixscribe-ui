@@ -31,8 +31,16 @@ export type TopicCluster = {
 // ---------- TIMELINE POINT ----------
 export type TimelinePoint = {
   date: string;
-  sentiment: number;
+
+  // Support both dataset + mock entity formats
+  sentiment?: number;   // used in /lib/data/timeline.ts
+  value?: number;       // used in lib/entity.ts
+
   volume: number;
+
+  // Additional fields used in mock entity
+  anomaly?: boolean;
+  label?: string;
 };
 
 // ---------- RELATED ENTITY ----------
