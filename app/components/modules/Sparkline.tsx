@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "recharts";
 
-import Card from "@/app/components/Card";
+import Card from "@/app/components/card";
 import { sentimentColors } from "@/app/styles/sentimentColors";
 
 export default function Sparkline({
@@ -32,7 +32,7 @@ export default function Sparkline({
             <Line
               type="monotone"
               dataKey="value"
-              stroke={sentimentColors.primary}
+              stroke={sentimentColors.positive}
               strokeWidth={2}
               dot={false}
             />
