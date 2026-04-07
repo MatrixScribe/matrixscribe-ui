@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+
 import Grid from "../../components/Grid";
 import Card from "../../components/Card";
 import EntityHeader from "../../components/EntityHeader";
@@ -24,29 +27,76 @@ import PublisherShift from "../../components/PublisherShift";
 import InfluenceNetwork from "../../components/InfluenceNetwork";
 import EntityComparisonRadar from "../../components/EntityComparisonRadar";
 
-import { cookies } from "next/headers";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+// ------------------------------
+// Safe backend fetch with JWT
+// ------------------------------
+async function safeFetch(path: string, token?: string) {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Entity API error:", path, res.status, res.statusText);
+      return null;
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("Entity API fetch failed:", err);
+    return null;
+  }
+}
 
 export default async function EntityPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params; // ⭐ UNWRAP THE PROMISE
-  console.log("SLUG:", slug);
-
+  // ------------------------------
+  // 1. AUTH CHECK (server-side)
+  // ------------------------------
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  if (!token) {
+    redirect("/login");
+  }
 
-  const res = await fetch(`${base}/api/entities/${slug}`, {
-    cache: "no-store",
-    next: { revalidate: 0 },
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  const { slug } = params;
 
-  const entity = res.ok ? await res.json() : null;
+  // ------------------------------
+  // 2. FETCH ENTITY DATA
+  // ------------------------------
+  const data = await safeFetch(`/entity/${slug}`, token);
+  const entity = data
+  ? {
+      ...data.entity,
+      timeline: data.timeline,
+      top_articles: data.articles,
+      publishers: data.publishers,
+      related_entities: data.related,
+      topics: data.topics,
+      tags: data.tags,
+      risk: data.risk,
+      alerts: data.alerts,
+      forecast: data.forecast,
+      events: data.events,
+      comparison: data.comparison,
+      insights: data.insights,
+    }
+  : null;
 
+  // ------------------------------
+  // 3. RENDER PAGE
+  // ------------------------------
   return (
     <Grid>
       {/* LEFT COLUMN */}

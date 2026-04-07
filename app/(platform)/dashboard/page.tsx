@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 import SentimentTimeline from "@/app/components/SentimentTimeline";
@@ -13,8 +14,11 @@ import EntityComparisonStrip from "@/app/components/EntityComparisonStrip";
 import TopArticles from "@/app/components/TopArticles";
 import NarrativeSummary from "@/app/components/NarrativeSummary";
 
-const API_BASE = "https://sentiment-platform-zgr8.onrender.com/api";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+// ------------------------------
+// Safe backend fetch with JWT
+// ------------------------------
 async function safeFetch(path: string, token?: string) {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
@@ -23,7 +27,6 @@ async function safeFetch(path: string, token?: string) {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      // Important for SSR in Next app router
       cache: "no-store",
     });
 
@@ -40,17 +43,27 @@ async function safeFetch(path: string, token?: string) {
 }
 
 export default async function DashboardPage() {
+  // ------------------------------
+  // 1. AUTH CHECK (server-side)
+  // ------------------------------
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
-  // ---- Fetch all backend data in parallel (with safety) ----
+  if (!token) {
+    // No JWT → redirect to login
+    redirect("/login");
+  }
+
+  // ------------------------------
+  // 2. FETCH BACKEND DATA
+  // ------------------------------
   const [
-    newsInsights,      // /api/insights/news
-    analyticsData,     // /api/analytics
-    alertsStore,       // /api/insights/narrative/alerts-store
-    entityData,        // /api/entity
-    crossSourceData,   // /api/insights/cross-source
-    narrativeData,     // /api/insights/narrative
+    newsInsights,
+    analyticsData,
+    alertsStore,
+    entityData,
+    crossSourceData,
+    narrativeData,
   ] = await Promise.all([
     safeFetch("/insights/news", token),
     safeFetch("/analytics", token),
@@ -60,7 +73,9 @@ export default async function DashboardPage() {
     safeFetch("/insights/narrative", token),
   ]);
 
-  // ---- Mock fallbacks (kept so the page never breaks) ----
+  // ------------------------------
+  // 3. MOCK FALLBACKS
+  // ------------------------------
   const mockTimeline = [
     { date: "2024-01-01", value: -0.2 },
     { date: "2024-01-02", value: -0.1 },
@@ -178,7 +193,9 @@ export default async function DashboardPage() {
     },
   ];
 
-  // ---- Light mapping with safe fallbacks ----
+  // ------------------------------
+  // 4. DATA MAPPING WITH FALLBACKS
+  // ------------------------------
   const timelineData =
     newsInsights?.timeline ??
     newsInsights?.sentiment_timeline ??
@@ -235,6 +252,9 @@ export default async function DashboardPage() {
     primaryEntity ??
     mockEntity;
 
+  // ------------------------------
+  // 5. RENDER DASHBOARD
+  // ------------------------------
   return (
     <div className="space-y-6">
       {/* Page header */}
