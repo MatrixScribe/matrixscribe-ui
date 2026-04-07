@@ -13,22 +13,15 @@ export type Alert = {
 
 // ---------- ARTICLE ----------
 export type Article = {
-  id: string;
+  id?: string;               // now optional
   title: string;
   url: string;
   publisher: string;
 
   // Support both dataset + mock entity formats
-  publishedAt?: string;   // used in /lib/data/articles.ts
-  timestamp?: string;     // used in lib/entity.ts
+  publishedAt?: string;      // dataset
+  timestamp?: string;        // mock entity
 
-  sentiment: number;
-};
-
-// ---------- TOPIC CLUSTER ----------
-export type TopicCluster = {
-  topic: string;
-  weight: number;
   sentiment: number;
 };
 
