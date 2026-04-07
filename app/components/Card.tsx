@@ -1,6 +1,14 @@
-export default function Card({ children }: { children: React.ReactNode }) {
+import React from "react";
+
+export default function Card({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="surface shadow-subtle p-5 rounded-xl">
+    <div className={`surface p-4 rounded-md shadow-subtle ${className}`}>
       {children}
     </div>
   );
