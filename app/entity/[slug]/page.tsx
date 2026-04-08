@@ -88,12 +88,39 @@ export default async function EntityPage({
       top_articles: data.articles,
 
       // ⭐ FIX: Normalize publishers into an array
-      publishers: Array.isArray(data.publishers)
-        ? data.publishers
-        : Object.entries(data.publishers || {}).map(([name, count]) => ({
-            name,
-            count,
-          })),
+      publishers: (() => {
+  const raw = data.publishers;
+
+  // Case 1: Already an array → return as-is
+  if (Array.isArray(raw)) {
+    return raw.map(p => ({
+      name: p.name ?? "Unknown",
+      count: typeof p.count === "number" ? p.count : 0,
+      ...p,
+    }));
+  }
+
+  // Case 2: Null / undefined → empty array
+  if (!raw || typeof raw !== "object") {
+    return [];
+  }
+
+  // Case 3: Object map → convert to array
+  return Object.entries(raw).map(([name, value]) => {
+    const isObj = typeof value === "object" && value !== null;
+
+    return {
+      name,
+      count:
+        typeof value === "number"
+          ? value
+          : isObj && typeof value.count === "number"
+          ? value.count
+          : 0,
+      ...(isObj ? value : {}),
+    };
+  });
+})(),
 
       related_entities: data.related,
       topics: data.topics,
