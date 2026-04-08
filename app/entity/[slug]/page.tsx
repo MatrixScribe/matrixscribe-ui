@@ -57,6 +57,41 @@ async function safeFetch(path: string, token?: string) {
   }
 }
 
+// ------------------------------
+// Publisher Normalization (Turbopack-safe)
+// ------------------------------
+function normalizePublishers(raw: any) {
+  // Case 1: Already an array
+  if (Array.isArray(raw)) {
+    return raw.map((p: any) => ({
+      name: p.name ?? "Unknown",
+      count: typeof p.count === "number" ? p.count : 0,
+      ...p,
+    }));
+  }
+
+  // Case 2: Null / undefined
+  if (!raw || typeof raw !== "object") {
+    return [];
+  }
+
+  // Case 3: Object map → convert to array
+  return Object.entries(raw).map(([name, value]: [string, any]) => {
+    const isObj = typeof value === "object" && value !== null;
+
+    return {
+      name,
+      count:
+        typeof value === "number"
+          ? value
+          : isObj && typeof value.count === "number"
+          ? value.count
+          : 0,
+      ...(isObj ? value : {}),
+    };
+  });
+}
+
 export default async function EntityPage({
   params,
 }: {
@@ -82,80 +117,22 @@ export default async function EntityPage({
   const data = await safeFetch(`/api/entity/${slug}`, token);
 
   const entity = data
-  ? {
-      ...data.entity,
-      timeline: data.timeline,
-      top_articles: data.articles,
-
-      // ⭐ FIX: Normalize publishers into an array
-      publishers: (() => {
-  const raw = data.publishers;
-
-  // Case 1: Already an array → return as-is
-  if (Array.isArray(raw)) {
-    return raw.map((p: any) => ({
-      name: p.name ?? "Unknown",
-      count: typeof p.count === "number" ? p.count : 0,
-      ...p,
-    }));
-  }
-
-  // Case 2: Null / undefined → empty array
-  if (!raw || typeof raw !== "object") {
-    return [];
-  }
-
-  // Case 3: Object map → convert to array
-  return Object.entries(raw).map(([name, value]: [string, any]) => {
-    const isObj = typeof value === "object" && value !== null;
-
-    return {
-      name,
-      count:
-        typeof value === "number"
-          ? value
-          : isObj && typeof value.count === "number"
-          ? value.count
-          : 0,
-      ...(isObj ? value : {}),
-    };
-  });
-})(),
-
-
-  // Case 2: Null / undefined → empty array
-  if (!raw || typeof raw !== "object") {
-    return [];
-  }
-
-  // Case 3: Object map → convert to array
-  return Object.entries(raw).map(([name, value]) => {
-    const isObj = typeof value === "object" && value !== null;
-
-    return {
-      name,
-      count:
-        typeof value === "number"
-          ? value
-          : isObj && typeof value.count === "number"
-          ? value.count
-          : 0,
-      ...(isObj ? value : {}),
-    };
-  });
-})(),
-
-      related_entities: data.related,
-      topics: data.topics,
-      tags: data.tags,
-      risk: data.risk,
-      alerts: data.alerts,
-      forecast: data.forecast,
-      events: data.events,
-      comparison: data.comparison,
-      insights: data.insights,
-    }
-  : null;
+    ? {
+        ...data.entity,
+        timeline: data.timeline,
+        top_articles: data.articles,
+        publishers: normalizePublishers(data.publishers),
+        related_entities: data.related,
+        topics: data.topics,
+        tags: data.tags,
+        risk: data.risk,
+        alerts: data.alerts,
+        forecast: data.forecast,
+        events: data.events,
+        comparison: data.comparison,
+        insights: data.insights,
+      }
+    : null;
 
   // ------------------------------
   // 3. RENDER PAGE
