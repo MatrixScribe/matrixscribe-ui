@@ -36,7 +36,10 @@ const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 // ------------------------------
 async function safeFetch(path: string, token?: string) {
   try {
-    const res = await fetch(`${API_BASE}${path}`, {
+    const url = `${API_BASE}${path}`;
+    console.log("FETCHING:", url);
+
+    const res = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +49,7 @@ async function safeFetch(path: string, token?: string) {
     });
 
     if (!res.ok) {
-      console.error("Entity API error:", path, res.status, res.statusText);
+      console.error("Entity API error:", url, res.status, res.statusText);
       return null;
     }
 
@@ -61,7 +64,6 @@ async function safeFetch(path: string, token?: string) {
 // Publisher Normalization (Turbopack-safe)
 // ------------------------------
 function normalizePublishers(raw: any) {
-  // Case 1: Already an array
   if (Array.isArray(raw)) {
     return raw.map((p: any) => ({
       name: p.name ?? "Unknown",
@@ -70,12 +72,10 @@ function normalizePublishers(raw: any) {
     }));
   }
 
-  // Case 2: Null / undefined
   if (!raw || typeof raw !== "object") {
     return [];
   }
 
-  // Case 3: Object map → convert to array
   return Object.entries(raw).map(([name, value]: [string, any]) => {
     const isObj = typeof value === "object" && value !== null;
 
@@ -107,12 +107,11 @@ export default async function EntityPage({
     redirect("/login");
   }
 
-  // ⭐ Next.js 16: params is a Promise — must await it
   const { slug } = await params;
   console.log("SLUG:", slug);
 
   // ------------------------------
-  // 2. FETCH ENTITY DATA
+  // 2. FETCH ENTITY DATA (FIXED)
   // ------------------------------
   const data = await safeFetch(`/api/entity/${slug}`, token);
 
