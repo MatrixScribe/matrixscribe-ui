@@ -84,7 +84,7 @@ export default async function DashboardPage() {
   if (!token) redirect("/login");
 
   // ------------------------------
-  2. FETCH BACKEND DATA
+  // 2. FETCH BACKEND DATA
   // ------------------------------
   const [
     newsInsights,
