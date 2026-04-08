@@ -3,14 +3,19 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { token } = await req.json();
 
+  if (!token) {
+    return NextResponse.json({ error: "Token missing" }, { status: 400 });
+  }
+
   const res = NextResponse.json({ ok: true });
 
-  res.cookies.set("token", token, {
+  res.cookies.set({
+    name: "token",
+    value: token,
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
+    sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 
   return res;
