@@ -71,6 +71,7 @@ export default async function EntityPage({
   }
 
   const { slug } = params;
+console.log("SLUG:", slug);
 
   // ------------------------------
   // 2. FETCH ENTITY DATA
