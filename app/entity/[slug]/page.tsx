@@ -58,7 +58,7 @@ async function safeFetch(path: string, token?: string) {
 export default async function EntityPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   // ------------------------------
   // 1. AUTH CHECK (server-side)
@@ -70,8 +70,9 @@ export default async function EntityPage({
     redirect("/login");
   }
 
-  const { slug } = params;
-console.log("SLUG:", slug);
+  // ⭐ Next.js 16: params is a Promise — must await it
+  const { slug } = await params;
+  console.log("SLUG:", slug);
 
   // ------------------------------
   // 2. FETCH ENTITY DATA
