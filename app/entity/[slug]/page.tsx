@@ -93,12 +93,35 @@ export default async function EntityPage({
 
   // Case 1: Already an array → return as-is
   if (Array.isArray(raw)) {
-    return raw.map(p => ({
+    return raw.map((p: any) => ({
       name: p.name ?? "Unknown",
       count: typeof p.count === "number" ? p.count : 0,
       ...p,
     }));
   }
+
+  // Case 2: Null / undefined → empty array
+  if (!raw || typeof raw !== "object") {
+    return [];
+  }
+
+  // Case 3: Object map → convert to array
+  return Object.entries(raw).map(([name, value]: [string, any]) => {
+    const isObj = typeof value === "object" && value !== null;
+
+    return {
+      name,
+      count:
+        typeof value === "number"
+          ? value
+          : isObj && typeof value.count === "number"
+          ? value.count
+          : 0,
+      ...(isObj ? value : {}),
+    };
+  });
+})(),
+
 
   // Case 2: Null / undefined → empty array
   if (!raw || typeof raw !== "object") {
