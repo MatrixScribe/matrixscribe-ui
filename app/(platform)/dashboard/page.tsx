@@ -42,20 +42,49 @@ async function safeFetch(path: string, token?: string) {
   }
 }
 
+// ------------------------------
+// Publisher Normalization
+// ------------------------------
+function normalizePublishers(raw: any) {
+  if (Array.isArray(raw)) {
+    return raw.map((p: any) => ({
+      name: p.name ?? "Unknown",
+      count: typeof p.count === "number" ? p.count : 0,
+      ...p,
+    }));
+  }
+
+  if (!raw || typeof raw !== "object") {
+    return [];
+  }
+
+  return Object.entries(raw).map(([name, value]: [string, any]) => {
+    const isObj = typeof value === "object" && value !== null;
+
+    return {
+      name,
+      count:
+        typeof value === "number"
+          ? value
+          : isObj && typeof value.count === "number"
+          ? value.count
+          : 0,
+      ...(isObj ? value : {}),
+    };
+  });
+}
+
 export default async function DashboardPage() {
   // ------------------------------
-  // 1. AUTH CHECK (server-side)
+  // 1. AUTH CHECK
   // ------------------------------
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
-  if (!token) {
-    // No JWT → redirect to login
-    redirect("/login");
-  }
+  if (!token) redirect("/login");
 
   // ------------------------------
-  // 2. FETCH BACKEND DATA
+  2. FETCH BACKEND DATA
   // ------------------------------
   const [
     newsInsights,
@@ -108,8 +137,7 @@ export default async function DashboardPage() {
       entity: "Eskom",
       severity: "warning",
       title: "Volume spike detected",
-      summary:
-        "Unusual increase in article volume over the last 24 hours.",
+      summary: "Unusual increase in article volume over the last 24 hours.",
       timestamp: "5h ago",
     },
   ];
@@ -237,10 +265,11 @@ export default async function DashboardPage() {
     entityData?.[0] ??
     mockEntity;
 
-  const publishersData =
+  const publishersData = normalizePublishers(
     crossSourceData?.publishers ??
-    crossSourceData?.publisher_breakdown ??
-    mockPublishers;
+      crossSourceData?.publisher_breakdown ??
+      mockPublishers
+  );
 
   const articlesData =
     newsInsights?.top_articles ??
