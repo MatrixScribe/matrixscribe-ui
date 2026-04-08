@@ -193,3 +193,90 @@ export default async function EntityPage({
           </Card>
         )}
 
+        {entity && (
+          <Card>
+            <ScenarioModule entity={entity} />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <InfluenceNetwork entity={entity} />
+          </Card>
+        )}
+      </div>
+
+      {/* RIGHT COLUMN */}
+      <div className="col-span-3 space-y-4">
+        <Card>
+          {entity?.publishers ? (
+            <PublisherBreakdown publishers={entity.publishers} />
+          ) : (
+            <div className="text-charcoal-light text-sm">No publisher data</div>
+          )}
+        </Card>
+
+        <Card>
+          {entity?.alerts?.length ? (
+            entity.alerts.map((a: any, i: number) => (
+              <div key={i} className="mb-3">
+                <div className="font-medium text-charcoal">{a.message}</div>
+                <div className="text-xs text-charcoal-light">{a.timestamp}</div>
+              </div>
+            ))
+          ) : (
+            <AlertBanner
+              message="No critical alerts at this time."
+              severity="info"
+            />
+          )}
+        </Card>
+
+        {entity && (
+          <Card>
+            <RelatedEntities
+              entities={entity.related_entities}
+              topics={entity.topics}
+            />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <PublisherShift entity={entity} />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <RiskTrajectory entity={entity} />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <ForecastConfidence entity={entity} />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <SourceDiversityWheel entity={entity} />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <CoverageMap entity={entity} />
+          </Card>
+        )}
+
+        {entity && (
+          <Card>
+            <EntityComparisonRadar entity={entity} />
+          </Card>
+        )}
+      </div>
+    </Grid>
+  );
+}
