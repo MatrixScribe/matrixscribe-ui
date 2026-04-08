@@ -82,22 +82,30 @@ export default async function EntityPage({
   const data = await safeFetch(`/api/entity/${slug}`, token);
 
   const entity = data
-    ? {
-        ...data.entity,
-        timeline: data.timeline,
-        top_articles: data.articles,
-        publishers: data.publishers,
-        related_entities: data.related,
-        topics: data.topics,
-        tags: data.tags,
-        risk: data.risk,
-        alerts: data.alerts,
-        forecast: data.forecast,
-        events: data.events,
-        comparison: data.comparison,
-        insights: data.insights,
-      }
-    : null;
+  ? {
+      ...data.entity,
+      timeline: data.timeline,
+      top_articles: data.articles,
+
+      // ⭐ FIX: Normalize publishers into an array
+      publishers: Array.isArray(data.publishers)
+        ? data.publishers
+        : Object.entries(data.publishers || {}).map(([name, count]) => ({
+            name,
+            count,
+          })),
+
+      related_entities: data.related,
+      topics: data.topics,
+      tags: data.tags,
+      risk: data.risk,
+      alerts: data.alerts,
+      forecast: data.forecast,
+      events: data.events,
+      comparison: data.comparison,
+      insights: data.insights,
+    }
+  : null;
 
   // ------------------------------
   // 3. RENDER PAGE
