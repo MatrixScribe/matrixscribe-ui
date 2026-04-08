@@ -1,3 +1,5 @@
+console.log("RUNNING FILE:", __filename);
+
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
