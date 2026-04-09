@@ -22,7 +22,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         <Link href="/explorer" className="block px-3 py-2 rounded hover:bg-surface-muted">
           Explorer
         </Link>
-        <Link href="/entity" className="block px-3 py-2 rounded hover:bg-surface-muted">
+        <Link href="/dashboard" className="block px-3 py-2 rounded hover:bg-surface-muted">
           Entities
         </Link>
         <Link href="/alerts" className="block px-3 py-2 rounded hover:bg-surface-muted">
