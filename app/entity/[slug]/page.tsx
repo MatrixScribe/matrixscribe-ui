@@ -77,6 +77,7 @@ export default async function EntityPage({
 }: {
   params: { slug: string };
 }) {
+  const { slug } = params;
   // ------------------------------
   // 1. AUTH CHECK
   // ------------------------------
