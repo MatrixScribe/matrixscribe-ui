@@ -34,7 +34,7 @@ const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 // ------------------------------
 // Safe backend fetch with JWT
 // ------------------------------
-async function safeFetch(path: string, token?: string) {
+async function safeFetch(path: string, token: string) {
   try {
     const url = `${API_BASE}${path}`;
     console.log("FETCHING:", url);
@@ -43,7 +43,7 @@ async function safeFetch(path: string, token?: string) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     });
@@ -61,44 +61,24 @@ async function safeFetch(path: string, token?: string) {
 }
 
 // ------------------------------
-// Publisher Normalization (Turbopack-safe)
+// Normalize arrays safely
 // ------------------------------
-function normalizePublishers(raw: any) {
-  if (Array.isArray(raw)) {
-    return raw.map((p: any) => ({
-      name: p.name ?? "Unknown",
-      count: typeof p.count === "number" ? p.count : 0,
-      ...p,
-    }));
-  }
-
-  if (!raw || typeof raw !== "object") {
-    return [];
-  }
-
-  return Object.entries(raw).map(([name, value]: [string, any]) => {
-    const isObj = typeof value === "object" && value !== null;
-
-    return {
-      name,
-      count:
-        typeof value === "number"
-          ? value
-          : isObj && typeof value.count === "number"
-          ? value.count
-          : 0,
-      ...(isObj ? value : {}),
-    };
-  });
+function normalizeArray(raw: any) {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((item) => ({
+    ...item,
+    name: item.name ?? "",
+    count: item.count ?? 0,
+  }));
 }
 
 export default async function EntityPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
   // ------------------------------
-  // 1. AUTH CHECK (server-side)
+  // 1. AUTH CHECK
   // ------------------------------
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -107,31 +87,41 @@ export default async function EntityPage({
     redirect("/login");
   }
 
-  const { slug } = await params;
+  const { slug } = params;
   console.log("SLUG:", slug);
 
   // ------------------------------
-  // 2. FETCH ENTITY DATA (FIXED)
+  // 2. FETCH ENTITY DATA
   // ------------------------------
   const data = await safeFetch(`/api/entity/${slug}`, token);
 
-  const entity = data
-    ? {
-        ...data.entity,
-        timeline: data.timeline,
-        top_articles: data.articles,
-        publishers: normalizePublishers(data.publishers),
-        related_entities: data.related,
-        topics: data.topics,
-        tags: data.tags,
-        risk: data.risk,
-        alerts: data.alerts,
-        forecast: data.forecast,
-        events: data.events,
-        comparison: data.comparison,
-        insights: data.insights,
-      }
-    : null;
+  if (!data || !data.entity) {
+    return (
+      <Grid>
+        <Card>
+          <div className="text-charcoal-light text-sm">
+            Entity unavailable or not found.
+          </div>
+        </Card>
+      </Grid>
+    );
+  }
+
+  const entity = {
+    ...data.entity,
+    timeline: data.timeline ?? [],
+    top_articles: data.articles ?? [],
+    publishers: normalizeArray(data.publishers),
+    related_entities: normalizeArray(data.related),
+    topics: normalizeArray(data.topics),
+    tags: normalizeArray(data.tags),
+    risk: data.risk ?? {},
+    alerts: data.alerts ?? [],
+    forecast: data.forecast ?? {},
+    events: data.events ?? [],
+    comparison: data.comparison ?? [],
+    insights: data.insights ?? [],
+  };
 
   // ------------------------------
   // 3. RENDER PAGE
@@ -141,121 +131,87 @@ export default async function EntityPage({
       {/* LEFT COLUMN */}
       <div className="col-span-3 space-y-4">
         <Card>
-          {entity ? (
-            <EntityHeader
-              name={entity.name}
-              type={entity.type}
-              region={entity.region}
-              updatedAt={entity.updatedAt}
-              sentiment={entity.sentiment}
-              sources={entity.sources}
-              confidence={entity.confidence}
-              data={entity.sparkline}
-            />
-          ) : (
-            <div className="text-charcoal-light text-sm">Entity unavailable</div>
-          )}
+          <EntityHeader
+            name={entity.name}
+            type={entity.type}
+            region={entity.region}
+            updatedAt={entity.updatedAt}
+            sentiment={entity.sentiment}
+            sources={entity.sources}
+            confidence={entity.confidence}
+            data={entity.sparkline}
+          />
         </Card>
 
-        {entity && (
-          <Card>
-            <RollingMetrics
-              avg7={entity.sentiment_7d_avg}
-              avg30={entity.sentiment_30d_avg}
-              volatility={entity.sentiment_volatility}
-              zscore={entity.sentiment_zscore}
-            />
-          </Card>
-        )}
+        <Card>
+          <RollingMetrics
+            avg7={entity.sentiment_7d_avg}
+            avg30={entity.sentiment_30d_avg}
+            volatility={entity.sentiment_volatility}
+            zscore={entity.sentiment_zscore}
+          />
+        </Card>
 
-        {entity && (
-          <Card>
-            <VolumeVelocity
-              count24h={entity.article_count_24h}
-              count7d={entity.article_count_7d}
-              velocity={entity.velocity}
-              diversity={entity.publisher_diversity_score}
-            />
-          </Card>
-        )}
+        <Card>
+          <VolumeVelocity
+            count24h={entity.article_count_24h}
+            count7d={entity.article_count_7d}
+            velocity={entity.velocity}
+            diversity={entity.publisher_diversity_score}
+          />
+        </Card>
 
-        {entity && (
-          <Card>
-            <SentimentMomentum entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <SentimentMomentum entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <VelocityAcceleration entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <VelocityAcceleration entity={entity} />
+        </Card>
       </div>
 
       {/* CENTER COLUMN */}
       <div className="col-span-6 space-y-4">
         <Card>
-          {entity?.timeline ? (
-            <TimelineChart
-              data={entity.timeline}
-              confidence={entity.timeline_confidence}
-            />
-          ) : (
-            <div className="h-64 flex items-center justify-center text-charcoal-light text-sm">
-              Timeline will render here
-            </div>
-          )}
+          <TimelineChart
+            data={entity.timeline}
+            confidence={entity.timeline_confidence}
+          />
         </Card>
 
-        {entity && (
-          <Card>
-            <TopArticles articles={entity.top_articles} />
-          </Card>
-        )}
+        <Card>
+          <TopArticles articles={entity.top_articles} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <WhatChanged entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <WhatChanged entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <KeywordExtraction entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <KeywordExtraction entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <EntityScorecard entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <EntityScorecard entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <ScenarioModule entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <ScenarioModule entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <InfluenceNetwork entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <InfluenceNetwork entity={entity} />
+        </Card>
       </div>
 
       {/* RIGHT COLUMN */}
       <div className="col-span-3 space-y-4">
         <Card>
-          {entity?.publishers ? (
-            <PublisherBreakdown publishers={entity.publishers} />
-          ) : (
-            <div className="text-charcoal-light text-sm">No publisher data</div>
-          )}
+          <PublisherBreakdown publishers={entity.publishers} />
         </Card>
 
         <Card>
-          {entity?.alerts?.length ? (
+          {entity.alerts.length ? (
             entity.alerts.map((a: any, i: number) => (
               <div key={i} className="mb-3">
                 <div className="font-medium text-charcoal">{a.message}</div>
@@ -270,50 +226,36 @@ export default async function EntityPage({
           )}
         </Card>
 
-        {entity && (
-          <Card>
-            <RelatedEntities
-              entities={entity.related_entities}
-              topics={entity.topics}
-            />
-          </Card>
-        )}
+        <Card>
+          <RelatedEntities
+            entities={entity.related_entities}
+            topics={entity.topics}
+          />
+        </Card>
 
-        {entity && (
-          <Card>
-            <PublisherShift entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <PublisherShift entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <RiskTrajectory entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <RiskTrajectory entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <ForecastConfidence entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <ForecastConfidence entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <SourceDiversityWheel entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <SourceDiversityWheel entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <CoverageMap entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <CoverageMap entity={entity} />
+        </Card>
 
-        {entity && (
-          <Card>
-            <EntityComparisonRadar entity={entity} />
-          </Card>
-        )}
+        <Card>
+          <EntityComparisonRadar entity={entity} />
+        </Card>
       </div>
     </Grid>
   );
