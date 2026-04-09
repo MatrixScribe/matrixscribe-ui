@@ -72,16 +72,24 @@ function normalizeArray(raw: any) {
   }));
 }
 
-export default async function EntityPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  // ------------------------------
-  // FIXED: Correct slug extraction
-  // ------------------------------
-  const { slug } = params;
+export default async function EntityPage(props: any) {
+  console.log("ENTITY PAGE PROPS:", props);
+
+  const slug: string | undefined = props?.params?.slug;
   console.log("SLUG:", slug);
+
+  // If slug is missing, hard fail early
+  if (!slug) {
+    return (
+      <Grid>
+        <Card>
+          <div className="text-charcoal-light text-sm">
+            Entity slug missing in route.
+          </div>
+        </Card>
+      </Grid>
+    );
+  }
 
   // ------------------------------
   // 1. AUTH CHECK
