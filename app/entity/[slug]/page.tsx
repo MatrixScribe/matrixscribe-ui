@@ -72,10 +72,16 @@ function normalizeArray(raw: any) {
   }));
 }
 
-export default async function EntityPage(props: any) {
-  console.log("ENTITY PAGE PROPS:", props);
+// ⭐⭐⭐ FIXED FUNCTION SIGNATURE ⭐⭐⭐
+// Next.js App Router passes params directly, not inside props, not as a Promise.
+export default async function EntityPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  console.log("ENTITY PAGE PARAMS:", params);
 
-  const slug: string | undefined = props?.params?.slug;
+  const slug = params.slug;
   console.log("SLUG:", slug);
 
   // If slug is missing, hard fail early
