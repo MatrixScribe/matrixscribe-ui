@@ -77,7 +77,12 @@ export default async function EntityPage({
 }: {
   params: { slug: string };
 }) {
+  // ------------------------------
+  // FIXED: Correct slug extraction
+  // ------------------------------
   const { slug } = params;
+  console.log("SLUG:", slug);
+
   // ------------------------------
   // 1. AUTH CHECK
   // ------------------------------
@@ -87,9 +92,6 @@ export default async function EntityPage({
   if (!token) {
     redirect("/login");
   }
-
-  const { slug } = params;
-  console.log("SLUG:", slug);
 
   // ------------------------------
   // 2. FETCH ENTITY DATA
