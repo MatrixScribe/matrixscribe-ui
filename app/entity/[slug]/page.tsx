@@ -8,6 +8,28 @@ import RelatedEntities from "@/app/components/RelatedEntities";
 import RiskIndicators from "@/app/components/RiskIndicators";
 import EventTimeline from "@/app/components/EventTimeline";
 
+import NarrativeSummary from "@/app/components/NarrativeSummary";
+import SentimentDrivers from "@/app/components/SentimentDrivers";
+import SentimentHistogram from "@/app/components/SentimentHistogram";
+import SentimentMomentum from "@/app/components/SentimentMomentum";
+import TopicHeatmap from "@/app/components/TopicHeatmap";
+import TopicDrift from "@/app/components/TopicDrift";
+import PublisherBreakdown from "@/app/components/PublisherBreakdown";
+import PublisherBiasMeters from "@/app/components/PublisherBiasMeters";
+import PublisherReliabilityScatter from "@/app/components/PublisherReliabilityScatter";
+import PublisherShift from "@/app/components/PublisherShift";
+import PublisherTimeline from "@/app/components/PublisherTimeline";
+import EntityInfluenceGraph from "@/app/components/EntityInfluenceGraph";
+import RiskTrajectory from "@/app/components/RiskTrajectory";
+import ForecastConfidence from "@/app/components/ForecastConfidence";
+import Forecasting from "@/app/components/Forecasting";
+import WhatChanged from "@/app/components/WhatChanged";
+import WhyThisMatters from "@/app/components/WhyThisMatters";
+import RecommendedActions from "@/app/components/RecommendedActions";
+import VolumeVelocity from "@/app/components/VolumeVelocity";
+import VelocityAcceleration from "@/app/components/VelocityAcceleration";
+import RollingMetrics from "@/app/components/RollingMetrics";
+
 export const dynamic = "force-dynamic";
 
 export default async function EntityPage({
@@ -41,76 +63,216 @@ export default async function EntityPage({
   }
 
   const data = await res.json();
-  const { entity, timeline, articles, topics, tags, risk } = data;
 
+  // ---------- FLEXIBLE MAPPING LAYER ----------
+  const entity = data.entity || data;
+
+  const timeline =
+    data.timeline ||
+    data.sentiment_timeline ||
+    data.sentimentTimeline ||
+    [];
+
+  const articles =
+    data.articles ||
+    data.article_list ||
+    data.articleList ||
+    [];
+
+  const topics =
+    data.topics ||
+    data.topic_list ||
+    data.topicList ||
+    [];
+
+  const tags =
+    data.tags ||
+    data.tag_list ||
+    data.tagList ||
+    [];
+
+  const risk =
+    data.risk ||
+    data.risk_profile ||
+    data.riskProfile ||
+    {};
+
+  const sentimentBuckets =
+    risk.sentiment ||
+    risk.sentiment_buckets ||
+    risk.sentimentBuckets ||
+    [];
+
+  const updatedAt =
+    entity.updated_at ||
+    entity.updatedAt ||
+    entity.last_updated ||
+    entity.lastUpdated ||
+    null;
+
+  const articleCount = Array.isArray(articles) ? articles.length : 0;
+  const topicCount = Array.isArray(topics) ? topics.length : 0;
+  const tagCount = Array.isArray(tags) ? tags.length : 0;
+
+  const sentimentTimelineData = Array.isArray(timeline)
+    ? timeline.map((t: any) => ({
+        date: t.date || t.day || t.timestamp,
+        value:
+          typeof t.avg_score !== "undefined"
+            ? Number(t.avg_score)
+            : typeof t.score !== "undefined"
+            ? Number(t.score)
+            : 0,
+      }))
+    : [];
+
+  // ---------- PAGE LAYOUT ----------
   return (
     <div className="p-6 space-y-8">
 
-      {/* ENTITY HEADER */}
+      {/* 1. ENTITY OVERVIEW */}
       <Card>
-  <EntityHeader
-    name={entity.name}
-    type={entity.type}
-    region={entity.region}
-    updatedAt={entity.updated_at}
-    articleCount={articles.length}
-    topicCount={topics.length}
-    sentimentBuckets={risk.sentiment || []}
-  />
-</Card>
-
-      {/* SCORECARD */}
-      <Card>
-        <EntityScorecard
-          articleCount={articles.length}
-          topicCount={topics.length}
-          tagCount={tags.length}
-          sentimentBucketCount={risk.sentiment?.length || 0}
+        <EntityHeader
+          name={entity.name}
+          type={entity.type}
+          region={entity.region}
+          updatedAt={updatedAt}
+          articleCount={articleCount}
+          topicCount={topicCount}
+          sentimentBuckets={sentimentBuckets}
         />
       </Card>
 
-      {/* SENTIMENT TIMELINE */}
+      <Card>
+        <EntityScorecard
+          articleCount={articleCount}
+          topicCount={topicCount}
+          tagCount={tagCount}
+          sentimentBucketCount={Array.isArray(sentimentBuckets) ? sentimentBuckets.length : 0}
+        />
+      </Card>
+
+      {/* 2. NARRATIVE & SENTIMENT */}
+      <Card>
+        <NarrativeSummary entity={entity} articles={articles} />
+      </Card>
+
       <Card>
         <div className="space-y-3">
           <div className="text-xs uppercase tracking-wide text-charcoal-light">
             Sentiment timeline
           </div>
-
-          <SentimentTimeline
-            data={timeline.map((t: any) => ({
-              date: t.date,
-              value: Number(t.avg_score) || 0,
-            }))}
-          />
+          <SentimentTimeline data={sentimentTimelineData} />
         </div>
       </Card>
 
-      {/* KEYWORD EXTRACTION */}
+      <Card>
+        <SentimentDrivers entity={entity} articles={articles} />
+      </Card>
+
+      <Card>
+        <SentimentMomentum entity={entity} timeline={timeline} />
+      </Card>
+
+      <Card>
+        <SentimentHistogram entity={entity} articles={articles} />
+      </Card>
+
+      {/* 3. TOPICS & KEYWORDS */}
       <Card>
         <KeywordExtraction entity={entity} />
       </Card>
 
-      {/* TOP ARTICLES */}
+      <Card>
+        <TopicHeatmap entity={entity} topics={topics} timeline={timeline} />
+      </Card>
+
+      <Card>
+        <TopicDrift entity={entity} topics={topics} />
+      </Card>
+
+      {/* 4. ARTICLES & MEDIA */}
       <Card>
         <TopArticles articles={articles} />
       </Card>
 
-      {/* RELATED ENTITIES */}
+      <Card>
+        <PublisherBreakdown entity={entity} articles={articles} />
+      </Card>
+
+      <Card>
+        <PublisherBiasMeters entity={entity} articles={articles} />
+      </Card>
+
+      <Card>
+        <PublisherReliabilityScatter entity={entity} articles={articles} />
+      </Card>
+
+      <Card>
+        <PublisherShift entity={entity} articles={articles} />
+      </Card>
+
+      <Card>
+        <PublisherTimeline entity={entity} articles={articles} />
+      </Card>
+
+      {/* 5. INFLUENCE & NETWORK */}
+      <Card>
+        <EntityInfluenceGraph entity={entity} />
+      </Card>
+
       <Card>
         <RelatedEntities
           entities={entity.related_entities || []}
-          topics={topics.map((t: any) => t.name)}
+          topics={topics.map((t: any) => t.name || t.topic || "")}
         />
       </Card>
 
-      {/* RISK INDICATORS */}
+      {/* 6. RISK & FORECASTING */}
       <Card>
-        <RiskIndicators entity={entity} />
+        <RiskIndicators entity={entity} risk={risk} />
       </Card>
 
-      {/* EVENT TIMELINE */}
+      <Card>
+        <RiskTrajectory entity={entity} risk={risk} timeline={timeline} />
+      </Card>
+
+      <Card>
+        <ForecastConfidence entity={entity} risk={risk} />
+      </Card>
+
+      <Card>
+        <Forecasting entity={entity} timeline={timeline} />
+      </Card>
+
+      {/* 7. EVENTS & CHANGE DETECTION */}
       <Card>
         <EventTimeline entity={entity} />
+      </Card>
+
+      <Card>
+        <WhatChanged entity={entity} articles={articles} timeline={timeline} />
+      </Card>
+
+      <Card>
+        <WhyThisMatters entity={entity} />
+      </Card>
+
+      <Card>
+        <RecommendedActions entity={entity} risk={risk} />
+      </Card>
+
+      {/* 8. VOLUME & VELOCITY */}
+      <Card>
+        <VolumeVelocity entity={entity} timeline={timeline} />
+      </Card>
+
+      <Card>
+        <VelocityAcceleration entity={entity} timeline={timeline} />
+      </Card>
+
+      <Card>
+        <RollingMetrics entity={entity} timeline={timeline} />
       </Card>
 
     </div>
