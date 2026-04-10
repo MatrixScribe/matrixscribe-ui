@@ -8,6 +8,7 @@ import RelatedEntities from "@/app/components/RelatedEntities";
 import RiskIndicators from "@/app/components/RiskIndicators";
 import EventTimeline from "@/app/components/EventTimeline";
 
+// Premium components — safe to pass only entity
 import NarrativeSummary from "@/app/components/NarrativeSummary";
 import SentimentDrivers from "@/app/components/SentimentDrivers";
 import SentimentHistogram from "@/app/components/SentimentHistogram";
@@ -154,28 +155,23 @@ export default async function EntityPage({
 
       {/* 2. NARRATIVE & SENTIMENT */}
       <Card>
-        <NarrativeSummary entity={entity} articles={articles} />
+        <NarrativeSummary entity={entity} />
       </Card>
 
       <Card>
-        <div className="space-y-3">
-          <div className="text-xs uppercase tracking-wide text-charcoal-light">
-            Sentiment timeline
-          </div>
-          <SentimentTimeline data={sentimentTimelineData} />
-        </div>
+        <SentimentTimeline data={sentimentTimelineData} />
       </Card>
 
       <Card>
-        <SentimentDrivers entity={entity} articles={articles} />
+        <SentimentDrivers entity={entity} />
       </Card>
 
       <Card>
-        <SentimentMomentum entity={entity} timeline={timeline} />
+        <SentimentMomentum entity={entity} />
       </Card>
 
       <Card>
-        <SentimentHistogram entity={entity} articles={articles} />
+        <SentimentHistogram entity={entity} />
       </Card>
 
       {/* 3. TOPICS & KEYWORDS */}
@@ -184,11 +180,11 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <TopicHeatmap entity={entity} topics={topics} timeline={timeline} />
+        <TopicHeatmap entity={entity} />
       </Card>
 
       <Card>
-        <TopicDrift entity={entity} topics={topics} />
+        <TopicDrift entity={entity} />
       </Card>
 
       {/* 4. ARTICLES & MEDIA */}
@@ -197,23 +193,23 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <PublisherBreakdown entity={entity} articles={articles} />
+        <PublisherBreakdown entity={entity} />
       </Card>
 
       <Card>
-        <PublisherBiasMeters entity={entity} articles={articles} />
+        <PublisherBiasMeters entity={entity} />
       </Card>
 
       <Card>
-        <PublisherReliabilityScatter entity={entity} articles={articles} />
+        <PublisherReliabilityScatter entity={entity} />
       </Card>
 
       <Card>
-        <PublisherShift entity={entity} articles={articles} />
+        <PublisherShift entity={entity} />
       </Card>
 
       <Card>
-        <PublisherTimeline entity={entity} articles={articles} />
+        <PublisherTimeline entity={entity} />
       </Card>
 
       {/* 5. INFLUENCE & NETWORK */}
@@ -230,19 +226,19 @@ export default async function EntityPage({
 
       {/* 6. RISK & FORECASTING */}
       <Card>
-        <RiskIndicators entity={entity} risk={risk} />
+        <RiskIndicators entity={entity} />
       </Card>
 
       <Card>
-        <RiskTrajectory entity={entity} risk={risk} timeline={timeline} />
+        <RiskTrajectory entity={entity} />
       </Card>
 
       <Card>
-        <ForecastConfidence entity={entity} risk={risk} />
+        <ForecastConfidence entity={entity} />
       </Card>
 
       <Card>
-        <Forecasting entity={entity} timeline={timeline} />
+        <Forecasting entity={entity} />
       </Card>
 
       {/* 7. EVENTS & CHANGE DETECTION */}
@@ -251,7 +247,7 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <WhatChanged entity={entity} articles={articles} timeline={timeline} />
+        <WhatChanged entity={entity} />
       </Card>
 
       <Card>
@@ -259,20 +255,20 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <RecommendedActions entity={entity} risk={risk} />
+        <RecommendedActions entity={entity} />
       </Card>
 
       {/* 8. VOLUME & VELOCITY */}
       <Card>
-        <VolumeVelocity entity={entity} timeline={timeline} />
+        <VolumeVelocity entity={entity} />
       </Card>
 
       <Card>
-        <VelocityAcceleration entity={entity} timeline={timeline} />
+        <VelocityAcceleration entity={entity} />
       </Card>
 
       <Card>
-        <RollingMetrics entity={entity} timeline={timeline} />
+        <RollingMetrics entity={entity} />
       </Card>
 
     </div>
