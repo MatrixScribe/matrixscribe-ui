@@ -1,3 +1,6 @@
+export const dynamicParams = true;
+export const dynamic = "force-dynamic";
+
 console.log("RUNNING FILE:", __filename);
 
 import { redirect } from "next/navigation";
