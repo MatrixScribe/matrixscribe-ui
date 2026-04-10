@@ -48,16 +48,16 @@ export default async function EntityPage({
 
       {/* ENTITY HEADER */}
       <Card>
-        <EntityHeader
-          name={entity.name}
-          type={entity.type}
-          region={entity.region}
-          updatedAt={entity.updated_at}
-          articleCount={articles.length}
-          topicCount={topics.length}
-          sentimentBucketCount={risk.sentiment?.length || 0}
-        />
-      </Card>
+  <EntityHeader
+    name={entity.name}
+    type={entity.type}
+    region={entity.region}
+    updatedAt={entity.updated_at}
+    articleCount={articles.length}
+    topicCount={topics.length}
+    sentimentBuckets={risk.sentiment || []}
+  />
+</Card>
 
       {/* SCORECARD */}
       <Card>
