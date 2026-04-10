@@ -3,11 +3,11 @@ export const dynamic = "force-dynamic";
 export default async function EntityPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  console.log("ENTITY PAGE PARAMS:", params);
-  const slug = params?.slug;
-  console.log("SLUG:", slug);
+  const { slug } = await params;
+
+  console.log("ENTITY PAGE PARAMS:", { slug });
 
   if (!slug) {
     return (
@@ -18,12 +18,9 @@ export default async function EntityPage({
     );
   }
 
-  // Fetch entity data from backend
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/entity/${slug}`,
-    {
-      cache: "no-store",
-    }
+    { cache: "no-store" }
   );
 
   if (!res.ok) {
