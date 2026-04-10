@@ -1,13 +1,23 @@
 import React from "react";
 
-export default function EntityScorecard({ entity }: any) {
-  if (!entity) return null;
+interface EntityScorecardProps {
+  articleCount: number;
+  topicCount: number;
+  tagCount: number;
+  sentimentBucketCount: number;
+}
 
+export default function EntityScorecard({
+  articleCount,
+  topicCount,
+  tagCount,
+  sentimentBucketCount,
+}: EntityScorecardProps) {
   const items = [
-    { label: "Sentiment", value: entity.sentiment },
-    { label: "Risk", value: entity.risk_score ?? 0.42 },
-    { label: "Stability", value: entity.stability ?? 0.71 },
-    { label: "Influence", value: entity.influence ?? 0.58 },
+    { label: "Articles", value: articleCount },
+    { label: "Topics", value: topicCount },
+    { label: "Tags", value: tagCount },
+    { label: "Sentiment Buckets", value: sentimentBucketCount },
   ];
 
   return (
@@ -26,14 +36,14 @@ export default function EntityScorecard({ entity }: any) {
               {m.label}
             </div>
             <div className="text-sm font-medium text-charcoal">
-              {(m.value * 100).toFixed(0)}%
+              {m.value}
             </div>
           </div>
         ))}
       </div>
 
       <p className="text-xs text-charcoal-light leading-relaxed">
-        A compact scorecard summarizing core sentiment and risk dimensions.
+        A compact scorecard summarizing core entity metrics.
       </p>
     </div>
   );

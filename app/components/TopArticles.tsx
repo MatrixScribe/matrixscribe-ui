@@ -2,9 +2,10 @@ import React from "react";
 
 interface TopArticlesProps {
   articles: {
-    title: string;
+    id: number;
+    content: string;
     source: string;
-    timestamp: string;
+    created_at: string;
     url?: string;
   }[];
 }
@@ -19,13 +20,14 @@ export default function TopArticles({ articles }: TopArticlesProps) {
       </div>
 
       <div className="space-y-3">
-        {top.map((a, i) => (
-          <div key={i} className="space-y-1">
+        {top.map((a) => (
+          <div key={a.id} className="space-y-1">
             <div className="text-sm font-medium text-charcoal dark:text-neutral-100">
-              {a.title}
+              {a.content.slice(0, 120)}...
             </div>
+
             <div className="text-xs text-charcoal-light dark:text-neutral-500">
-              {a.source} · {a.timestamp}
+              {a.source} · {new Date(a.created_at).toLocaleString()}
             </div>
           </div>
         ))}
