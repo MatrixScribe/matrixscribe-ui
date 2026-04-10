@@ -1,30 +1,19 @@
-"use client";
+// ❌ NO "use client" HERE — this must be a Server Component
 
-import { useState } from "react";
 import Sidebar from "@/app/components/Sidebar";
 import TopBar from "@/app/components/TopBar";
+import ClientShell from "./ClientShell";
 
-export default function PlatformLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
+export default function PlatformLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: any;
+}) {
   return (
-    <div className="flex h-screen bg-[var(--background)] text-[var(--foreground)]">
-      
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main area */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-
-        {/* Top bar */}
-        <TopBar onMenuClick={() => setSidebarOpen(true)} />
-
-        {/* Workspace */}
-        <main className="flex-1 overflow-y-auto p-6 bg-surface-muted">
-          {children}
-        </main>
-
-      </div>
-    </div>
+    <ClientShell>
+      {children}
+    </ClientShell>
   );
 }
