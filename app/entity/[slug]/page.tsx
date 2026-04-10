@@ -8,7 +8,7 @@ import RelatedEntities from "@/app/components/RelatedEntities";
 import RiskIndicators from "@/app/components/RiskIndicators";
 import EventTimeline from "@/app/components/EventTimeline";
 
-// Premium components — safe to pass only entity
+// Premium components — rendered with no props unless proven safe
 import NarrativeSummary from "@/app/components/NarrativeSummary";
 import SentimentDrivers from "@/app/components/SentimentDrivers";
 import SentimentHistogram from "@/app/components/SentimentHistogram";
@@ -155,7 +155,7 @@ export default async function EntityPage({
 
       {/* 2. NARRATIVE & SENTIMENT */}
       <Card>
-        <NarrativeSummary entity={entity} />
+        <NarrativeSummary />
       </Card>
 
       <Card>
@@ -163,15 +163,15 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <SentimentDrivers entity={entity} />
+        <SentimentDrivers />
       </Card>
 
       <Card>
-        <SentimentMomentum entity={entity} />
+        <SentimentMomentum />
       </Card>
 
       <Card>
-        <SentimentHistogram entity={entity} />
+        <SentimentHistogram />
       </Card>
 
       {/* 3. TOPICS & KEYWORDS */}
@@ -180,11 +180,11 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <TopicHeatmap entity={entity} />
+        <TopicHeatmap />
       </Card>
 
       <Card>
-        <TopicDrift entity={entity} />
+        <TopicDrift />
       </Card>
 
       {/* 4. ARTICLES & MEDIA */}
@@ -193,28 +193,28 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <PublisherBreakdown entity={entity} />
+        <PublisherBreakdown />
       </Card>
 
       <Card>
-        <PublisherBiasMeters entity={entity} />
+        <PublisherBiasMeters />
       </Card>
 
       <Card>
-        <PublisherReliabilityScatter entity={entity} />
+        <PublisherReliabilityScatter />
       </Card>
 
       <Card>
-        <PublisherShift entity={entity} />
+        <PublisherShift />
       </Card>
 
       <Card>
-        <PublisherTimeline entity={entity} />
+        <PublisherTimeline />
       </Card>
 
       {/* 5. INFLUENCE & NETWORK */}
       <Card>
-        <EntityInfluenceGraph entity={entity} />
+        <EntityInfluenceGraph />
       </Card>
 
       <Card>
@@ -230,15 +230,15 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <RiskTrajectory entity={entity} />
+        <RiskTrajectory />
       </Card>
 
       <Card>
-        <ForecastConfidence entity={entity} />
+        <ForecastConfidence />
       </Card>
 
       <Card>
-        <Forecasting entity={entity} />
+        <Forecasting />
       </Card>
 
       {/* 7. EVENTS & CHANGE DETECTION */}
@@ -247,28 +247,28 @@ export default async function EntityPage({
       </Card>
 
       <Card>
-        <WhatChanged entity={entity} />
+        <WhatChanged />
       </Card>
 
       <Card>
-        <WhyThisMatters entity={entity} />
+        <WhyThisMatters />
       </Card>
 
       <Card>
-        <RecommendedActions entity={entity} />
+        <RecommendedActions />
       </Card>
 
       {/* 8. VOLUME & VELOCITY */}
       <Card>
-        <VolumeVelocity entity={entity} />
+        <VolumeVelocity />
       </Card>
 
       <Card>
-        <VelocityAcceleration entity={entity} />
+        <VelocityAcceleration />
       </Card>
 
       <Card>
-        <RollingMetrics entity={entity} />
+        <RollingMetrics />
       </Card>
 
     </div>
