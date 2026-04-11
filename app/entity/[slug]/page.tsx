@@ -153,123 +153,130 @@ export default async function EntityPage({
         />
       </Card>
 
-      {/* 2. NARRATIVE & SENTIMENT */}
-      <Card>
-        <NarrativeSummary />
-      </Card>
+{/* 2. NARRATIVE & SENTIMENT */}
+<Card>
+  <NarrativeSummary entity={entity} />
+</Card>
 
-      <Card>
-        <SentimentTimeline data={sentimentTimelineData} />
-      </Card>
+<Card>
+  <SentimentTimeline data={sentimentTimelineData} />
+</Card>
 
-      <Card>
-        <SentimentDrivers />
-      </Card>
+<Card>
+  <SentimentDrivers entity={entity} />
+</Card>
 
-      <Card>
-        <SentimentMomentum />
-      </Card>
+<Card>
+  <SentimentMomentum entity={entity} />
+</Card>
 
-      <Card>
-        <SentimentHistogram />
-      </Card>
+<Card>
+  <SentimentHistogram entity={entity} />
+</Card>
 
-      {/* 3. TOPICS & KEYWORDS */}
-      <Card>
-        <KeywordExtraction entity={entity} />
-      </Card>
+{/* 3. TOPICS & KEYWORDS */}
+<Card>
+  <KeywordExtraction entity={entity} />
+</Card>
 
-      <Card>
-        <TopicHeatmap />
-      </Card>
+<Card>
+  <TopicHeatmap entity={entity} />
+</Card>
 
-      <Card>
-        <TopicDrift />
-      </Card>
+<Card>
+  <TopicDrift entity={entity} />
+</Card>
 
-      {/* 4. ARTICLES & MEDIA */}
-      <Card>
-        <TopArticles articles={articles} />
-      </Card>
+{/* 4. ARTICLES & MEDIA */}
+<Card>
+  <TopArticles articles={articles} />
+</Card>
 
-      <Card>
-        <PublisherBreakdown />
-      </Card>
+<Card>
+  <PublisherBreakdown
+    publishers={
+      entity.publishers ||
+      entity.publisher_breakdown ||
+      entity.publisherBreakdown ||
+      []
+    }
+  />
+</Card>
 
-      <Card>
-        <PublisherBiasMeters />
-      </Card>
+<Card>
+  <PublisherBiasMeters entity={entity} />
+</Card>
 
-      <Card>
-        <PublisherReliabilityScatter />
-      </Card>
+<Card>
+  <PublisherReliabilityScatter entity={entity} />
+</Card>
 
-      <Card>
-        <PublisherShift />
-      </Card>
+<Card>
+  <PublisherShift entity={entity} />
+</Card>
 
-      <Card>
-        <PublisherTimeline />
-      </Card>
+<Card>
+  <PublisherTimeline entity={entity} />
+</Card>
 
-      {/* 5. INFLUENCE & NETWORK */}
-      <Card>
-        <EntityInfluenceGraph />
-      </Card>
+{/* 5. INFLUENCE & NETWORK */}
+<Card>
+  <EntityInfluenceGraph entity={entity} />
+</Card>
 
-      <Card>
-        <RelatedEntities
-          entities={entity.related_entities || []}
-          topics={topics.map((t: any) => t.name || t.topic || "")}
-        />
-      </Card>
+<Card>
+  <RelatedEntities
+    entities={entity.related_entities || []}
+    topics={topics.map((t: any) => t.name || t.topic || "")}
+  />
+</Card>
 
-      {/* 6. RISK & FORECASTING */}
-      <Card>
-        <RiskIndicators entity={entity} />
-      </Card>
+{/* 6. RISK & FORECASTING */}
+<Card>
+  <RiskIndicators entity={entity} />
+</Card>
 
-      <Card>
-        <RiskTrajectory />
-      </Card>
+<Card>
+  <RiskTrajectory entity={entity} />
+</Card>
 
-      <Card>
-        <ForecastConfidence />
-      </Card>
+<Card>
+  <ForecastConfidence entity={entity} />
+</Card>
 
-      <Card>
-        <Forecasting />
-      </Card>
+<Card>
+  <Forecasting entity={entity} />
+</Card>
 
-      {/* 7. EVENTS & CHANGE DETECTION */}
-      <Card>
-        <EventTimeline entity={entity} />
-      </Card>
+{/* 7. EVENTS & CHANGE DETECTION */}
+<Card>
+  <EventTimeline entity={entity} />
+</Card>
 
-      <Card>
-        <WhatChanged />
-      </Card>
+<Card>
+  <WhatChanged entity={entity} />
+</Card>
 
-      <Card>
-        <WhyThisMatters />
-      </Card>
+<Card>
+  <WhyThisMatters entity={entity} />
+</Card>
 
-      <Card>
-        <RecommendedActions />
-      </Card>
+<Card>
+  <RecommendedActions entity={entity} />
+</Card>
 
-      {/* 8. VOLUME & VELOCITY */}
-      <Card>
-        <VolumeVelocity />
-      </Card>
+{/* 8. VOLUME & VELOCITY */}
+<Card>
+  <VolumeVelocity entity={entity} />
+</Card>
 
-      <Card>
-        <VelocityAcceleration />
-      </Card>
+<Card>
+  <VelocityAcceleration entity={entity} />
+</Card>
 
-      <Card>
-        <RollingMetrics />
-      </Card>
+<Card>
+  <RollingMetrics entity={entity} />
+</Card>
 
     </div>
   );
