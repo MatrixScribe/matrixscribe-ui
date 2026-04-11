@@ -11,7 +11,10 @@ export default function SentimentTimeline({
   width = 600,
   height = 200,
 }: SentimentTimelineProps) {
-  if (!data || data.length === 0) {
+  // Ensure data is ALWAYS an array
+  const safeData = Array.isArray(data) ? data : [];
+
+  if (safeData.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-charcoal-light text-sm">
         No timeline data available
@@ -22,16 +25,22 @@ export default function SentimentTimeline({
   const min = -1;
   const max = 1;
 
-  const points = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * width;
-    const y = height - ((d.value - min) / (max - min)) * height;
+  // Avoid divide-by-zero when only one point exists
+  const denom = safeData.length > 1 ? safeData.length - 1 : 1;
+
+  const points = safeData.map((d, i) => {
+    const value = typeof d.value === "number" ? d.value : 0;
+    const x = (i / denom) * width;
+    const y = height - ((value - min) / (max - min)) * height;
     return { x, y };
   });
 
   // Weighted trend
   let trend: "up" | "down" | "flat" = "flat";
-  if (data.length > 1) {
-    const values = data.map((d) => d.value);
+  if (safeData.length > 1) {
+    const values = safeData.map((d) =>
+      typeof d.value === "number" ? d.value : 0
+    );
     const weights = values.map((_, i) => Math.pow(1.2, i));
     const weightedAvg =
       values.reduce((sum, v, i) => sum + v * weights[i], 0) /
@@ -59,18 +68,25 @@ export default function SentimentTimeline({
     return `${acc} C ${cx},${prev.y} ${cx},${point.y} ${point.x},${point.y}`;
   }, "");
 
-  // Confidence band path
+  // Confidence band
   let bandPath = "";
-  if (confidence && confidence.length === data.length) {
-    const upper = confidence.map((c, i) => {
-      const x = (i / (confidence.length - 1)) * width;
-      const y = height - ((c.upper - min) / (max - min)) * height;
+  const safeConfidence =
+    Array.isArray(confidence) && confidence.length === safeData.length
+      ? confidence
+      : null;
+
+  if (safeConfidence) {
+    const upper = safeConfidence.map((c, i) => {
+      const upperVal = typeof c.upper === "number" ? c.upper : 0;
+      const x = (i / denom) * width;
+      const y = height - ((upperVal - min) / (max - min)) * height;
       return { x, y };
     });
 
-    const lower = confidence.map((c, i) => {
-      const x = (i / (confidence.length - 1)) * width;
-      const y = height - ((c.lower - min) / (max - min)) * height;
+    const lower = safeConfidence.map((c, i) => {
+      const lowerVal = typeof c.lower === "number" ? c.lower : 0;
+      const x = (i / denom) * width;
+      const y = height - ((lowerVal - min) / (max - min)) * height;
       return { x, y };
     });
 
@@ -78,9 +94,7 @@ export default function SentimentTimeline({
       .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x},${p.y}`)
       .join(" ");
 
-    const lowerPath = lower
-      .map((p) => `L ${p.x},${p.y}`)
-      .join(" ");
+    const lowerPath = lower.map((p) => `L ${p.x},${p.y}`).join(" ");
 
     bandPath = `${upperPath} ${lowerPath} Z`;
   }
@@ -88,8 +102,6 @@ export default function SentimentTimeline({
   return (
     <div className="w-full">
       <svg width={width} height={height} className="overflow-visible">
-
-        {/* Confidence band */}
         {bandPath && (
           <path
             d={bandPath}
@@ -99,7 +111,6 @@ export default function SentimentTimeline({
           />
         )}
 
-        {/* Main sentiment line */}
         <path
           d={path}
           fill="none"
@@ -108,8 +119,7 @@ export default function SentimentTimeline({
           strokeLinecap="round"
         />
 
-        {/* Anomaly markers */}
-        {data.map((d, i) =>
+        {safeData.map((d, i) =>
           d.anomaly ? (
             <circle
               key={i}

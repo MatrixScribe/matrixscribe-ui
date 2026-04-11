@@ -33,6 +33,12 @@ import RollingMetrics from "@/app/components/RollingMetrics";
 
 export const dynamic = "force-dynamic";
 
+// ---------- SAFE HELPERS ----------
+const safeArray = (v: any) => (Array.isArray(v) ? v : []);
+const safeObj = (v: any) => (v && typeof v === "object" ? v : {});
+const safeNum = (v: any) =>
+  typeof v === "number" && !isNaN(v) ? v : null;
+
 export default async function EntityPage({
   params,
 }: {
@@ -63,46 +69,46 @@ export default async function EntityPage({
     );
   }
 
-  const data = await res.json();
+  const data = safeObj(await res.json());
 
   // ---------- FLEXIBLE MAPPING LAYER ----------
-  const entity = data.entity || data;
+  const entity = safeObj(data.entity || data);
 
-  const timeline =
+  const timeline = safeArray(
     data.timeline ||
-    data.sentiment_timeline ||
-    data.sentimentTimeline ||
-    [];
+      data.sentiment_timeline ||
+      data.sentimentTimeline
+  );
 
-  const articles =
+  const articles = safeArray(
     data.articles ||
-    data.article_list ||
-    data.articleList ||
-    [];
+      data.article_list ||
+      data.articleList
+  );
 
-  const topics =
+  const topics = safeArray(
     data.topics ||
-    data.topic_list ||
-    data.topicList ||
-    [];
+      data.topic_list ||
+      data.topicList
+  );
 
-  const tags =
+  const tags = safeArray(
     data.tags ||
-    data.tag_list ||
-    data.tagList ||
-    [];
+      data.tag_list ||
+      data.tagList
+  );
 
-  const risk =
+  const risk = safeObj(
     data.risk ||
-    data.risk_profile ||
-    data.riskProfile ||
-    {};
+      data.risk_profile ||
+      data.riskProfile
+  );
 
-  const sentimentBuckets =
+  const sentimentBuckets = safeArray(
     risk.sentiment ||
-    risk.sentiment_buckets ||
-    risk.sentimentBuckets ||
-    [];
+      risk.sentiment_buckets ||
+      risk.sentimentBuckets
+  );
 
   const updatedAt =
     entity.updated_at ||
@@ -111,21 +117,19 @@ export default async function EntityPage({
     entity.lastUpdated ||
     null;
 
-  const articleCount = Array.isArray(articles) ? articles.length : 0;
-  const topicCount = Array.isArray(topics) ? topics.length : 0;
-  const tagCount = Array.isArray(tags) ? tags.length : 0;
+  const articleCount = articles.length;
+  const topicCount = topics.length;
+  const tagCount = tags.length;
 
-  const sentimentTimelineData = Array.isArray(timeline)
-    ? timeline.map((t: any) => ({
-        date: t.date || t.day || t.timestamp,
-        value:
-          typeof t.avg_score !== "undefined"
-            ? Number(t.avg_score)
-            : typeof t.score !== "undefined"
-            ? Number(t.score)
-            : 0,
-      }))
-    : [];
+  const sentimentTimelineData = timeline.map((t: any) => ({
+    date: t.date || t.day || t.timestamp || "",
+    value:
+      typeof t.avg_score !== "undefined"
+        ? Number(t.avg_score)
+        : typeof t.score !== "undefined"
+        ? Number(t.score)
+        : 0,
+  }));
 
   // ---------- PAGE LAYOUT ----------
   return (
@@ -149,7 +153,7 @@ export default async function EntityPage({
           articleCount={articleCount}
           topicCount={topicCount}
           tagCount={tagCount}
-          sentimentBucketCount={Array.isArray(sentimentBuckets) ? sentimentBuckets.length : 0}
+          sentimentBucketCount={sentimentBuckets.length}
         />
       </Card>
 
@@ -195,10 +199,11 @@ export default async function EntityPage({
       <Card>
         <PublisherBreakdown
           publishers={
-            entity.publishers ||
-            entity.publisher_breakdown ||
-            entity.publisherBreakdown ||
-            []
+            safeArray(
+              entity.publishers ||
+                entity.publisher_breakdown ||
+                entity.publisherBreakdown
+            )
           }
         />
       </Card>
@@ -226,7 +231,7 @@ export default async function EntityPage({
 
       <Card>
         <RelatedEntities
-          entities={entity.related_entities || []}
+          entities={safeArray(entity.related_entities)}
           topics={topics.map((t: any) => t.name || t.topic || "")}
         />
       </Card>
@@ -268,10 +273,10 @@ export default async function EntityPage({
       {/* 8. VOLUME & VELOCITY */}
       <Card>
         <VolumeVelocity
-          count24h={entity.article_count_24h}
-          count7d={entity.article_count_7d}
-          velocity={entity.velocity}
-          diversity={entity.publisher_diversity_score}
+          count24h={safeNum(entity.article_count_24h)}
+          count7d={safeNum(entity.article_count_7d)}
+          velocity={safeNum(entity.velocity)}
+          diversity={safeNum(entity.publisher_diversity_score)}
         />
       </Card>
 
@@ -281,11 +286,11 @@ export default async function EntityPage({
 
       <Card>
         <RollingMetrics
-  avg7={entity.avg7}
-  avg30={entity.avg30}
-  volatility={entity.volatility}
-  zscore={entity.zscore}
-/>
+          avg7={safeNum(entity.avg7)}
+          avg30={safeNum(entity.avg30)}
+          volatility={safeNum(entity.volatility)}
+          zscore={safeNum(entity.zscore)}
+        />
       </Card>
 
     </div>

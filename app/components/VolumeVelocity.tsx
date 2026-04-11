@@ -13,16 +13,19 @@ export default function VolumeVelocity({
   velocity,
   diversity,
 }: VolumeVelocityProps) {
+  const safeNum = (v: any) =>
+    typeof v === "number" && !isNaN(v) ? v : null;
+
   const items = [
-    { label: "Articles (24h)", value: count24h },
-    { label: "Articles (7d)", value: count7d },
+    { label: "Articles (24h)", value: safeNum(count24h) },
+    { label: "Articles (7d)", value: safeNum(count7d) },
     {
       label: "Velocity",
-      value: typeof velocity === "number" ? velocity.toFixed(2) : "—",
+      value: safeNum(velocity) !== null ? safeNum(velocity)!.toFixed(2) : "—",
     },
     {
       label: "Publisher diversity",
-      value: typeof diversity === "number" ? diversity.toFixed(2) : "—",
+      value: safeNum(diversity) !== null ? safeNum(diversity)!.toFixed(2) : "—",
     },
   ];
 
@@ -43,7 +46,7 @@ export default function VolumeVelocity({
             </div>
 
             <div className="text-sm font-medium text-charcoal dark:text-neutral-100">
-              {typeof m.value === "number" ? m.value : m.value}
+              {m.value === null ? "—" : m.value}
             </div>
           </div>
         ))}

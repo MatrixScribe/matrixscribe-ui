@@ -3,11 +3,15 @@ import React from "react";
 export default function EntityComparisonStrip({ entity }: any) {
   if (!entity) return null;
 
-  const items = entity.related_entities ?? [
-    { name: "National Treasury", score: 0.61 },
-    { name: "Finance Ministry", score: 0.54 },
-    { name: "Reserve Bank", score: 0.72 },
-  ];
+  // Ensure related_entities is ALWAYS an array
+  const raw = entity.related_entities;
+  const items = Array.isArray(raw)
+    ? raw
+    : [
+        { name: "National Treasury", score: 0.61 },
+        { name: "Finance Ministry", score: 0.54 },
+        { name: "Reserve Bank", score: 0.72 },
+      ];
 
   return (
     <div className="space-y-3">
@@ -16,17 +20,22 @@ export default function EntityComparisonStrip({ entity }: any) {
       </div>
 
       <div className="flex flex-col gap-2">
-        {items.map((e: any, i: number) => (
-          <div
-            key={i}
-            className="flex items-center justify-between bg-sandstone/40 dark:bg-neutral-900/40 rounded-md p-3"
-          >
-            <span className="text-sm text-charcoal-mid">{e.name}</span>
-            <span className="text-xs text-charcoal-light">
-              {(e.score * 100).toFixed(0)}%
-            </span>
-          </div>
-        ))}
+        {items.map((e: any, i: number) => {
+          const name = e?.name ?? "Unknown";
+          const score = typeof e?.score === "number" ? e.score : 0;
+
+          return (
+            <div
+              key={i}
+              className="flex items-center justify-between bg-sandstone/40 dark:bg-neutral-900/40 rounded-md p-3"
+            >
+              <span className="text-sm text-charcoal-mid">{name}</span>
+              <span className="text-xs text-charcoal-light">
+                {(score * 100).toFixed(0)}%
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       <p className="text-xs text-charcoal-light leading-relaxed">
