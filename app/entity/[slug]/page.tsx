@@ -8,7 +8,7 @@ import RelatedEntities from "@/app/components/RelatedEntities";
 import RiskIndicators from "@/app/components/RiskIndicators";
 import EventTimeline from "@/app/components/EventTimeline";
 
-// Premium components — rendered with no props unless proven safe
+// Premium components
 import NarrativeSummary from "@/app/components/NarrativeSummary";
 import SentimentDrivers from "@/app/components/SentimentDrivers";
 import SentimentHistogram from "@/app/components/SentimentHistogram";
@@ -153,130 +153,140 @@ export default async function EntityPage({
         />
       </Card>
 
-{/* 2. NARRATIVE & SENTIMENT */}
-<Card>
-  <NarrativeSummary entity={entity} />
-</Card>
+      {/* 2. NARRATIVE & SENTIMENT */}
+      <Card>
+        <NarrativeSummary entity={entity} />
+      </Card>
 
-<Card>
-  <SentimentTimeline data={sentimentTimelineData} />
-</Card>
+      <Card>
+        <SentimentTimeline data={sentimentTimelineData} />
+      </Card>
 
-<Card>
-  <SentimentDrivers entity={entity} />
-</Card>
+      <Card>
+        <SentimentDrivers entity={entity} />
+      </Card>
 
-<Card>
-  <SentimentMomentum entity={entity} />
-</Card>
+      <Card>
+        <SentimentMomentum entity={entity} />
+      </Card>
 
-<Card>
-  <SentimentHistogram entity={entity} />
-</Card>
+      <Card>
+        <SentimentHistogram entity={entity} />
+      </Card>
 
-{/* 3. TOPICS & KEYWORDS */}
-<Card>
-  <KeywordExtraction entity={entity} />
-</Card>
+      {/* 3. TOPICS & KEYWORDS */}
+      <Card>
+        <KeywordExtraction entity={entity} />
+      </Card>
 
-<Card>
-  <TopicHeatmap entity={entity} />
-</Card>
+      <Card>
+        <TopicHeatmap entity={entity} />
+      </Card>
 
-<Card>
-  <TopicDrift entity={entity} />
-</Card>
+      <Card>
+        <TopicDrift entity={entity} />
+      </Card>
 
-{/* 4. ARTICLES & MEDIA */}
-<Card>
-  <TopArticles articles={articles} />
-</Card>
+      {/* 4. ARTICLES & MEDIA */}
+      <Card>
+        <TopArticles articles={articles} />
+      </Card>
 
-<Card>
-  <PublisherBreakdown
-    publishers={
-      entity.publishers ||
-      entity.publisher_breakdown ||
-      entity.publisherBreakdown ||
-      []
-    }
-  />
-</Card>
+      <Card>
+        <PublisherBreakdown
+          publishers={
+            entity.publishers ||
+            entity.publisher_breakdown ||
+            entity.publisherBreakdown ||
+            []
+          }
+        />
+      </Card>
 
-<Card>
-  <PublisherBiasMeters entity={entity} />
-</Card>
+      <Card>
+        <PublisherBiasMeters entity={entity} />
+      </Card>
 
-<Card>
-  <PublisherReliabilityScatter entity={entity} />
-</Card>
+      <Card>
+        <PublisherReliabilityScatter entity={entity} />
+      </Card>
 
-<Card>
-  <PublisherShift entity={entity} />
-</Card>
+      <Card>
+        <PublisherShift entity={entity} />
+      </Card>
 
-<Card>
-  <PublisherTimeline entity={entity} />
-</Card>
+      <Card>
+        <PublisherTimeline entity={entity} />
+      </Card>
 
-{/* 5. INFLUENCE & NETWORK */}
-<Card>
-  <EntityInfluenceGraph entity={entity} />
-</Card>
+      {/* 5. INFLUENCE & NETWORK */}
+      <Card>
+        <EntityInfluenceGraph entity={entity} />
+      </Card>
 
-<Card>
-  <RelatedEntities
-    entities={entity.related_entities || []}
-    topics={topics.map((t: any) => t.name || t.topic || "")}
-  />
-</Card>
+      <Card>
+        <RelatedEntities
+          entities={entity.related_entities || []}
+          topics={topics.map((t: any) => t.name || t.topic || "")}
+        />
+      </Card>
 
-{/* 6. RISK & FORECASTING */}
-<Card>
-  <RiskIndicators entity={entity} />
-</Card>
+      {/* 6. RISK & FORECASTING */}
+      <Card>
+        <RiskIndicators entity={entity} />
+      </Card>
 
-<Card>
-  <RiskTrajectory entity={entity} />
-</Card>
+      <Card>
+        <RiskTrajectory entity={entity} />
+      </Card>
 
-<Card>
-  <ForecastConfidence entity={entity} />
-</Card>
+      <Card>
+        <ForecastConfidence entity={entity} />
+      </Card>
 
-<Card>
-  <Forecasting entity={entity} />
-</Card>
+      <Card>
+        <Forecasting entity={entity} />
+      </Card>
 
-{/* 7. EVENTS & CHANGE DETECTION */}
-<Card>
-  <EventTimeline entity={entity} />
-</Card>
+      {/* 7. EVENTS & CHANGE DETECTION */}
+      <Card>
+        <EventTimeline entity={entity} />
+      </Card>
 
-<Card>
-  <WhatChanged entity={entity} />
-</Card>
+      <Card>
+        <WhatChanged entity={entity} />
+      </Card>
 
-<Card>
-  <WhyThisMatters entity={entity} />
-</Card>
+      <Card>
+        <WhyThisMatters entity={entity} />
+      </Card>
 
-<Card>
-  <RecommendedActions entity={entity} />
-</Card>
+      <Card>
+        <RecommendedActions entity={entity} />
+      </Card>
 
-{/* 8. VOLUME & VELOCITY */}
-<Card>
-  <VolumeVelocity entity={entity} />
-</Card>
+      {/* 8. VOLUME & VELOCITY */}
+      <Card>
+        <VolumeVelocity
+          count24h={entity.article_count_24h}
+          count7d={entity.article_count_7d}
+          velocity={entity.velocity}
+          diversity={entity.publisher_diversity_score}
+        />
+      </Card>
 
-<Card>
-  <VelocityAcceleration entity={entity} />
-</Card>
+      <Card>
+        <VelocityAcceleration entity={entity} />
+      </Card>
 
-<Card>
-  <RollingMetrics entity={entity} />
-</Card>
+      <Card>
+        <RollingMetrics
+  avg7={entity.avg7}
+  avg30={entity.avg30}
+  volatility={entity.volatility}
+  zscore={entity.zscore}
+/>
+      </Card>
 
     </div>
   );
