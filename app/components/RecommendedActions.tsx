@@ -1,8 +1,10 @@
 import React from "react";
 
 export default function RecommendedActions({ entity }: any) {
-  if (!entity) return null;
+  // Ensure entity is a safe object
+  if (!entity || typeof entity !== "object") return null;
 
+  // Static actions — safe by design
   const actions = [
     {
       title: "Monitor volatility closely",

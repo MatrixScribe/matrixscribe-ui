@@ -1,13 +1,17 @@
 import React from "react";
 
 export default function SentimentDrivers({ entity }: any) {
-  if (!entity) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const drivers = entity.drivers ?? [
-    "Policy commentary",
-    "Market volatility",
-    "Regional economic updates",
-  ];
+  // Ensure drivers is ALWAYS an array of strings
+  const raw = entity.drivers;
+  const drivers = Array.isArray(raw)
+    ? raw.map((d) => (typeof d === "string" ? d : String(d ?? "")))
+    : [
+        "Policy commentary",
+        "Market volatility",
+        "Regional economic updates",
+      ];
 
   return (
     <div className="space-y-3">
@@ -21,7 +25,7 @@ export default function SentimentDrivers({ entity }: any) {
             key={i}
             className="bg-sandstone/40 dark:bg-neutral-900/40 rounded-md p-3 text-sm text-charcoal-mid"
           >
-            {d}
+            {d || "—"}
           </div>
         ))}
       </div>

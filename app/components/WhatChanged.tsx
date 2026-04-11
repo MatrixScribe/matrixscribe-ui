@@ -1,13 +1,17 @@
 import React from "react";
 
 export default function WhatChanged({ entity }: any) {
-  if (!entity) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const changes = entity.changes ?? [
-    "Spike in monetary policy coverage",
-    "Shift in tone from major financial outlets",
-    "Increase in regional commentary",
-  ];
+  // Ensure changes is ALWAYS an array of strings
+  const raw = entity.changes;
+  const changes = Array.isArray(raw)
+    ? raw.map((c) => (typeof c === "string" ? c : String(c ?? "")))
+    : [
+        "Spike in monetary policy coverage",
+        "Shift in tone from major financial outlets",
+        "Increase in regional commentary",
+      ];
 
   return (
     <div className="space-y-3">
@@ -21,7 +25,7 @@ export default function WhatChanged({ entity }: any) {
             key={i}
             className="bg-sandstone dark:bg-surface rounded-md p-3 text-sm text-charcoal-mid"
           >
-            {c}
+            {c || "—"}
           </div>
         ))}
       </div>

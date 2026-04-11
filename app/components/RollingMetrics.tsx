@@ -13,11 +13,15 @@ export default function RollingMetrics({
   volatility,
   zscore,
 }: RollingMetricsProps) {
+  // Safe numeric coercion helper
+  const safeNum = (v: any) =>
+    typeof v === "number" && !isNaN(v) ? v : null;
+
   const items = [
-    { label: "7‑day avg", value: avg7 },
-    { label: "30‑day avg", value: avg30 },
-    { label: "Volatility", value: volatility },
-    { label: "Z‑score", value: zscore },
+    { label: "7‑day avg", value: safeNum(avg7) },
+    { label: "30‑day avg", value: safeNum(avg30) },
+    { label: "Volatility", value: safeNum(volatility) },
+    { label: "Z‑score", value: safeNum(zscore) },
   ];
 
   return (
@@ -37,9 +41,7 @@ export default function RollingMetrics({
             </div>
 
             <div className="text-sm font-medium text-charcoal dark:text-neutral-100">
-              {typeof m.value === "number"
-                ? m.value.toFixed(2)
-                : "—"}
+              {m.value !== null ? m.value.toFixed(2) : "—"}
             </div>
           </div>
         ))}

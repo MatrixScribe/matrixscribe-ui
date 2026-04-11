@@ -1,10 +1,21 @@
 import React from "react";
 
 export default function VelocityAcceleration({ entity }: any) {
-  if (!entity) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const velocity = entity.velocity ?? 0;
-  const acceleration = entity.acceleration ?? 0;
+  // Ensure velocity is ALWAYS a number
+  const rawVelocity = entity.velocity;
+  const velocity =
+    typeof rawVelocity === "number" && !isNaN(rawVelocity)
+      ? rawVelocity
+      : 0;
+
+  // Ensure acceleration is ALWAYS a number
+  const rawAcceleration = entity.acceleration;
+  const acceleration =
+    typeof rawAcceleration === "number" && !isNaN(rawAcceleration)
+      ? rawAcceleration
+      : 0;
 
   return (
     <div className="space-y-3">

@@ -9,15 +9,39 @@ type PublisherPoint = {
 };
 
 export default function PublisherReliabilityScatter({ entity }: any) {
-  if (!entity || !entity.publishers) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const points: PublisherPoint[] = entity.publishers.slice(0, 10).map((p: any, i: number) => ({
-    name: p.name,
-    reliability: p.reliability_score ?? Math.random() * 0.5 + 0.5,
-    sentiment: p.sentiment ?? (Math.random() * 2 - 1),
-    x: 40 + (i % 5) * 40,
-    y: 40 + Math.floor(i / 5) * 50,
-  }));
+  // Ensure publishers is ALWAYS an array
+  const raw = entity.publishers;
+  const publishers = Array.isArray(raw) ? raw : [];
+
+  // Build safe points
+  const points: PublisherPoint[] = publishers.slice(0, 10).map((p: any, i: number) => {
+    const name = p?.name ?? "Unknown";
+
+    const reliability =
+      typeof p?.reliability_score === "number" && !isNaN(p.reliability_score)
+        ? p.reliability_score
+        : Math.random() * 0.5 + 0.5;
+
+    const sentiment =
+      typeof p?.sentiment === "number" && !isNaN(p.sentiment)
+        ? p.sentiment
+        : Math.random() * 2 - 1;
+
+    const x = 40 + (i % 5) * 40;
+    const y = 40 + Math.floor(i / 5) * 50;
+
+    return { name, reliability, sentiment, x, y };
+  });
+
+  if (points.length === 0) {
+    return (
+      <div className="h-48 flex items-center justify-center text-charcoal-light text-sm">
+        No publisher reliability data available
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -46,7 +70,7 @@ export default function PublisherReliabilityScatter({ entity }: any) {
             opacity="0.4"
           />
 
-          {points.map((p: PublisherPoint, i: number) => (
+          {points.map((p, i) => (
             <g key={i}>
               <circle
                 cx={p.x}

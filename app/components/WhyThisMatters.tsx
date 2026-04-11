@@ -1,8 +1,10 @@
 import React from "react";
 
 export default function WhyThisMatters({ entity }: any) {
-  if (!entity) return null;
+  // Ensure entity is a safe object
+  if (!entity || typeof entity !== "object") return null;
 
+  // Static points — safe by design
   const points = [
     "Sentiment shifts are accelerating, indicating increased narrative sensitivity.",
     "Publisher tone changes suggest coordinated or emerging story pressure.",

@@ -1,9 +1,12 @@
 import React from "react";
 
 export default function SentimentMomentum({ entity }: any) {
-  if (!entity) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const momentum = entity.momentum ?? 0.12;
+  // Ensure momentum is ALWAYS a number
+  const raw = entity.momentum;
+  const momentum =
+    typeof raw === "number" && !isNaN(raw) ? raw : 0.12;
 
   return (
     <div className="space-y-3">

@@ -1,7 +1,8 @@
 import React from "react";
 
 export default function Forecasting({ entity }: any) {
-  if (!entity) return null;
+  // Ensure entity is a safe object
+  if (!entity || typeof entity !== "object") return null;
 
   return (
     <div className="space-y-3">

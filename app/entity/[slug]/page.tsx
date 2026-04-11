@@ -42,9 +42,9 @@ const safeNum = (v: any) =>
 export default async function EntityPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
 
   if (!slug) {
     return (
@@ -121,15 +121,25 @@ export default async function EntityPage({
   const topicCount = topics.length;
   const tagCount = tags.length;
 
-  const sentimentTimelineData = timeline.map((t: any) => ({
-    date: t.date || t.day || t.timestamp || "",
-    value:
-      typeof t.avg_score !== "undefined"
-        ? Number(t.avg_score)
-        : typeof t.score !== "undefined"
-        ? Number(t.score)
-        : 0,
-  }));
+  const sentimentTimelineData = timeline.map((t: any) => {
+    const obj = t && typeof t === "object" ? t : {};
+    const rawValue =
+      typeof obj.avg_score === "number"
+        ? obj.avg_score
+        : typeof obj.score === "number"
+        ? obj.score
+        : 0;
+
+    return {
+      date: obj.date || obj.day || obj.timestamp || "",
+      value: Number.isFinite(rawValue) ? rawValue : 0,
+    };
+  });
+
+  const relatedTopics = topics.map((t: any) => {
+    const obj = t && typeof t === "object" ? t : {};
+    return obj.name || obj.topic || "";
+  });
 
   // ---------- PAGE LAYOUT ----------
   return (
@@ -138,9 +148,9 @@ export default async function EntityPage({
       {/* 1. ENTITY OVERVIEW */}
       <Card>
         <EntityHeader
-          name={entity.name}
-          type={entity.type}
-          region={entity.region}
+          name={entity.name ?? "Unknown"}
+          type={entity.type ?? ""}
+          region={entity.region ?? ""}
           updatedAt={updatedAt}
           articleCount={articleCount}
           topicCount={topicCount}
@@ -198,13 +208,11 @@ export default async function EntityPage({
 
       <Card>
         <PublisherBreakdown
-          publishers={
-            safeArray(
-              entity.publishers ||
-                entity.publisher_breakdown ||
-                entity.publisherBreakdown
-            )
-          }
+          publishers={safeArray(
+            entity.publishers ||
+              entity.publisher_breakdown ||
+              entity.publisherBreakdown
+          )}
         />
       </Card>
 
@@ -232,7 +240,7 @@ export default async function EntityPage({
       <Card>
         <RelatedEntities
           entities={safeArray(entity.related_entities)}
-          topics={topics.map((t: any) => t.name || t.topic || "")}
+          topics={relatedTopics}
         />
       </Card>
 

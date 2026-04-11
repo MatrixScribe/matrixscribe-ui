@@ -1,9 +1,12 @@
 import React from "react";
 
 export default function ForecastConfidence({ entity }: any) {
-  if (!entity) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const confidence = entity.forecast_confidence ?? 0.68;
+  // Ensure forecast_confidence is ALWAYS a number
+  const raw = entity.forecast_confidence;
+  const confidence =
+    typeof raw === "number" && !isNaN(raw) ? raw : 0.68;
 
   return (
     <div className="space-y-3">

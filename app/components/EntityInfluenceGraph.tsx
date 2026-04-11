@@ -5,9 +5,14 @@ interface EntityInfluenceGraphProps {
 }
 
 export default function EntityInfluenceGraph({ entity }: EntityInfluenceGraphProps) {
-  if (!entity) return null;
+  if (!entity || typeof entity !== "object") return null;
 
-  const related = entity.related_entities || [];
+  // Ensure related_entities is ALWAYS an array
+  const raw = entity.related_entities;
+  const related = Array.isArray(raw) ? raw : [];
+
+  // Avoid divide-by-zero
+  const count = related.length > 0 ? related.length : 1;
 
   return (
     <div className="space-y-3">
@@ -15,20 +20,25 @@ export default function EntityInfluenceGraph({ entity }: EntityInfluenceGraphPro
         Influence graph
       </div>
 
-      {/* Network container */}
       <div className="relative w-full h-64 bg-sandstone dark:bg-surface rounded-xl flex items-center justify-center">
 
         {/* Central node */}
         <div className="absolute text-center">
           <div className="font-medium text-charcoal">
-            {entity.name}
+            {entity.name ?? "Unknown"}
           </div>
           <div className="text-xs text-charcoal-light">Central node</div>
         </div>
 
         {/* Related nodes */}
         {related.map((r: any, i: number) => {
-          const angle = (i / related.length) * 2 * Math.PI;
+          const name = r?.name ?? "Unknown";
+          const strength =
+            typeof r?.strength === "number" && !isNaN(r.strength)
+              ? r.strength
+              : 0;
+
+          const angle = (i / count) * 2 * Math.PI;
           const radius = 110;
 
           const x = radius * Math.cos(angle);
@@ -43,10 +53,10 @@ export default function EntityInfluenceGraph({ entity }: EntityInfluenceGraphPro
               }}
             >
               <div className="px-2 py-1 bg-surface rounded-md shadow-subtle text-xs text-charcoal-mid">
-                {r.name}
+                {name}
               </div>
               <div className="text-[10px] text-charcoal-light mt-1">
-                Strength {Math.round(r.strength * 100)}%
+                Strength {Math.round(strength * 100)}%
               </div>
             </div>
           );
