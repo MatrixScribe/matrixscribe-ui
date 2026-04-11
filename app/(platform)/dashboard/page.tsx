@@ -74,6 +74,14 @@ function normalizePublishers(raw: any) {
   });
 }
 
+// ------------------------------
+// Safe array helper
+// ------------------------------
+const safeArray = (x: any) => (Array.isArray(x) ? x : []);
+
+// ------------------------------
+// Dashboard Page
+// ------------------------------
 export default async function DashboardPage() {
   // ------------------------------
   // 1. AUTH CHECK
@@ -222,12 +230,13 @@ export default async function DashboardPage() {
   ];
 
   // ------------------------------
-  // 4. DATA MAPPING WITH FALLBACKS
+  // 4. DATA MAPPING WITH SAFE FALLBACKS
   // ------------------------------
-  const timelineData =
+  const timelineData = safeArray(
     newsInsights?.timeline ??
-    newsInsights?.sentiment_timeline ??
-    mockTimeline;
+      newsInsights?.sentiment_timeline ??
+      mockTimeline
+  );
 
   const volumeData = {
     count24h:
@@ -248,16 +257,16 @@ export default async function DashboardPage() {
       mockVolume.diversity,
   };
 
-  const alertsData =
-    alertsStore?.alerts ??
-    alertsStore ??
-    mockAlerts;
+  const alertsData = safeArray(
+    alertsStore?.alerts ?? alertsStore ?? mockAlerts
+  );
 
-  const entitiesData =
+  const entitiesData = safeArray(
     newsInsights?.top_entities ??
-    entityData?.entities ??
-    entityData ??
-    mockEntities;
+      entityData?.entities ??
+      entityData ??
+      mockEntities
+  );
 
   const primaryEntity =
     entityData?.entity ??
@@ -271,10 +280,11 @@ export default async function DashboardPage() {
       mockPublishers
   );
 
-  const articlesData =
+  const articlesData = safeArray(
     newsInsights?.top_articles ??
-    newsInsights?.recent_articles ??
-    mockArticles;
+      newsInsights?.recent_articles ??
+      mockArticles
+  );
 
   const narrativeEntity =
     narrativeData?.entity ??

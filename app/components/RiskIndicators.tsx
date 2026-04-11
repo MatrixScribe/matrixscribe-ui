@@ -3,10 +3,12 @@ import React from "react";
 export default function RiskIndicators({ entity }: any) {
   if (!entity) return null;
 
+  const risk = entity.risk_indicators || entity.risk || {};
+
   const indicators = [
-    { label: "Policy risk", value: entity.policy_risk ?? 0.42 },
-    { label: "Market risk", value: entity.market_risk ?? 0.33 },
-    { label: "Reputational risk", value: entity.rep_risk ?? 0.27 },
+    { label: "Policy risk", value: risk.policy_risk ?? 0 },
+    { label: "Market risk", value: risk.market_risk ?? 0 },
+    { label: "Reputational risk", value: risk.reputational_risk ?? 0 },
   ];
 
   return (
