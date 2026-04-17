@@ -1,0 +1,25 @@
+.unifiedTooltip {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px) scale(0.98);
+  animation: tooltipFadeIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition:
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.unifiedTooltip:hover {
+  transform: translateY(0px) scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes tooltipFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

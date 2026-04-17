@@ -1,0 +1,31 @@
+.scorecardContainer {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scorecardItem {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scorecardItem:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
