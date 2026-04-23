@@ -1,61 +1,48 @@
 "use client";
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  onSelect: (product: any) => void;
-  productType: string;
-}
+import { useProductSelector } from "@/hooks/useProductSelector";
+import { mockProducts } from "@/data/mockProducts";
 
-export function ProductSelectorModal({ open, onClose, onSelect, productType }: Props) {
-  if (!open) return null;
+type ProductType = "airtime" | "data" | "utilities"; // ⭐ FIX
 
-  const products = {
-    airtime: [
-      { name: "Airtime $5", amount: 5 },
-      { name: "Airtime $10", amount: 10 },
-      { name: "Airtime $20", amount: 20 },
-    ],
-    data: [
-      { name: "1GB Data", amount: 3 },
-      { name: "3GB Data", amount: 7 },
-      { name: "5GB Data", amount: 10 },
-    ],
-    utilities: [
-      { name: "Electricity Token $10", amount: 10 },
-      { name: "Electricity Token $20", amount: 20 },
-    ],
-  };
+export default function ProductSelectorModal() {
+  const { isOpen, close, productType, setProduct } = useProductSelector();
 
-  const list = products[productType] || [];
+  if (!isOpen) return null;
+
+  // ⭐ FIX: tell TS that productType is one of the allowed keys
+  const type = (productType as ProductType) || "airtime";
+
+  // ⭐ FIX: TS now knows this is safe
+  const list = mockProducts[type] || [];
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-end md:items-center justify-center z-50">
-      <div className="w-full md:max-w-md bg-neutral-100 rounded-t-2xl md:rounded-2xl shadow-lg p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-neutral-700">
-            Select {productType.charAt(0).toUpperCase() + productType.slice(1)}
-          </h2>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700">
-            ✕
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-end md:items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+        <h2 className="text-lg font-semibold">Select Product</h2>
 
-        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-          {list.map((p) => (
+        <div className="space-y-2">
+          {list.map((item) => (
             <button
-              key={p.name}
+              key={item.name}
               onClick={() => {
-                onSelect(p);
-                onClose();
+                setProduct(item);
+                close();
               }}
-              className="w-full flex items-center justify-between bg-white border border-neutral-300 rounded-xl px-4 py-3 text-sm hover:bg-neutral-200 transition"
+              className="w-full text-left px-4 py-3 rounded-xl border border-neutral-200 hover:bg-neutral-50 transition"
             >
-              <span className="text-neutral-800">{p.name}</span>
-              <span className="text-neutral-500">${p.amount}</span>
+              <div className="font-medium">{item.name}</div>
+              <div className="text-sm text-neutral-500">${item.amount}</div>
             </button>
           ))}
         </div>
+
+        <button
+          onClick={close}
+          className="w-full mt-4 py-3 rounded-xl bg-neutral-200 text-neutral-700 font-medium hover:bg-neutral-300 transition"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
