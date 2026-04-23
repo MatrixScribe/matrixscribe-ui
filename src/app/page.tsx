@@ -3,10 +3,10 @@
 import Link from "next/link";
 
 import { useCountrySelector } from "@/hooks/useCountrySelector";
-import CountrySelectorModal from "@/components/country/CountrySelectorModal";
+import { CountrySelectorModal } from "@/components/country/CountrySelectorModal";
 
 import { useOperatorSelector } from "@/hooks/useOperatorSelector";
-import OperatorSelectorModal from "@/components/operator/OperatorSelectorModal";
+import { OperatorSelectorModal } from "@/components/operator/OperatorSelectorModal";
 
 import { useProductSelector } from "@/hooks/useProductSelector";
 import ProductSelectorModal from "@/components/product/ProductSelectorModal";
