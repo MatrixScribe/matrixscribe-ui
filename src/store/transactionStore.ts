@@ -2,14 +2,15 @@
 
 import { create } from "zustand";
 
-interface Transaction {
+export interface Transaction {
   id: string;
   timestamp: string;
   country: any;
   operator: any;
   product: any;
-  amount: number;
+  amount: number;          // always number (never null)
   total: number;
+  pricingBreakdown?: any;  // optional, matches checkout
 }
 
 interface TransactionState {

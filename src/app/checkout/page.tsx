@@ -25,13 +25,15 @@ export default function CheckoutPage() {
   const { addTransaction } = useTransactionStore();
   const { refreshBalance } = useWalletStore();
 
+  const safeAmount = Number(amount ?? 0); // ⭐ FIX: always a number
+
   const [loading, setLoading] = useState(false);
   const [pricing, setPricing] = useState<any>(null);
 
   // Fetch hybrid pricing
   useEffect(() => {
     async function loadPricing() {
-      if (!country || !operator || !product || !amount) return;
+      if (!country || !operator || !product || !safeAmount) return;
 
       const res = await fetch("/api/pricing", {
         method: "POST",
@@ -39,8 +41,8 @@ export default function CheckoutPage() {
           countryCode: country.code,
           operatorId: operator.id,
           productType: product.type,
-          operatorCost: product.operatorCost ?? amount,
-          amount,
+          operatorCost: product.operatorCost ?? safeAmount,
+          amount: safeAmount,
           fxRate: 1,
         }),
       });
@@ -50,7 +52,7 @@ export default function CheckoutPage() {
     }
 
     loadPricing();
-  }, [country, operator, product, amount]);
+  }, [country, operator, product, safeAmount]);
 
   async function handleConfirm() {
     if (!pricing) return;
@@ -62,7 +64,7 @@ export default function CheckoutPage() {
       country,
       operator,
       product,
-      amount,
+      amount: safeAmount, // ⭐ FIX: always number
       total: pricing.finalPrice,
       pricingBreakdown: pricing,
     };
@@ -150,7 +152,7 @@ export default function CheckoutPage() {
             <div className="flex justify-between">
               <span className="text-neutral-500">Amount</span>
               <span className="font-medium">
-                {amount ? `$${amount.toFixed(2)}` : "—"}
+                {safeAmount ? `$${safeAmount.toFixed(2)}` : "—"}
               </span>
             </div>
           </div>
