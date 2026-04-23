@@ -9,7 +9,7 @@ import { useOperatorSelector } from "@/hooks/useOperatorSelector";
 import { OperatorSelectorModal } from "@/components/operator/OperatorSelectorModal";
 
 import { useProductSelector } from "@/hooks/useProductSelector";
-import { ProductSelectorModal } from "@/components/product/ProductSelectorModal";
+import ProductSelectorModal from "@/components/product/ProductSelectorModal";
 
 import { useTopupStore } from "@/store/topupStore";
 import { useWalletStore } from "@/store/walletStore";
