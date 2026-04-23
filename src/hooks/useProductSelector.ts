@@ -2,22 +2,24 @@
 
 import { useState } from "react";
 
+export type ProductType = "airtime" | "data" | "utilities";
+
 export function useProductSelector() {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [productType, setProductType] = useState<"airtime" | "data" | "utilities">("airtime");
+  const [productType, setProductType] = useState<ProductType>("airtime");
 
-  function openSelector() {
-    setOpen(true);
+  function open() {
+    setIsOpen(true);
   }
 
-  function closeSelector() {
-    setOpen(false);
+  function close() {
+    setIsOpen(false);
   }
 
-  function chooseProduct(p: any) {
+  function setProduct(p: any) {
     setSelectedProduct(p);
-    setOpen(false);
+    setIsOpen(false);
   }
 
   function resetProduct() {
@@ -25,13 +27,13 @@ export function useProductSelector() {
   }
 
   return {
+    isOpen,
     open,
+    close,
     selectedProduct,
+    setProduct,
     productType,
     setProductType,
-    openSelector,
-    closeSelector,
-    chooseProduct,
     resetProduct,
   };
 }

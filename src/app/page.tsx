@@ -3,10 +3,10 @@
 import Link from "next/link";
 
 import { useCountrySelector } from "@/hooks/useCountrySelector";
-import { CountrySelectorModal } from "@/components/country/CountrySelectorModal";
+import CountrySelectorModal from "@/components/country/CountrySelectorModal";
 
 import { useOperatorSelector } from "@/hooks/useOperatorSelector";
-import { OperatorSelectorModal } from "@/components/operator/OperatorSelectorModal";
+import OperatorSelectorModal from "@/components/operator/OperatorSelectorModal";
 
 import { useProductSelector } from "@/hooks/useProductSelector";
 import ProductSelectorModal from "@/components/product/ProductSelectorModal";
@@ -28,37 +28,43 @@ export default function Home() {
 
   const { balance } = useWalletStore();
 
+  // COUNTRY SELECTOR
   const {
-    open,
-    openSelector,
-    closeSelector,
-    chooseCountry,
+    isOpen: countryOpen,
+    open: openCountrySelector,
+    close: closeCountrySelector,
+    setCountry: chooseCountry,
   } = useCountrySelector();
 
+  // OPERATOR SELECTOR
   const {
-    open: opOpen,
-    openSelector: openOpSelector,
-    closeSelector: closeOpSelector,
-    chooseOperator,
+    isOpen: operatorOpen,
+    open: openOperatorSelector,
+    close: closeOperatorSelector,
+    setOperator: chooseOperator,
   } = useOperatorSelector();
 
+  // PRODUCT SELECTOR
   const {
-    open: prodOpen,
+    isOpen: productOpen,
+    open: openProductSelector,
+    close: closeProductSelector,
+    setProduct: chooseProduct,
     productType,
     setProductType,
-    openSelector: openProdSelector,
-    closeSelector: closeProdSelector,
-    chooseProduct,
   } = useProductSelector();
 
   function handleCountrySelect(c: any) {
     setCountry(c);
     chooseCountry(c);
+    setOperator(null);
+    setProduct(null);
   }
 
   function handleOperatorSelect(o: any) {
     setOperator(o);
     chooseOperator(o);
+    setProduct(null);
   }
 
   function handleProductSelect(p: any) {
@@ -158,7 +164,7 @@ export default function Home() {
                 </label>
 
                 <button
-                  onClick={openSelector}
+                  onClick={openCountrySelector}
                   className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-left text-sm flex items-center justify-between hover:border-emerald-500 transition"
                 >
                   <span className="flex items-center gap-2">
@@ -178,7 +184,7 @@ export default function Home() {
                 </label>
 
                 <button
-                  onClick={openOpSelector}
+                  onClick={openOperatorSelector}
                   disabled={!country}
                   className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-left text-sm flex items-center justify-between hover:border-emerald-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -213,7 +219,7 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={openProdSelector}
+                  onClick={openProductSelector}
                   disabled={!operator}
                   className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-left text-sm flex items-center justify-between hover:border-emerald-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -258,21 +264,21 @@ export default function Home() {
 
       {/* Modals */}
       <CountrySelectorModal
-        open={open}
-        onClose={closeSelector}
+        open={countryOpen}
+        onClose={closeCountrySelector}
         onSelect={handleCountrySelect}
       />
 
       <OperatorSelectorModal
-        open={opOpen}
-        onClose={closeOpSelector}
+        open={operatorOpen}
+        onClose={closeOperatorSelector}
         onSelect={handleOperatorSelect}
         country={country}
       />
 
       <ProductSelectorModal
-        open={prodOpen}
-        onClose={closeProdSelector}
+        open={productOpen}
+        onClose={closeProductSelector}
         onSelect={handleProductSelect}
         productType={productType}
       />

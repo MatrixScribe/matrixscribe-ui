@@ -1,19 +1,14 @@
 "use client";
 
-import { useProductSelector } from "@/hooks/useProductSelector";
+import { useProductSelector, ProductType } from "@/hooks/useProductSelector";
 import { mockProducts } from "@/data/mockProducts";
-
-type ProductType = "airtime" | "data" | "utilities"; // ⭐ FIX
 
 export default function ProductSelectorModal() {
   const { isOpen, close, productType, setProduct } = useProductSelector();
 
   if (!isOpen) return null;
 
-  // ⭐ FIX: tell TS that productType is one of the allowed keys
-  const type = (productType as ProductType) || "airtime";
-
-  // ⭐ FIX: TS now knows this is safe
+  const type: ProductType = productType || "airtime";
   const list = mockProducts[type] || [];
 
   return (
