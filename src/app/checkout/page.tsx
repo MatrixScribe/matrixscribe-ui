@@ -28,7 +28,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [pricing, setPricing] = useState<any>(null);
 
-  // 🔥 Fetch hybrid pricing from backend
+  // Fetch hybrid pricing
   useEffect(() => {
     async function loadPricing() {
       if (!country || !operator || !product || !amount) return;
@@ -39,9 +39,9 @@ export default function CheckoutPage() {
           countryCode: country.code,
           operatorId: operator.id,
           productType: product.type,
-          operatorCost: product.operatorCost ?? amount, // TEMP until ingestion
+          operatorCost: product.operatorCost ?? amount,
           amount,
-          fxRate: 1, // TEMP until FX ingestion
+          fxRate: 1,
         }),
       });
 
@@ -67,17 +67,14 @@ export default function CheckoutPage() {
       pricingBreakdown: pricing,
     };
 
-    // 🔥 Call backend topup API
     await fetch("/api/topup", {
       method: "POST",
       body: JSON.stringify(tx),
     });
 
-    // Save local transaction
     addTransaction(tx);
     setLastTransaction(tx);
 
-    // 🔥 Save ledger entry to backend
     await fetch("/api/ledger/add", {
       method: "POST",
       body: JSON.stringify({
@@ -98,13 +95,12 @@ export default function CheckoutPage() {
         feeAmount: pricing.feeAmount,
         fxRate: pricing.fxRate,
         fxSpreadAmount: pricing.fxSpreadAmount,
-        runningBalance: null, // backend will compute later
+        runningBalance: null,
       }),
     });
 
     refreshBalance();
 
-    // Reset UI
     setCountry(null);
     setOperator(null);
     setProduct(null);
@@ -177,3 +173,42 @@ export default function CheckoutPage() {
                 <span className="font-medium">
                   ${pricing.operatorCost.toFixed(2)}
                 </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Markup</span>
+                <span className="font-medium">
+                  ${pricing.markupAmount.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Platform Fee</span>
+                <span className="font-medium">
+                  ${pricing.feeAmount.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between pt-2 border-t border-neutral-200">
+                <span className="text-neutral-500">Total</span>
+                <span className="font-semibold">
+                  ${pricing.finalPrice.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Confirm Button */}
+        <button
+          onClick={handleConfirm}
+          disabled={!pricing || loading}
+          className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-semibold text-white 
+                     hover:bg-emerald-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Processing..." : "Confirm Topup"}
+        </button>
+      </div>
+    </main>
+  );
+}
