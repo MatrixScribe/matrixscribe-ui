@@ -3,27 +3,32 @@
 import { useState } from "react";
 
 export function useCountrySelector() {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
 
-  function openSelector() {
-    setOpen(true);
+  function open() {
+    setIsOpen(true);
   }
 
-  function closeSelector() {
-    setOpen(false);
+  function close() {
+    setIsOpen(false);
   }
 
-  function chooseCountry(country: any) {
-    setSelectedCountry(country);
-    setOpen(false);
+  function setCountry(c: any) {
+    setSelectedCountry(c);
+    setIsOpen(false);
+  }
+
+  function resetCountry() {
+    setSelectedCountry(null);
   }
 
   return {
+    isOpen,
     open,
+    close,
     selectedCountry,
-    openSelector,
-    closeSelector,
-    chooseCountry,
+    setCountry,
+    resetCountry,
   };
 }

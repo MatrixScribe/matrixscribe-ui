@@ -3,20 +3,20 @@
 import { useState } from "react";
 
 export function useOperatorSelector() {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState<any>(null);
 
-  function openSelector() {
-    setOpen(true);
+  function open() {
+    setIsOpen(true);
   }
 
-  function closeSelector() {
-    setOpen(false);
+  function close() {
+    setIsOpen(false);
   }
 
-  function chooseOperator(op: any) {
+  function setOperator(op: any) {
     setSelectedOperator(op);
-    setOpen(false);
+    setIsOpen(false);
   }
 
   function resetOperator() {
@@ -24,11 +24,11 @@ export function useOperatorSelector() {
   }
 
   return {
+    isOpen,
     open,
+    close,
     selectedOperator,
-    openSelector,
-    closeSelector,
-    chooseOperator,
+    setOperator,
     resetOperator,
   };
 }
