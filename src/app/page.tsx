@@ -1,287 +1,207 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { useCountrySelector } from "@/hooks/useCountrySelector";
-import { CountrySelectorModal } from "@/components/country/CountrySelectorModal";
-
-import { useOperatorSelector } from "@/hooks/useOperatorSelector";
-import { OperatorSelectorModal } from "@/components/operator/OperatorSelectorModal";
-
-import { useProductSelector } from "@/hooks/useProductSelector";
-import ProductSelectorModal from "@/components/product/ProductSelectorModal";
-
-import { useTopupStore } from "@/store/topupStore";
-import { useWalletStore } from "@/store/walletStore";
+type Country = {
+  name: string;
+  isoName: string;
+  flag: string;
+};
 
 export default function Home() {
-  const {
-    country,
-    operator,
-    product,
-    amount,
-    setCountry,
-    setOperator,
-    setProduct,
-    setAmount,
-  } = useTopupStore();
+  const router = useRouter();
 
-  const { balance } = useWalletStore();
+  const [countries, setCountries] = useState<Country[]>([]);
 
-  // COUNTRY SELECTOR
-  const {
-    isOpen: countryOpen,
-    open: openCountrySelector,
-    close: closeCountrySelector,
-    setCountry: chooseCountry,
-  } = useCountrySelector();
+  // Typing headline
+  const [typedText, setTypedText] = useState("");
+  const [headlineIndex, setHeadlineIndex] = useState(0);
 
-  // OPERATOR SELECTOR
-  const {
-    isOpen: operatorOpen,
-    open: openOperatorSelector,
-    close: closeOperatorSelector,
-    setOperator: chooseOperator,
-  } = useOperatorSelector();
+  // Typing sub-message
+  const [subTyped, setSubTyped] = useState("");
+  const [subIndex, setSubIndex] = useState(0);
 
-  // PRODUCT SELECTOR
-  const {
-    isOpen: productOpen,
-    open: openProductSelector,
-    close: closeProductSelector,
-    setProduct: chooseProduct,
-    productType,
-    setProductType,
-  } = useProductSelector();
+  const headlines = [
+    "Instant Airtime & Data",
+    "Recharge Worldwide",
+    "Instant Global Top‑Ups"
+  ];
 
-  function handleCountrySelect(c: any) {
-    setCountry(c);
-    chooseCountry(c);
-    setOperator(null);
-    setProduct(null);
-  }
+  const subMessages = [
+    "No accounts. No friction. Just premium simplicity.",
+    "Send airtime and data in seconds, anywhere.",
+    "Built for Africa, the Middle East, and the world."
+  ];
 
-  function handleOperatorSelect(o: any) {
-    setOperator(o);
-    chooseOperator(o);
-    setProduct(null);
-  }
+  // Typing effect for headline
+  useEffect(() => {
+    const current = headlines[headlineIndex];
+    let i = 0;
 
-  function handleProductSelect(p: any) {
-    setProduct(p);
-    chooseProduct(p);
-  }
+    setTypedText("");
+
+    const interval = setInterval(() => {
+      setTypedText(current.slice(0, i));
+      i++;
+
+      if (i > current.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setHeadlineIndex((prev) => (prev + 1) % headlines.length);
+        }, 1500);
+      }
+    }, 70);
+
+    return () => clearInterval(interval);
+  }, [headlineIndex]);
+
+  // Typing effect for sub-message
+  useEffect(() => {
+    const current = subMessages[subIndex];
+    let i = 0;
+
+    setSubTyped("");
+
+    const interval = setInterval(() => {
+      setSubTyped(current.slice(0, i));
+      i++;
+
+      if (i > current.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setSubIndex((prev) => (prev + 1) % subMessages.length);
+        }, 1500);
+      }
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, [subIndex]);
+
+  // Load countries
+  useEffect(() => {
+    async function loadCountries() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/countries`
+        );
+        const data = await res.json();
+
+        const list: Country[] = data.countries || [];
+        setCountries(list);
+      } catch (err) {
+        console.error("Failed to load countries", err);
+      }
+    }
+
+    loadCountries();
+  }, []);
+
+  const countryCount = countries.length;
+  const operatorCount = countryCount > 0 ? countryCount * 5 : 0;
 
   return (
-    <main className="min-h-screen bg-neutral-50 text-neutral-900">
-      <div className="mx-auto max-w-5xl px-4 py-10">
-        {/* Top bar */}
-        <header className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600" />
-            <span className="text-lg font-semibold tracking-tight">
-              MatrixScribe Topup
+    <main className="min-h-screen bg-[#fdfdfd] text-neutral-900 flex flex-col relative overflow-hidden">
+
+      {/* APPLE‑STYLE BACKGROUND GRADIENT */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#fafafa] to-[#f5f5f5]" />
+
+      {/* SOFT GLOW ACCENTS */}
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-72 w-72 bg-purple-300/20 blur-[120px] rounded-full" />
+      <div className="absolute bottom-0 right-0 h-72 w-72 bg-blue-300/20 blur-[120px] rounded-full" />
+
+      {/* HEADER */}
+      <header className="relative z-10 w-full border-b border-neutral-200/60 bg-white/70 backdrop-blur-xl">
+        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+
+          {/* LEFT: Operators Button */}
+          <button
+            onClick={() => router.push("/operators")}
+            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
+              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
+              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
+          >
+            Networks
+          </button>
+
+          {/* CENTER: LOGO */}
+          <div className="text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2">
+            <span className="opacity-80">Your Logo</span>
+          </div>
+
+          {/* RIGHT: Connected Stats */}
+          <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+            <div className="flex items-center gap-1">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-energy"></span>
+              <span></span>
+            </div>
+
+            <span className="font-semibold text-neutral-900">
+              {operatorCount} Operators
+            </span>
+            <span className="text-neutral-400">|</span>
+            <span className="font-semibold text-neutral-900">
+              {countryCount} Countries
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/wallet"
-              className="rounded-full bg-white px-3 py-1 border border-neutral-300 text-xs hover:bg-neutral-100 transition"
-            >
-              Wallet:{" "}
-              <span className="font-semibold text-emerald-600">
-                ${balance.toFixed(2)}
-              </span>
-            </Link>
-          </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Hero + flow */}
-        <section className="grid gap-8 md:grid-cols-[1.3fr,1fr] items-start">
-          {/* Left */}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
-              Global airtime & data,{" "}
-              <span className="text-emerald-600">from one wallet</span>.
-            </h1>
+      {/* HERO */}
+      <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
 
-            <p className="text-neutral-600 mb-6 max-w-xl">
-              Top up phones in 150+ countries with a single balance. Fast,
-              transparent, and built for daily cashflow.
-            </p>
+        {/* WORLD MAP BACKDROP */}
+        <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
+          <img
+            src="/world-map.svg"
+            alt="World map"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        </div>
 
-            <ol className="space-y-3 text-sm text-neutral-600">
-              <li className="flex gap-3">
-                <span className="mt-0.5 h-6 w-6 flex items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold">
-                  1
-                </span>
-                <div>
-                  <div className="font-medium">Choose country & operator</div>
-                  <div className="text-xs text-neutral-500">
-                    We surface live operators and products for that destination.
-                  </div>
-                </div>
-              </li>
+        <div className="relative max-w-2xl w-full text-center mb-16">
+          {/* AI TYPING HEADLINE */}
+          <h1 className="text-[40px] md:text-[52px] font-semibold tracking-tight leading-tight text-neutral-900 mb-4">
+            {typedText}
+            <span className="inline-block w-1 h-7 md:h-8 bg-neutral-900 ml-1 animate-pulse" />
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mt-2">
+              Simple. Global. Fast.
+            </span>
+          </h1>
+        </div>
 
-              <li className="flex gap-3">
-                <span className="mt-0.5 h-6 w-6 flex items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold">
-                  2
-                </span>
-                <div>
-                  <div className="font-medium">Pick airtime, data, or utilities</div>
-                  <div className="text-xs text-neutral-500">
-                    Flexible amounts or curated bundles.
-                  </div>
-                </div>
-              </li>
+        {/* CTA BUTTON */}
+        <button
+          onClick={() => router.push("/topup")}
+          className="relative z-10 w-full sm:w-56 mx-auto flex items-center justify-center gap-2 
+            rounded-xl border border-neutral-300 bg-white/80 backdrop-blur 
+            text-neutral-900 py-3.5 text-[17px] font-medium 
+            hover:border-purple-500 hover:text-purple-600 
+            transition-all shadow-sm hover:shadow-md animate-energy"
+        >
+          Start Recharge
+        </button>
 
-              <li className="flex gap-3">
-                <span className="mt-0.5 h-6 w-6 flex items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold">
-                  3
-                </span>
-                <div>
-                  <div className="font-medium">Confirm & send instantly</div>
-                  <div className="text-xs text-neutral-500">
-                    Wallet debits, ledger updates, and delivery receipts.
-                  </div>
-                </div>
-              </li>
-            </ol>
-          </div>
+        {/* AI SUB‑MESSAGE TYPING EFFECT */}
+        <div className="mt-6 text-center text-neutral-600 text-[15px] min-h-[22px]">
+          {subTyped}
+          <span className="inline-block w-1 h-4 bg-neutral-600 ml-1 animate-pulse" />
+        </div>
+      </section>
 
-          {/* Right: Start Topup Card */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
-            <div className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-neutral-500">
-              Start a topup
-            </div>
-
-            <div className="space-y-4">
-              {/* Country Selector */}
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  Destination country
-                </label>
-
-                <button
-                  onClick={openCountrySelector}
-                  className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-left text-sm flex items-center justify-between hover:border-emerald-500 transition"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="h-5 w-5 rounded-full bg-neutral-300 flex items-center justify-center">
-                      {country?.flag || ""}
-                    </span>
-                    <span>{country?.name || "Select country"}</span>
-                  </span>
-                  <span className="text-xs text-neutral-500">Change</span>
-                </button>
-              </div>
-
-              {/* Operator Selector */}
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  Mobile operator
-                </label>
-
-                <button
-                  onClick={openOperatorSelector}
-                  disabled={!country}
-                  className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-left text-sm flex items-center justify-between hover:border-emerald-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>
-                    {operator?.name ||
-                      (country ? "Select operator" : "Choose country first")}
-                  </span>
-                  <span className="text-xs text-neutral-500">Browse</span>
-                </button>
-              </div>
-
-              {/* Product Selector */}
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  Product
-                </label>
-
-                <div className="flex gap-2 text-xs mb-2">
-                  {["airtime", "data", "utilities"].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setProductType(type as any)}
-                      className={`flex-1 rounded-full py-1.5 font-medium ${
-                        productType === type
-                          ? "bg-neutral-900 text-white"
-                          : "bg-neutral-200"
-                      }`}
-                    >
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={openProductSelector}
-                  disabled={!operator}
-                  className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-left text-sm flex items-center justify-between hover:border-emerald-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>
-                    {product?.name ||
-                      (operator ? "Select product" : "Choose operator first")}
-                  </span>
-                  <span className="text-xs text-neutral-500">Browse</span>
-                </button>
-              </div>
-
-              {/* Amount */}
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  Amount
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    value={amount ?? ""}
-                    onChange={(e) => setAmount(Number(e.target.value))}
-                    placeholder={product?.amount || "10.00"}
-                    className="flex-1 rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
-                  />
-                  <span className="text-xs text-neutral-500 px-2 py-1 rounded-full border border-neutral-300">
-                    USD
-                  </span>
-                </div>
-              </div>
-
-              {/* Continue */}
-              <Link
-                href="/checkout"
-                className="mt-2 w-full block text-center rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-white hover:bg-emerald-400 transition"
-              >
-                Continue to checkout
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* Modals */}
-      <CountrySelectorModal
-        open={countryOpen}
-        onClose={closeCountrySelector}
-        onSelect={handleCountrySelect}
-      />
-
-      <OperatorSelectorModal
-        open={operatorOpen}
-        onClose={closeOperatorSelector}
-        onSelect={handleOperatorSelect}
-        country={country}
-      />
-
-      <ProductSelectorModal
-        open={productOpen}
-        onClose={closeProductSelector}
-        onSelect={handleProductSelect}
-        productType={productType}
-      />
+      {/* FOOTER LINKS */}
+      <footer className="relative z-10 w-full bg-white/70 backdrop-blur-xl border-t border-neutral-200 py-4">
+        <div className="max-w-6xl mx-auto px-4 flex items-center justify-center gap-6 text-xs text-neutral-500">
+          <button onClick={() => router.push("/terms")} className="hover:text-neutral-800 transition">Terms</button>
+          <button onClick={() => router.push("/privacy")} className="hover:text-neutral-800 transition">Privacy</button>
+          <button onClick={() => router.push("/about")} className="hover:text-neutral-800 transition">About</button>
+          <button onClick={() => router.push("/support")} className="hover:text-neutral-800 transition">Support</button>
+        </div>
+      </footer>
     </main>
   );
 }

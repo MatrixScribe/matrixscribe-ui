@@ -21,51 +21,127 @@ export default function HistoryPage() {
         )}
 
         <div className="space-y-4">
-          {history.map((tx) => (
-            <div
-              key={tx.id}
-              className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm"
-            >
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">ID</span>
-                <span className="font-medium">{tx.id}</span>
-              </div>
+          {history.map((tx) => {
+            const p = tx.pricingBreakdown || {};
 
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Timestamp</span>
-                <span className="font-medium">
-                  {new Date(tx.timestamp).toLocaleString()}
-                </span>
-              </div>
+            return (
+              <div
+                key={tx.id}
+                className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4"
+              >
+                {/* Header */}
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Topup</span>
+                  <span className="font-medium">
+                    {tx.operator.name} ({tx.product.name})
+                  </span>
+                </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Country</span>
-                <span className="font-medium flex items-center gap-2">
-                  {tx.country.flag} {tx.country.name}
-                </span>
-              </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Timestamp</span>
+                  <span className="font-medium">
+                    {new Date(tx.timestamp).toLocaleString()}
+                  </span>
+                </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Operator</span>
-                <span className="font-medium">{tx.operator.name}</span>
-              </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Country</span>
+                  <span className="font-medium flex items-center gap-2">
+                    {tx.country.flag} {tx.country.name}
+                  </span>
+                </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Product</span>
-                <span className="font-medium">{tx.product.name}</span>
-              </div>
+                {/* Amounts */}
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Amount</span>
+                  <span className="font-semibold">${tx.amount.toFixed(2)}</span>
+                </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Amount</span>
-                <span className="font-semibold">${tx.amount.toFixed(2)}</span>
-              </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Final Price</span>
+                  <span className="font-semibold">${tx.total.toFixed(2)}</span>
+                </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Total</span>
-                <span className="font-semibold">${tx.total.toFixed(2)}</span>
+                {/* Divider */}
+                <div className="border-t border-neutral-200 pt-3" />
+
+                {/* Pricing Breakdown */}
+                <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+                  Pricing Breakdown
+                </h3>
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Operator Cost</span>
+                    <span className="font-medium">
+                      ${p.operatorCost?.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Corridor Markup</span>
+                    <span className="font-medium">{p.corridorMarkup}%</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Operator Markup</span>
+                    <span className="font-medium">{p.operatorMarkup}%</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Product Markup</span>
+                    <span className="font-medium">{p.productMarkup}%</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Tier Markup</span>
+                    <span className="font-medium">{p.tierMarkup}%</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Total Markup</span>
+                    <span className="font-medium">
+                      ${p.markupAmount?.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Platform Fee</span>
+                    <span className="font-medium">
+                      ${p.feeAmount?.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">FX Spread</span>
+                    <span className="font-medium">
+                      ${p.fxSpreadAmount?.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">FX Rate</span>
+                    <span className="font-medium">
+                      1 USD = {p.fxRate} {tx.country.currency}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-neutral-200 pt-3" />
+
+                {/* Running Balance */}
+                {p.runningBalance !== undefined && p.runningBalance !== null && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-500">Running Balance</span>
+                    <span className="font-semibold">
+                      ${p.runningBalance.toFixed(2)}
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </main>

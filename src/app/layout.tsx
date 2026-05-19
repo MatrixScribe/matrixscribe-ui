@@ -1,33 +1,15 @@
-// src/app/layout.tsx
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "MatrixScribe Topup",
-  description: "Global Airtime & Data Platform",
+export const metadata = {
+  title: "MatrixScribe Top‑Up",
+  description: "Instant global airtime & data top-ups",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
-      <body className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-        <ThemeProvider>{children}</ThemeProvider>
+    <html lang="en">
+      <body className="bg-neutral-50 text-neutral-900 antialiased">
+        {children}
       </body>
     </html>
   );
