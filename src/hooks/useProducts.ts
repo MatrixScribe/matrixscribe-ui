@@ -38,7 +38,7 @@ export function useProducts(
         // -----------------------------
         if (data.type === "RANGE") {
           const p: Product = {
-            id: `${operator.operatorId}-custom`,
+            id: `${operator?.operatorId ?? "unknown"}-custom`,
             name: "Custom Airtime",
             label: "Airtime Amount",
             kind: "custom",
