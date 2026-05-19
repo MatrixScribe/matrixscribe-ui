@@ -15,7 +15,7 @@ import { useAutoDetectOperator } from "@/hooks/useAutoDetectOperator";
 import { useProducts } from "@/hooks/useProducts";
 import { getCountryCode } from "@/utils/topup";
 
-export default function TopupPage() {
+export default function TopupPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
