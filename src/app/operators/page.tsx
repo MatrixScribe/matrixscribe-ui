@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 export default function OperatorsDirectory() {
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000";
 
-  const [countries, setCountries] = useState([]);
+  interface Country {
+  name: string;
+  flag: string;
+  iso2: string;
+}
+
+const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [operators, setOperators] = useState([]);
   const [showCountries, setShowCountries] = useState(false);
