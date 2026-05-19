@@ -25,11 +25,7 @@ export default function CheckoutPageInner() {
     );
   }
 
-  const operatorAmount =
-    payload.product?.customAmount ??
-    payload.product?.baseAmount ??
-    payload.amount;
-
+  const operatorAmount = payload.amount;
   const operatorCurrency = payload.currency;
 
   useEffect(() => {
@@ -48,6 +44,7 @@ export default function CheckoutPageInner() {
         const data = await res.json();
         setQuote(data);
       } catch (e) {
+        console.error("QUOTE ERROR", e);
         setQuote({ error: "Unable to calculate FX rate" });
       }
     }
@@ -61,25 +58,38 @@ export default function CheckoutPageInner() {
 
     const finalZar = Number(quote.paystackAmount.toFixed(2));
 
-    const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amountZar: finalZar,
-        totalChargeUSD: quote.totalChargeUSD,
-        topupPayload: {
-          operatorId: payload.operatorId,
-          operatorAmount: operatorAmount,
-          operatorCurrency: operatorCurrency,
-          phone: payload.phone,
-          countryCode: payload.country,
-          operatorCostUSD: quote.operatorCostUSD
-        }
-      })
-    });
+    try {
+      const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountZar: finalZar,
+          totalChargeUSD: quote.totalChargeUSD,
+          topupPayload: {
+            operatorId: payload.operatorId,
+            operatorAmount: operatorAmount,
+            operatorCurrency: operatorCurrency,
+            phone: payload.phone,
+            countryCode: payload.country,
+            operatorCostUSD: quote.operatorCostUSD
+          }
+        })
+      });
 
-    const payData = await payRes.json();
-    window.location.href = payData.authorization_url;
+      const payData = await payRes.json();
+
+      if (!payData || !payData.authorization_url) {
+        alert("Payment initialization failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = payData.authorization_url;
+    } catch (err) {
+      console.error("PAYSTACK INIT ERROR", err);
+      alert("Payment initialization failed. Please try again.");
+      setLoading(false);
+    }
   }
 
   const hasQuote =
@@ -93,7 +103,6 @@ export default function CheckoutPageInner() {
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-900 px-4 py-10">
       <div className="mx-auto max-w-lg space-y-6">
-
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">Checkout</h1>
           <button
@@ -110,7 +119,6 @@ export default function CheckoutPageInner() {
           </h2>
 
           <div className="space-y-3 text-sm">
-
             <div className="flex justify-between">
               <span className="text-neutral-500">Country</span>
               <span className="font-medium flex items-center gap-2">
@@ -184,7 +192,6 @@ export default function CheckoutPageInner() {
 
           {hasQuote && (
             <div className="space-y-3 text-sm">
-
               <div className="flex justify-between">
                 <span className="text-neutral-500">FX Rate</span>
                 <span className="font-medium">
@@ -228,7 +235,6 @@ export default function CheckoutPageInner() {
                   {quote.paystackAmount.toFixed(2)} ZAR
                 </span>
               </div>
-
             </div>
           )}
         </div>

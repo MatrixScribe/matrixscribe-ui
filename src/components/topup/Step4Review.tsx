@@ -27,7 +27,6 @@ export function Step4Review(props: Props) {
   const step4Ready =
     step3Done && !!selectedCountry && !!selectedOperator && !!selectedProduct;
 
-  // Dot color logic
   const dotColor = step4Ready
     ? "bg-emerald-500 animate-pulse hover:animate-energy"
     : step3Done
@@ -41,7 +40,6 @@ export function Step4Review(props: Props) {
         ${step3Done ? "opacity-100" : "opacity-40 pointer-events-none"}
       `}
     >
-      {/* Step Dot */}
       <div
         className={`
           absolute top-4 right-4 h-2.5 w-2.5 rounded-full 
