@@ -28,7 +28,7 @@ export function useProducts(
         const code = getCountryCode(country);
 
         const res = await fetch(
-          `${apiBase}/api/products?operatorId=${operator.operatorId}`
+          `${apiBase}/api/products?operatorId=${operator?.operatorId ?? ""}`
         );
 
         const data = await res.json();
