@@ -1,269 +1,270 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { Country, Operator, Product } from "@/components/topup/types";
-import { Step1Recipient } from "@/components/topup/Step1Recipient";
-import { Step2Operator } from "@/components/topup/Step2Operator";
-import { Step3Products } from "@/components/topup/Step3Products";
-import { Step4Review } from "@/components/topup/Step4Review";
-
-import { usePhoneRules } from "@/hooks/usePhoneRules";
-import { useOperators } from "@/hooks/useOperators";
-import { useAutoDetectOperator } from "@/hooks/useAutoDetectOperator";
-import { useProducts } from "@/hooks/useProducts";
-import { getCountryCode } from "@/utils/topup";
-
-export default function TopupPageInner() {
-  const searchParams = useSearchParams();
+export default function CheckoutPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000";
+  // 🔧 IMPORTANT: point this to your backend base URL
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_BASE ||
+    "https://sentiment-platform-zgr8.onrender.com";
 
-  const typeParam = searchParams.get("type") || "airtime";
-  const topupType: "airtime" | "data" =
-    typeParam === "data" ? "data" : "airtime";
+  const payloadRaw = searchParams.get("payload");
+  const payload = payloadRaw ? JSON.parse(payloadRaw) : null;
 
-  // Countries + phone
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [countriesLoading, setCountriesLoading] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
-  const [phone, setPhone] = useState("");
-  const [step1Done, setStep1Done] = useState(false);
+  const [quote, setQuote] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Operators
-  const {
-    allOperators,
-    displayOperators,
-    setDisplayOperators,
-    selectedOperator,
-    setSelectedOperator,
-    loading: operatorsLoading,
-    step2Done,
-    setStep2Done
-  } = useOperators(step1Done, selectedCountry, API_BASE);
+  if (!payload) {
+    return (
+      <main className="p-10">
+        <p className="text-red-500">Invalid checkout payload.</p>
+      </main>
+    );
+  }
 
-  // Products
-  const {
-    products,
-    groupedProducts,
-    loading: productsLoading,
-    selectedProduct,
-    setSelectedProduct,
-    step3Done,
-    setStep3Done
-  } = useProducts(
-    step2Done,
-    selectedOperator,
-    selectedCountry,
-    topupType,
-    API_BASE
-  );
+  const operatorAmount =
+    payload.product?.customAmount ??
+    payload.product?.baseAmount ??
+    payload.amount;
 
-  // Load countries
+  const operatorCurrency = payload.currency;
+
   useEffect(() => {
-    async function loadCountries() {
+    async function loadQuote() {
       try {
-        const res = await fetch(`${API_BASE}/api/countries`);
+        const res = await fetch(`${API_BASE}/api/checkout/quote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            operatorAmount,
+            operatorCurrency,
+            userCurrency: "USD"
+          })
+        });
+
         const data = await res.json();
-        if (Array.isArray(data.countries)) {
-          setCountries(data.countries);
-          setSelectedCountry(null);
-        }
-      } catch (err) {
-        console.error("Failed to load countries", err);
-      } finally {
-        setCountriesLoading(false);
+        setQuote(data);
+      } catch (e) {
+        console.error("QUOTE ERROR", e);
+        setQuote({ error: "Unable to calculate FX rate" });
       }
     }
-    loadCountries();
-  }, [API_BASE]);
 
-  const phoneRules = usePhoneRules(selectedCountry, API_BASE);
+    loadQuote();
+  }, [API_BASE, operatorAmount, operatorCurrency]);
 
-  const isPhoneValid = useMemo(() => {
-    if (!phoneRules) return false;
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length < phoneRules.minLength) return false;
-    if (digits.length > phoneRules.maxLength) return false;
-    if (phoneRules.regex) {
-      try {
-        const re = new RegExp(phoneRules.regex);
-        if (!re.test(digits)) return false;
-      } catch {}
+  async function handlePay() {
+    if (!quote || quote.error) return;
+    setLoading(true);
+
+    const finalZar = Number(quote.paystackAmount.toFixed(2));
+
+    try {
+      console.log(
+        "Calling Paystack INIT at:",
+        `${API_BASE}/api/paystack/initiate`
+      );
+
+      const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountZar: finalZar,
+          totalChargeUSD: quote.totalChargeUSD,
+          topupPayload: {
+            operatorId: payload.operatorId,
+            operatorAmount: operatorAmount,
+            operatorCurrency: operatorCurrency,
+            phone: payload.phone,
+            countryCode: payload.country,
+            operatorCostUSD: quote.operatorCostUSD
+          }
+        })
+      });
+
+      const payData = await payRes.json();
+      console.log("Paystack INIT response:", payData);
+
+      if (!payData || !payData.authorization_url) {
+        alert("Payment initialization failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = payData.authorization_url;
+    } catch (err) {
+      console.error("PAYSTACK INIT ERROR", err);
+      alert("Payment initialization failed. Please try again.");
+      setLoading(false);
     }
-    return true;
-  }, [phone, phoneRules]);
+  }
 
-  // Auto-detect operator
-  useAutoDetectOperator({
-    step1Done,
-    phone,
-    country: selectedCountry,
-    phoneRules,
-    allOperators,
-    apiBase: API_BASE,
-    setSelectedOperator,
-    setDisplayOperators,
-    setStep2Done
-  });
-
-  // Continue to checkout
-  const handleContinue = () => {
-    if (!step3Done || !selectedCountry || !selectedOperator || !selectedProduct)
-      return;
-
-    const code = getCountryCode(selectedCountry);
-    if (!code) return;
-
-    const payload = {
-      type: topupType,
-      country: code,
-      countryName: selectedCountry.name,
-      dialCode: selectedCountry.dialCode,
-      phone,
-      countryFlag: selectedCountry.flag,
-      operatorLogo: (selectedOperator as any).logoUrls?.[0] || selectedOperator.logo,
-      operatorId: selectedOperator.operatorId,
-      operatorName: selectedOperator.name,
-      productId: selectedProduct.id,
-      productName: selectedProduct.label || selectedProduct.name,
-      amount:
-        (selectedProduct as any).customAmount ??
-        selectedProduct.baseAmount ??
-        (selectedProduct as any).amount,
-      currency:
-        selectedProduct.baseCurrency ?? (selectedProduct as any).currency,
-      product: selectedProduct
-    };
-
-    router.push(
-      `/checkout?payload=${encodeURIComponent(JSON.stringify(payload))}`
-    );
-  };
-
-  // FULL RESET
-  const handleRestart = () => {
-    setSelectedCountry(null);
-    setPhone("");
-    setStep1Done(false);
-
-    setSelectedOperator(null);
-    setStep2Done(false);
-
-    setSelectedProduct(null);
-    setStep3Done(false);
-
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  const hasQuote =
+    quote &&
+    !quote.error &&
+    typeof quote.operatorCostUSD === "number" &&
+    typeof quote.serviceFeeUSD === "number" &&
+    typeof quote.totalChargeUSD === "number" &&
+    typeof quote.sellRate === "number";
 
   return (
-    <main className="min-h-screen bg-[#fafafa] text-neutral-900 px-4 py-10">
-      {/* Sticky premium header (aligned with Checkout) */}
-      <div
-        className="
-          sticky top-0 z-50 
-          bg-[#fafafa]/80 backdrop-blur-xl 
-          border-b border-neutral-200 
-          mb-8 py-4
-        "
-      >
-        <div className="max-w-3xl mx-auto flex items-center justify-between px-1">
-          <div className="flex items-center gap-3">
-            <button
-  type="button"
-  onClick={() => router.push("/")}
-  className="
-    h-9 w-9 flex items-center justify-center rounded-full
-    border border-neutral-300 bg-white shadow-sm
-    hover:border-neutral-500 hover:shadow-md transition
-  "
-  title="Home"
->
-  <img
-    src="/favicon.ico"
-    alt="Home"
-    className="h-10 w-10 object-contain"
-  />
-</button>
-
-            <div>
-              <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">
-                {topupType === "airtime" ? "Airtime Top‑Up" : "Data Top‑Up"}
-              </h1>
-              <p className="text-neutral-600 text-xs md:text-[13px] mt-0.5">
-                Complete the steps below to send a fast, global mobile top‑up.
-              </p>
-            </div>
-          </div>
-
+    <main className="min-h-screen bg-neutral-50 text-neutral-900 px-4 py-10">
+      <div className="mx-auto max-w-lg space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold">Checkout</h1>
           <button
-            type="button"
-            onClick={handleRestart}
-            className="
-              h-9 w-9 flex items-center justify-center rounded-full
-              border border-neutral-300 bg-white shadow-sm
-              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
-    transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
-            title="Restart"
+            onClick={() => router.back()}
+            className="text-sm text-neutral-500 hover:text-neutral-700 transition"
           >
-            ↻
+            Back
           </button>
         </div>
-      </div>
 
-      {/* Steps container */}
-      <div className="max-w-3xl mx-auto space-y-6">
-        <Step1Recipient
-          apiBase={API_BASE}
-          countries={countries}
-          countriesLoading={countriesLoading}
-          selectedCountry={selectedCountry}
-          setSelectedCountry={(c) => {
-            setSelectedCountry(c);
-            setPhone("");
-            setStep1Done(false);
-          }}
-          phone={phone}
-          setPhone={setPhone}
-          phoneRules={phoneRules}
-          isPhoneValid={isPhoneValid}
-          step1Done={step1Done}
-          setStep1Done={setStep1Done}
-        />
+        <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4">
+          <h2 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500">
+            Summary
+          </h2>
 
-        <Step2Operator
-          step1Done={step1Done}
-          operatorsLoading={operatorsLoading}
-          displayOperators={displayOperators}
-          selectedOperator={selectedOperator}
-          setSelectedOperator={setSelectedOperator}
-          setStep2Done={setStep2Done}
-        />
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Country</span>
+              <span className="font-medium flex items-center gap-2">
+                {payload.countryFlag && (
+                  <img
+                    src={payload.countryFlag}
+                    alt="flag"
+                    className="w-5 h-5 rounded-sm object-cover"
+                  />
+                )}
+                {payload.countryName}
+              </span>
+            </div>
 
-        <Step3Products
-          step2Done={step2Done}
-          productsLoading={productsLoading}
-          products={products}
-          groupedProducts={groupedProducts}
-          selectedProduct={selectedProduct}
-          setSelectedProduct={setSelectedProduct}
-          step3Done={step3Done}
-          setStep3Done={setStep3Done}
-        />
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Phone</span>
+              <span className="font-medium">
+                {payload.dialCode} {payload.phone}
+              </span>
+            </div>
 
-        <Step4Review
-          step3Done={step3Done}
-          selectedCountry={selectedCountry}
-          phone={phone}
-          selectedOperator={selectedOperator}
-          selectedProduct={selectedProduct}
-          topupType={topupType}
-          onContinue={handleContinue}
-        />
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Operator</span>
+              <span className="font-medium flex items-center gap-2">
+                {payload.operatorLogo && (
+                  <img
+                    src={payload.operatorLogo}
+                    alt="operator logo"
+                    className="w-6 h-6 rounded object-contain"
+                  />
+                )}
+                {payload.operatorName}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Product</span>
+              <span className="font-medium">{payload.productName}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Face Value</span>
+              <span className="font-medium">
+                {operatorAmount} {operatorCurrency}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500">
+              Payment Breakdown
+            </h2>
+
+            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+              FX Verified
+            </span>
+          </div>
+
+          {!quote && (
+            <p className="text-neutral-500 text-sm">Calculating price…</p>
+          )}
+
+          {quote?.error && (
+            <p className="text-red-500 text-sm">
+              Unable to calculate FX rate. Please try again.
+            </p>
+          )}
+
+          {hasQuote && (
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-neutral-500">FX Rate</span>
+                <span className="font-medium">
+                  1 USD = {quote.sellRate.toFixed(4)} {operatorCurrency}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Subtotal (USD)</span>
+                <span className="font-medium">
+                  ${quote.operatorCostUSD.toFixed(4)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Service Fee</span>
+                <span className="font-medium">
+                  ${quote.serviceFeeUSD.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between pt-2 border-t border-neutral-200">
+                <span className="text-neutral-500">Total (USD)</span>
+                <span className="font-semibold">
+                  ${quote.totalChargeUSD.toFixed(4)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-neutral-500">
+                  Approx. in {operatorCurrency}
+                </span>
+                <span className="font-semibold">
+                  {quote.approxLocal.toFixed(2)} {operatorCurrency}
+                </span>
+              </div>
+
+              <div className="flex justify-between pt-2 border-t border-neutral-200">
+                <span className="text-neutral-500">You'll pay in ZAR</span>
+                <span className="font-semibold">
+                  {quote.paystackAmount.toFixed(2)} ZAR
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-center gap-2 text-xs text-neutral-500">
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-4 w-4 rounded-full bg-emerald-500" />
+            <span>Secure Paystack Payment</span>
+          </span>
+        </div>
+
+        <button
+          onClick={handlePay}
+          disabled={!hasQuote || loading}
+          className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-semibold text-white 
+                     hover:bg-emerald-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Processing…" : "Pay with Paystack"}
+        </button>
       </div>
     </main>
   );
