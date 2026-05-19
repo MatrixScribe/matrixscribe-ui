@@ -30,4 +30,6 @@ export type Product = {
   description?: string | null;
   minBaseAmount?: number;
   maxBaseAmount?: number;
+  amount?: number;
+  currency?: string;
 };
