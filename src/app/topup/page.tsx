@@ -174,18 +174,21 @@ export default function TopupPage() {
         <div className="max-w-3xl mx-auto flex items-center justify-between px-1">
           <div className="flex items-center gap-3">
             <button
-              type="button"
-              onClick={() => router.back()}
-              className="
-                h-9 px-3 rounded-full border border-neutral-300 bg-white
-                text-sm text-neutral-700 flex items-center gap-1
-                hover:border-neutral-500 hover:text-neutral-900
-                transition
-              "
-            >
-              <span className="text-lg leading-none">←</span>
-              <span></span>
-            </button>
+  type="button"
+  onClick={() => router.push("/")}
+  className="
+    h-9 w-9 flex items-center justify-center rounded-full
+    border border-neutral-300 bg-white shadow-sm
+    hover:border-neutral-500 hover:shadow-md transition
+  "
+  title="Home"
+>
+  <img
+    src="/favicon.ico"
+    alt="Home"
+    className="h-10 w-10 object-contain"
+  />
+</button>
 
             <div>
               <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">

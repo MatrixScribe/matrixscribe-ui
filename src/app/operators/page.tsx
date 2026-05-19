@@ -102,26 +102,21 @@ export default function OperatorsDirectory() {
 
             {/* HOME BUTTON */}
             <button
-              onClick={() => (window.location.href = "/")}
-              className="h-9 w-9 flex items-center justify-center rounded-lg 
-                border border-neutral-300 bg-white shadow-sm 
-                hover:border-purple-500 hover:text-purple-600 transition"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.8"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 9.75L12 3l9 6.75M4.5 10.5V21h15V10.5"
-                />
-              </svg>
-            </button>
+  type="button"
+  onClick={() => (window.location.href = "/")}
+  className="
+    h-9 w-9 flex items-center justify-center rounded-full
+    border border-neutral-300 bg-white shadow-sm
+    hover:border-neutral-500 hover:shadow-md transition
+  "
+  title="Home"
+>
+  <img
+    src="/favicon.ico"
+    alt="Home"
+    className="h-10 w-10 object-contain"
+  />
+</button>
 
             {/* RECHARGE BUTTON */}
             <button

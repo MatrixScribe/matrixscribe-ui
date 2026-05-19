@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "MatrixScribe Top‑Up",
+  title: "Redatacom Global Recharge",
   description: "Instant global airtime & data top-ups",
 };
 

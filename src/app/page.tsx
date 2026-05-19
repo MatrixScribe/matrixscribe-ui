@@ -9,10 +9,18 @@ type Country = {
   flag: string;
 };
 
+type Operator = {
+  operatorId: string;
+  name: string;
+  logo?: string;
+  operatorType?: string;
+};
+
 export default function Home() {
   const router = useRouter();
 
   const [countries, setCountries] = useState<Country[]>([]);
+  const [operators, setOperators] = useState<Operator[]>([]);
 
   // Typing headline
   const [typedText, setTypedText] = useState("");
@@ -23,15 +31,15 @@ export default function Home() {
   const [subIndex, setSubIndex] = useState(0);
 
   const headlines = [
-    "Instant Airtime & Data",
-    "Recharge Worldwide",
-    "Instant Global Top‑Ups"
+    "re-data yourself & others",
+    "global airtime & data ",
+    "power to connectivity"
   ];
 
   const subMessages = [
-    "No accounts. No friction. Just premium simplicity.",
-    "Send airtime and data in seconds, anywhere.",
-    "Built for Africa, the Middle East, and the world."
+    "no accounts. no friction. just premium simplicity.",
+    "send airtime & data in seconds, anywhere.",
+    "click networks button to check your countries operators."
   ];
 
   // Typing effect for headline
@@ -126,7 +134,7 @@ export default function Home() {
 
           {/* CENTER: LOGO */}
           <div className="text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2">
-            <span className="opacity-80">Your Logo</span>
+            <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
           </div>
 
           {/* RIGHT: Connected Stats */}
@@ -168,8 +176,8 @@ export default function Home() {
           <h1 className="text-[40px] md:text-[52px] font-semibold tracking-tight leading-tight text-neutral-900 mb-4">
             {typedText}
             <span className="inline-block w-1 h-7 md:h-8 bg-neutral-900 ml-1 animate-pulse" />
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mt-2">
-              Simple. Global. Fast.
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-900 mt-2">
+              Simple. Intelligent. Instant.
             </span>
           </h1>
         </div>
