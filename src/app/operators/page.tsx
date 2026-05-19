@@ -5,15 +5,25 @@ import { useEffect, useState } from "react";
 export default function OperatorsDirectory() {
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000";
 
+  /** COUNTRY TYPE */
   interface Country {
-  name: string;
-  flag: string;
-  iso2: string;
-}
+    name: string;
+    flag: string;
+    iso2: string;
+  }
 
-const [countries, setCountries] = useState<Country[]>([]);
+  /** OPERATOR TYPE */
+  interface Operator {
+    operatorId: string;
+    name: string;
+    logo?: string;
+    operatorType?: string;
+    countryIso?: string;
+  }
+
+  const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [operators, setOperators] = useState([]);
+  const [operators, setOperators] = useState<Operator[]>([]);
   const [showCountries, setShowCountries] = useState(false);
 
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -23,12 +33,14 @@ const [countries, setCountries] = useState<Country[]>([]);
     return match ? match[1].toUpperCase() : null;
   };
 
+  /** LOAD COUNTRIES */
   useEffect(() => {
     fetch(`${API_BASE}/api/countries`)
       .then((r) => r.json())
       .then((d) => setCountries(d.countries || []));
   }, []);
 
+  /** LOAD OPERATORS WHEN COUNTRY SELECTED */
   useEffect(() => {
     if (!selectedCountry) return;
 
@@ -88,7 +100,7 @@ const [countries, setCountries] = useState<Country[]>([]);
 
           <div className="flex items-center gap-3 mt-3 sm:mt-0">
 
-            {/* APPLE‑STYLE HOME ICON BUTTON */}
+            {/* HOME BUTTON */}
             <button
               onClick={() => (window.location.href = "/")}
               className="h-9 w-9 flex items-center justify-center rounded-lg 
@@ -111,7 +123,7 @@ const [countries, setCountries] = useState<Country[]>([]);
               </svg>
             </button>
 
-            {/* Recharge Button */}
+            {/* RECHARGE BUTTON */}
             <button
               onClick={() => (window.location.href = "/topup")}
               className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
@@ -208,7 +220,7 @@ const [countries, setCountries] = useState<Country[]>([]);
           </p>
         )}
 
-        {/* FAQ SECTION — MOVED BELOW OPERATOR GRID */}
+        {/* FAQ SECTION */}
         <div className="mb-10">
           <h2 className="text-[20px] font-semibold text-neutral-900 mb-4">
             Frequently Asked Questions
