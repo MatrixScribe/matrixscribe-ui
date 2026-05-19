@@ -61,7 +61,7 @@ export default function CheckoutPageInner() {
 
     const finalZar = Number(quote.paystackAmount.toFixed(2));
 
-    const payRes = await fetch(`${API_BASE}/api/paystack/initialize`, {
+    const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
