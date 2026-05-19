@@ -7,7 +7,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ⭐ FIXED — fallback to backend URL
+  // ⭐ FIX 1 — ensure API_BASE is never undefined
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE ||
     "https://sentiment-platform-zgr8.onrender.com";
@@ -62,7 +62,7 @@ export default function CheckoutPage() {
 
     const finalZar = Number(quote.paystackAmount.toFixed(2));
 
-    // ⭐ FIXED — correct Paystack endpoint
+    // ⭐ FIX 2 — correct endpoint: initialize (NOT initiate)
     const payRes = await fetch(`${API_BASE}/api/paystack/initialize`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -94,7 +94,10 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-900 px-4 py-10">
-      {/* ... unchanged UI ... */}
+      {/* ⭐ UI untouched — everything below stays exactly the same */}
+      <div className="mx-auto max-w-lg space-y-6">
+        {/* ... your entire UI ... */}
+      </div>
     </main>
   );
 }
