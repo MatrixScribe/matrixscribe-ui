@@ -21,7 +21,7 @@ export default function TopupPageInner() {
 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE ||
-    "https://redatacomend.onrender.com";
+    "https://redatacom-end.onrender.com";
 
   const typeParam = searchParams.get("type") || "airtime";
   const topupType: "airtime" | "data" =

@@ -9,7 +9,7 @@ export default function CheckoutPageInner() {
 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE ||
-    "https://redatacomend.onrender.com";
+    "https://redatacom-end.onrender.com";
 
   const payloadRaw = searchParams.get("payload");
   const payload = payloadRaw ? JSON.parse(payloadRaw) : null;
