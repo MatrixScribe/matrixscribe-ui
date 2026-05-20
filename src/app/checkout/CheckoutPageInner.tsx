@@ -53,44 +53,48 @@ export default function CheckoutPageInner() {
   }, [API_BASE, operatorAmount, operatorCurrency]);
 
   async function handlePay() {
-    if (!quote || quote.error) return;
-    setLoading(true);
+  if (!quote || quote.error) return;
+  setLoading(true);
 
-    const finalZar = Number(quote.paystackAmount.toFixed(2));
+  const finalZar = Number(quote.paystackAmount.toFixed(2));
 
-    try {
-      const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amountZar: finalZar,
-          totalChargeUSD: quote.totalChargeUSD,
-          topupPayload: {
-            operatorId: payload.operatorId,
-            operatorAmount: operatorAmount,
-            operatorCurrency: operatorCurrency,
-            phone: payload.phone,
-            countryCode: payload.country,
-            operatorCostUSD: quote.operatorCostUSD
-          }
-        })
-      });
+  try {
+    const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amountZar: finalZar,
+        totalChargeUSD: quote.totalChargeUSD,
+        topupPayload: {
+          type: payload.type,
+          operatorId: payload.operatorId,
+          operatorName: payload.operatorName,
+          operatorAmount: operatorAmount,
+          operatorCurrency: operatorCurrency,
+          phone: payload.phone,
+          countryCode: payload.country,
+          productId: payload.productId,
+          productName: payload.productName,
+          operatorCostUSD: quote.operatorCostUSD
+        }
+      })
+    });
 
-      const payData = await payRes.json();
+    const payData = await payRes.json();
 
-      if (!payData || !payData.authorization_url) {
-        alert("Payment initialization failed. Please try again.");
-        setLoading(false);
-        return;
-      }
-
-      window.location.href = payData.authorization_url;
-    } catch (err) {
-      console.error("PAYSTACK INIT ERROR", err);
+    if (!payData || !payData.authorization_url) {
       alert("Payment initialization failed. Please try again.");
       setLoading(false);
+      return;
     }
+
+    window.location.href = payData.authorization_url;
+  } catch (err) {
+    console.error("PAYSTACK INIT ERROR", err);
+    alert("Payment initialization failed. Please try again.");
+    setLoading(false);
   }
+}
 
   const hasQuote =
     quote &&
