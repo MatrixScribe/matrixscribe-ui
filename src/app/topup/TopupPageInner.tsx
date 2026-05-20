@@ -21,7 +21,7 @@ export default function TopupPageInner() {
 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE ||
-    "https://sentiment-platform-zgr8.onrender.com";
+    "https://redatacomend.onrender.com";
 
   const typeParam = searchParams.get("type") || "airtime";
   const topupType: "airtime" | "data" =

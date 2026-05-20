@@ -9,7 +9,7 @@ export default function CheckoutPageInner() {
 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE ||
-    "https://sentiment-platform-zgr8.onrender.com";
+    "https://redatacomend.onrender.com";
 
   const payloadRaw = searchParams.get("payload");
   const payload = payloadRaw ? JSON.parse(payloadRaw) : null;
