@@ -66,17 +66,17 @@ export default function CheckoutPageInner() {
         amountZar: finalZar,
         totalChargeUSD: quote.totalChargeUSD,
         topupPayload: {
-          type: payload.type,
-          operatorId: payload.operatorId,
-          operatorName: payload.operatorName,
-          operatorAmount: operatorAmount,
-          operatorCurrency: operatorCurrency,
-          phone: payload.phone,
-          countryCode: payload.country,
-          productId: payload.productId,
-          productName: payload.productName,
-          operatorCostUSD: quote.operatorCostUSD
-        }
+  type: payload.productId ? "data" : "airtime",
+  operatorId: payload.operatorId,
+  operatorName: payload.operatorName,
+  operatorAmount: operatorAmount,
+  operatorCurrency: operatorCurrency,
+  phone: payload.phone,
+  countryCode: payload.country,
+  productId: payload.productId,
+  productName: payload.productName,
+  operatorCostUSD: quote.operatorCostUSD
+}
       })
     });
 
