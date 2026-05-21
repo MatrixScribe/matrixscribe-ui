@@ -160,13 +160,13 @@ export default function Home() {
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
 
         {/* ANIMATED ICON BACKDROP */}
-<div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-  <img
-    src="/public/loop-icon.svg"   // <-- replace with your actual filename
-    alt="background-icon"
-    className="animated-bg-icon"
-  />
-</div>
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+          <img
+            src="/loop-icon.svg"
+            alt="background-icon"
+            className="animated-bg-icon"
+          />
+        </div>
 
         <div className="relative max-w-2xl w-full text-center mb-16">
           {/* AI TYPING HEADLINE */}
@@ -200,11 +200,36 @@ export default function Home() {
 
       {/* FOOTER LINKS */}
       <footer className="relative z-10 w-full bg-white/70 backdrop-blur-xl border-t border-neutral-200 py-4">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-center gap-6 text-xs text-neutral-500">
-          <button onClick={() => router.push("/terms")} className="hover:text-neutral-800 transition">Terms</button>
-          <button onClick={() => router.push("/privacy")} className="hover:text-neutral-800 transition">Privacy</button>
-          <button onClick={() => router.push("/about")} className="hover:text-neutral-800 transition">About</button>
-          <button onClick={() => router.push("/support")} className="hover:text-neutral-800 transition">Support</button>
+        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs text-neutral-500">
+
+          {/* LEFT LINKS */}
+          <div className="flex items-center gap-6">
+            <button onClick={() => router.push("/terms")} className="hover:text-neutral-800 transition">Terms</button>
+            <button onClick={() => router.push("/privacy")} className="hover:text-neutral-800 transition">Privacy</button>
+            <button onClick={() => router.push("/about")} className="hover:text-neutral-800 transition">About</button>
+            <button onClick={() => router.push("/support")} className="hover:text-neutral-800 transition">Support</button>
+          </div>
+
+          {/* RIGHT SHARE BUTTON */}
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: "Redatacom",
+                  text: "Instant global airtime & data top‑ups.",
+                  url: window.location.href
+                });
+              } else {
+                alert("Sharing not supported on this device");
+              }
+            }}
+            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
+              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
+              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
+          >
+            Share
+          </button>
+
         </div>
       </footer>
     </main>
