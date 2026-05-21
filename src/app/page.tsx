@@ -33,13 +33,13 @@ export default function Home() {
   const headlines = [
     "re-data yourself & others",
     "global airtime & data ",
-    "power to connectivity"
+    "--connectivity--"
   ];
 
   const subMessages = [
     "no accounts. no friction. just premium simplicity.",
     "send airtime & data in seconds, anywhere.",
-    "click networks button to check your countries operators."
+    "click networks button to check your country availibilty."
   ];
 
   // Typing effect for headline
@@ -119,42 +119,46 @@ export default function Home() {
       <div className="absolute bottom-0 right-0 h-72 w-72 bg-blue-300/20 blur-[120px] rounded-full" />
 
       {/* HEADER */}
-      <header className="relative z-10 w-full border-b border-neutral-200/60 bg-white/70 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+<header className="relative z-10 w-full border-b border-neutral-200/60 bg-white/70 backdrop-blur-xl">
+  <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
 
-          {/* LEFT: Operators Button */}
-          <button
-            onClick={() => router.push("/operators")}
-            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
-              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
-              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
-          >
-            Networks
-          </button>
+    {/* LEFT: Operators Button */}
+    <button
+      onClick={() => router.push("/operators")}
+      className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
+        text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
+        transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
+    >
+      Networks
+    </button>
 
-          {/* CENTER: LOGO */}
-          <div className="text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2">
-            <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
-          </div>
+    {/* CENTER: LOGO */}
+    <div className="text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2">
+      <img
+        src="/logo.png"
+        alt="Redatacom"
+        className="h-5 md:h-6 opacity-90"   // ⭐ Smaller on mobile, normal on desktop
+      />
+    </div>
 
-          {/* RIGHT: Connected Stats */}
-          <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
-            <div className="flex items-center gap-1">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-energy"></span>
-              <span></span>
-            </div>
+    {/* RIGHT: Connected Stats */}
+    <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+      <div className="flex items-center gap-1">
+        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-energy"></span>
+        <span></span>
+      </div>
 
-            <span className="font-semibold text-neutral-900">
-              {operatorCount} Operators
-            </span>
-            <span className="text-neutral-400">|</span>
-            <span className="font-semibold text-neutral-900">
-              {countryCount} Countries
-            </span>
-          </div>
+      <span className="font-semibold text-neutral-900">
+        {operatorCount} Operators
+      </span>
+      <span className="text-neutral-400">|</span>
+      <span className="font-semibold text-neutral-900">
+        {countryCount} Countries
+      </span>
+    </div>
 
-        </div>
-      </header>
+  </div>
+</header>
 
       {/* HERO */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
