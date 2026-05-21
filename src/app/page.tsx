@@ -132,13 +132,13 @@ export default function Home() {
       Networks
     </button>
 
-    {/* CENTER: LOGO */}
-    <div className="text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2">
-      <img
-        src="/logo.png"
-        alt="Redatacom"
-        className="h-5 md:h-6 opacity-90"   // ⭐ Smaller on mobile, normal on desktop
-      />
+    {/* CENTER LOGO — moves below header on mobile */}
+    <div className="
+      hidden
+      md:block
+      text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2
+    ">
+      <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
     </div>
 
     {/* RIGHT: Connected Stats */}
@@ -157,6 +157,11 @@ export default function Home() {
       </span>
     </div>
 
+  </div>
+
+  {/* MOBILE LOGO BELOW HEADER */}
+  <div className="md:hidden w-full flex justify-center py-2">
+    <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
   </div>
 </header>
 
