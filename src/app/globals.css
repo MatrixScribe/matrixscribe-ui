@@ -39,3 +39,27 @@ html {
 .animate-energy {
   animation: energy-ripple 2s infinite ease-out;
 }
+/* 🔄 ROTATION + PULSE ANIMATION FOR BACKGROUND ICON */
+.animated-bg-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 420px; /* adjust size */
+  opacity: 0.10; /* subtle background */
+  transform: translate(-50%, -50%);
+  animation: spin 18s linear infinite, pulse 4s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Smooth continuous rotation */
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Soft glow pulse */
+@keyframes pulse {
+  0%, 100% { filter: drop-shadow(0 0 0px #a855f7); }
+  50%      { filter: drop-shadow(0 0 14px #c084fc); }
+}

@@ -159,17 +159,14 @@ export default function Home() {
       {/* HERO */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
 
-        {/* WORLD MAP BACKDROP */}
-        <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
-          <img
-            src="/world-map.svg"
-            alt="World map"
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </div>
+        {/* ANIMATED ICON BACKDROP */}
+<div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+  <img
+    src="/public/loop-icon.svg"   // <-- replace with your actual filename
+    alt="background-icon"
+    className="animated-bg-icon"
+  />
+</div>
 
         <div className="relative max-w-2xl w-full text-center mb-16">
           {/* AI TYPING HEADLINE */}
