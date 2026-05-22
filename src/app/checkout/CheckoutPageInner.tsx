@@ -216,7 +216,7 @@ export default function CheckoutPageInner() {
                 <img
                   src="/logogrey.png"
                   alt="Home"
-                  className="h-25 w-25 object-contain"
+                  className="h-15 w-15 object-contain"
                 />
               </div>
 
