@@ -345,7 +345,6 @@ export default function TopupPageInner() {
           setSelectedProduct={setSelectedProduct}
           step3Done={step3Done}
           setStep3Done={setStep3Done}
-          selectedOperator={selectedOperator}
         />
 
         <Step4Review
