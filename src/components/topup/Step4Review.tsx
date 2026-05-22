@@ -114,7 +114,7 @@ export function Step4Review(props: Props) {
           Review
         </h2>
         <p className="text-white/80 text-sm mt-1">
-          Make sure everything looks right before checkout
+          Lets make sure of the details
         </p>
       </div>
 

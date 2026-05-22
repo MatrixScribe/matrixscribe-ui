@@ -238,7 +238,7 @@ export default function TopupPageInner() {
                 Redatacom Recharge Center
               </h1>
 
-              <p className="text-neutral-600 text-xs md:text-[13px] mt-0.5 flex items-center gap-1">
+              <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">
                 <span className="text-emerald-500 font-semibold animate-pulse">
                   Global
                 </span>
