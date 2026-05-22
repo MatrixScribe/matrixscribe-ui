@@ -198,7 +198,7 @@ export function Step3Products(props: Props) {
             return (
               <button
                 key={p.id}
-                onMouseEnter={() => setHovered(p.label || p.name)}
+                onMouseEnter={() => setHovered(p.label ?? p.name ?? null)}
                 onMouseLeave={() => setHovered(null)}
                 onClick={() => {
                   setSelectedProduct(p);
