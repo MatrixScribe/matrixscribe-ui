@@ -82,7 +82,7 @@ export function CountrySelectorModal({ open, onClose, onSelect, countries }: Pro
           <div className="flex flex-col gap-1">
             {filtered.map((c) => (
   <button
-    key={`${c.iso || c.name}-${c.dialCode}`}
+    key={`${c.iso2 || c.name}-${c.dialCode}`}
     onClick={() => {
       onSelect(c);
       onClose();
