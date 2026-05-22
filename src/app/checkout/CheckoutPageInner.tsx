@@ -153,188 +153,158 @@ export default function CheckoutPageInner() {
         </div>
 
         {/* BOARDING PASS CARD */}
-<div
-  ref={cardRef}
-  className="
-    bg-white rounded-3xl shadow-xl border border-neutral-200
-    overflow-hidden relative transition-all duration-500
-    animate-[goldPulse_2.2s_ease-in-out_infinite]
-  "
-  style={{ transformStyle: "preserve-3d" }}
->
-  {/* Gold Pulse Keyframes */}
-  <style>{`
-    @keyframes goldPulse {
-      0% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
-      50% { box-shadow: 0 0 32px rgba(234,179,8,0.55); }
-      100% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
-    }
-  `}</style>
+        <div
+          ref={cardRef}
+          className="
+            bg-white rounded-3xl shadow-xl border border-neutral-200
+            overflow-hidden relative transition-all duration-500
+            animate-[goldPulse_2.2s_ease-in-out_infinite]
+          "
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          {/* Gold Pulse Keyframes */}
+          <style>{`
+            @keyframes goldPulse {
+              0% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
+              50% { box-shadow: 0 0 32px rgba(234,179,8,0.55); }
+              100% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
+            }
+          `}</style>
 
-  {/* PURPLE HEADER */}
-  <div className="p-6 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
+          {/* PURPLE HEADER */}
+          <div className="p-6 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {payload.operatorLogo && (
+                  <img
+                    src={payload.operatorLogo}
+                    className="h-15 w-15 object-contain rounded-md shadow"
+                  />
+                )}
+                <div>
+                  <h2 className="text-lg font-semibold">{payload.operatorName}</h2>
+                  <p className="text-xs opacity-80 tracking-wide">
+                    Waiting to Deliver
+                  </p>
+                </div>
+              </div>
 
-    {/* TOP ROW — MOBILE STACK, DESKTOP ROW */}
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {payload.countryFlag && (
+                <img
+                  src={payload.countryFlag}
+                  className="h-10 w-14 rounded shadow-sm object-cover"
+                />
+              )}
+            </div>
 
-      {/* LEFT: Operator */}
-      <div className="flex items-center gap-3">
-        {payload.operatorLogo && (
-          <img
-            src={payload.operatorLogo}
-            className="h-14 w-14 object-contain rounded-md shadow"
-          />
-        )}
-        <div>
-          <h2 className="text-lg font-semibold">{payload.operatorName}</h2>
-          <p className="text-xs opacity-80 tracking-wide">
-            Waiting to Deliver
-          </p>
-        </div>
-      </div>
+            {/* Product Name */}
+            <div className="mt-5">
+              <p className="text-[18px] font-bold text-white animate-pulse tracking-tight">
+                {payload.productName}
+              </p>
+              <p className="text-xs opacity-80">Ready</p>
+            </div>
 
-      {/* RIGHT: Country Flag */}
-      {payload.countryFlag && (
-        <img
-          src={payload.countryFlag}
-          className="h-10 w-14 rounded shadow-sm object-cover self-start sm:self-center"
-        />
-      )}
-    </div>
+            {/* Route */}
+            <div className="mt-6 flex items-center justify-between">
+              <div>
+                <p className="text-xs opacity-80">Country Location</p>
+                <p className="text-lg font-semibold">{payload.countryName}</p>
+              </div>
 
-    {/* PRODUCT NAME */}
-    <div className="mt-5">
-      <p className="text-[18px] font-bold text-white animate-pulse tracking-tight">
-        {payload.productName}
-      </p>
-      <p className="text-xs opacity-80">Ready</p>
-    </div>
+              <div className="font-bold text-2xl">
+                <img
+                  src="/logogrey.png"
+                  alt="Home"
+                  className="h-25 w-25 object-contain"
+                />
+              </div>
 
-    {/* ROUTE ROW — MOBILE STACK, DESKTOP ROW */}
-    <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+              <div>
+                <p className="text-xs opacity-80">Phone Number</p>
+                <p className="text-lg font-semibold">
+                  {payload.dialCode} {payload.phone}
+                </p>
+              </div>
+            </div>
+          </div>
 
-      {/* COUNTRY */}
-      <div>
-        <p className="text-xs opacity-80">Country Location</p>
-        <p className="text-lg font-semibold">{payload.countryName}</p>
-      </div>
+          {/* Middle Section */}
+          <div className="p-6 border-b border-dashed border-neutral-300">
+            <h3 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500 mb-4">
+              Details
+            </h3>
 
-      {/* LOGO */}
-      <div className="font-bold text-2xl flex justify-center sm:justify-start">
-        <img
-          src="/logogrey.png"
-          alt="Home"
-          className="h-20 w-20 object-contain opacity-80"
-        />
-      </div>
+            {!quote && (
+              <p className="text-neutral-500 text-sm">Calculating price…</p>
+            )}
 
-      {/* PHONE */}
-      <div>
-        <p className="text-xs opacity-80">Phone Number</p>
-        <p className="text-lg font-semibold">
-          {payload.dialCode} {payload.phone}
-        </p>
-      </div>
+            {quote?.error && (
+              <p className="text-red-500 text-sm">
+                Unable to calculate FX rate. Please try again.
+              </p>
+            )}
 
-    </div>
-  </div>
+            {hasQuote && (
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Face Value</span>
+                  <span className="font-medium">
+                    {operatorAmount} {operatorCurrency}
+                  </span>
+                </div>
 
-  {/* Middle Section */}
-  <div className="p-6 border-b border-dashed border-neutral-300">
-    <h3 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500 mb-4">
-      Details
-    </h3>
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">FX Rate</span>
+                  <span className="font-medium">
+                    1 USD = {quote.sellRate.toFixed(4)} {operatorCurrency}
+                  </span>
+                </div>
 
-    {!quote && (
-      <p className="text-neutral-500 text-sm">Calculating price…</p>
-    )}
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Subtotal</span>
+                  <span className="font-medium">
+                    ${quote.operatorCostUSD.toFixed(4)}
+                  </span>
+                </div>
 
-    {quote?.error && (
-      <p className="text-red-500 text-sm">
-        Unable to calculate FX rate. Please try again.
-      </p>
-    )}
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Service Fee</span>
+                  <span className="font-medium">
+                    ${quote.serviceFeeUSD.toFixed(2)}
+                  </span>
+                </div>
 
-    {hasQuote && (
-      <div className="space-y-4 text-sm">
+                <div className="flex justify-between pt-2 border-t border-neutral-200">
+                  <span className="text-neutral-500">Total (USD)</span>
+                  <span className="font-semibold">
+                    ${quote.totalChargeUSD.toFixed(4)}
+                  </span>
+                </div>
 
-        {/* FACE VALUE */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            Face Value
-          </span>
-          <span className="font-medium text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            {operatorAmount} {operatorCurrency}
-          </span>
-        </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">
+                    Your Total in {operatorCurrency}
+                  </span>
+                  <span className="font-semibold">
+                    {quote.approxLocal.toFixed(2)} {operatorCurrency}
+                  </span>
+                </div>
 
-        {/* FX RATE */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            FX Rate
-          </span>
-          <span className="font-medium text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            1 USD = {quote.sellRate.toFixed(4)} {operatorCurrency}
-          </span>
-        </div>
+                <div className="flex justify-between pt-2 border-t border-neutral-200">
+                  <span className="text-neutral-500">you’ll pay redatacom in ZAR</span>
+                  <span className="font-semibold">
+                    {quote.paystackAmount.toFixed(2)} ZAR
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
 
-        {/* SUBTOTAL */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            Subtotal
-          </span>
-          <span className="font-medium text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            ${quote.operatorCostUSD.toFixed(4)}
-          </span>
-        </div>
-
-        {/* SERVICE FEE */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            Service Fee
-          </span>
-          <span className="font-medium text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            ${quote.serviceFeeUSD.toFixed(2)}
-          </span>
-        </div>
-
-        {/* TOTAL USD */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pt-2 border-t border-neutral-200">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            Total (USD)
-          </span>
-          <span className="font-semibold text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            ${quote.totalChargeUSD.toFixed(4)}
-          </span>
+          {/* Bottom Section */}
+          <div className="p-6"></div>
         </div>
 
-        {/* LOCAL TOTAL */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            Your Total in {operatorCurrency}
-          </span>
-          <span className="font-semibold text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            {quote.approxLocal.toFixed(2)} {operatorCurrency}
-          </span>
-        </div>
-
-        {/* ZAR PAYSTACK */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pt-2 border-t border-neutral-200">
-          <span className="text-neutral-500 whitespace-nowrap text-xs sm:text-sm">
-            you’ll pay redatacom in ZAR
-          </span>
-          <span className="font-semibold text-xs sm:text-sm sm:text-right whitespace-nowrap">
-            {quote.paystackAmount.toFixed(2)} ZAR
-          </span>
-        </div>
-
-      </div>
-    )}
-  </div>
-
-  {/* Bottom Section */}
-  <div className="p-6"></div>
-</div>
         {/* PAY BUTTON */}
         <button
           onClick={handlePay}
