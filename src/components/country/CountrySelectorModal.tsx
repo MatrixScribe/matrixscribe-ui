@@ -18,7 +18,7 @@ export function CountrySelectorModal({ open, onClose, onSelect, countries }: Pro
 
   return countries.filter((c) => {
     const name = c.name?.toLowerCase() || "";
-    const iso = c.iso?.toLowerCase() || "";
+    const iso = c.iso2?.toLowerCase() || "";
     const dial = c.dialCode || "";
 
     return (
