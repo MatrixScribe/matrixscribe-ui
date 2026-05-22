@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function CheckoutPageInner() {
   const router = useRouter();
@@ -16,6 +16,37 @@ export default function CheckoutPageInner() {
 
   const [quote, setQuote] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  // 3D tilt ref
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      const rotateX = (y / rect.height) * -10;
+      const rotateY = (x / rect.width) * 10;
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    };
+
+    const reset = () => {
+      card.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+    };
+
+    card.addEventListener("mousemove", handleMove);
+    card.addEventListener("mouseleave", reset);
+
+    return () => {
+      card.removeEventListener("mousemove", handleMove);
+      card.removeEventListener("mouseleave", reset);
+    };
+  }, []);
 
   if (!payload) {
     return (
@@ -53,48 +84,48 @@ export default function CheckoutPageInner() {
   }, [API_BASE, operatorAmount, operatorCurrency]);
 
   async function handlePay() {
-  if (!quote || quote.error) return;
-  setLoading(true);
+    if (!quote || quote.error) return;
+    setLoading(true);
 
-  const finalZar = Number(quote.paystackAmount.toFixed(2));
+    const finalZar = Number(quote.paystackAmount.toFixed(2));
 
-  try {
-    const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amountZar: finalZar,
-        totalChargeUSD: quote.totalChargeUSD,
-        topupPayload: {
-  type: payload.productId ? "data" : "airtime",
-  operatorId: payload.operatorId,
-  operatorName: payload.operatorName,
-  operatorAmount: operatorAmount,
-  operatorCurrency: operatorCurrency,
-  phone: payload.phone,
-  countryCode: payload.country,
-  productId: payload.productId,
-  productName: payload.productName,
-  operatorCostUSD: quote.operatorCostUSD
-}
-      })
-    });
+    try {
+      const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountZar: finalZar,
+          totalChargeUSD: quote.totalChargeUSD,
+          topupPayload: {
+            type: payload.type,
+            operatorId: payload.operatorId,
+            operatorName: payload.operatorName,
+            operatorAmount: operatorAmount,
+            operatorCurrency: operatorCurrency,
+            phone: payload.phone,
+            countryCode: payload.country,
+            productId: payload.productId,
+            productName: payload.productName,
+            operatorCostUSD: quote.operatorCostUSD
+          }
+        })
+      });
 
-    const payData = await payRes.json();
+      const payData = await payRes.json();
 
-    if (!payData || !payData.authorization_url) {
+      if (!payData || !payData.authorization_url) {
+        alert("Payment initialization failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = payData.authorization_url;
+    } catch (err) {
+      console.error("PAYSTACK INIT ERROR", err);
       alert("Payment initialization failed. Please try again.");
       setLoading(false);
-      return;
     }
-
-    window.location.href = payData.authorization_url;
-  } catch (err) {
-    console.error("PAYSTACK INIT ERROR", err);
-    alert("Payment initialization failed. Please try again.");
-    setLoading(false);
   }
-}
 
   const hasQuote =
     quote &&
@@ -105,158 +136,186 @@ export default function CheckoutPageInner() {
     typeof quote.sellRate === "number";
 
   return (
-    <main className="min-h-screen bg-neutral-50 text-neutral-900 px-4 py-10">
-      <div className="mx-auto max-w-lg space-y-6">
+    <main className="min-h-screen bg-neutral-100 px-4 py-10 flex justify-center">
+      <div className="w-full max-w-lg space-y-8">
+
+        {/* HEADER */}
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Checkout</h1>
+          <h1 className="text-xl font-semibold tracking-tight"></h1>
           <button
             onClick={() => router.back()}
-            className="text-sm text-neutral-500 hover:text-neutral-700 transition"
+            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
+              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
+              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
           >
-            Back
+            Cancel
           </button>
         </div>
 
-        <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4">
-          <h2 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500">
-            Summary
-          </h2>
+        {/* BOARDING PASS CARD */}
+        <div
+          ref={cardRef}
+          className="
+            bg-white rounded-3xl shadow-xl border border-neutral-200
+            overflow-hidden relative transition-all duration-500
+            animate-[goldPulse_2.2s_ease-in-out_infinite]
+          "
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          {/* Gold Pulse Keyframes */}
+          <style>{`
+            @keyframes goldPulse {
+              0% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
+              50% { box-shadow: 0 0 32px rgba(234,179,8,0.55); }
+              100% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
+            }
+          `}</style>
 
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-neutral-500">Country</span>
-              <span className="font-medium flex items-center gap-2">
-                {payload.countryFlag && (
-                  <img
-                    src={payload.countryFlag}
-                    alt="flag"
-                    className="w-5 h-5 rounded-sm object-cover"
-                  />
-                )}
-                {payload.countryName}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-neutral-500">Phone</span>
-              <span className="font-medium">
-                {payload.dialCode} {payload.phone}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-neutral-500">Operator</span>
-              <span className="font-medium flex items-center gap-2">
+          {/* PURPLE HEADER */}
+          <div className="p-6 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 {payload.operatorLogo && (
                   <img
                     src={payload.operatorLogo}
-                    alt="operator logo"
-                    className="w-6 h-6 rounded object-contain"
+                    className="h-15 w-15 object-contain rounded-md shadow"
                   />
                 )}
-                {payload.operatorName}
-              </span>
+                <div>
+                  <h2 className="text-lg font-semibold">{payload.operatorName}</h2>
+                  <p className="text-xs opacity-80 tracking-wide">
+                    Waiting to Deliver
+                  </p>
+                </div>
+              </div>
+
+              {payload.countryFlag && (
+                <img
+                  src={payload.countryFlag}
+                  className="h-10 w-14 rounded shadow-sm object-cover"
+                />
+              )}
             </div>
 
-            <div className="flex justify-between">
-              <span className="text-neutral-500">Product</span>
-              <span className="font-medium">{payload.productName}</span>
+            {/* Product Name */}
+            <div className="mt-5">
+              <p className="text-[18px] font-bold text-white animate-pulse tracking-tight">
+                {payload.productName}
+              </p>
+              <p className="text-xs opacity-80">Ready</p>
             </div>
 
-            <div className="flex justify-between">
-              <span className="text-neutral-500">Face Value</span>
-              <span className="font-medium">
-                {operatorAmount} {operatorCurrency}
-              </span>
+            {/* Route */}
+            <div className="mt-6 flex items-center justify-between">
+              <div>
+                <p className="text-xs opacity-80">Country Location</p>
+                <p className="text-lg font-semibold">{payload.countryName}</p>
+              </div>
+
+              <div className="font-bold text-2xl">
+                <img
+                  src="/logogrey.png"
+                  alt="Home"
+                  className="h-25 w-25 object-contain"
+                />
+              </div>
+
+              <div>
+                <p className="text-xs opacity-80">Phone Number</p>
+                <p className="text-lg font-semibold">
+                  {payload.dialCode} {payload.phone}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500">
-              Payment Breakdown
-            </h2>
+          {/* Middle Section */}
+          <div className="p-6 border-b border-dashed border-neutral-300">
+            <h3 className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500 mb-4">
+              Details
+            </h3>
 
-            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-              FX Verified
-            </span>
+            {!quote && (
+              <p className="text-neutral-500 text-sm">Calculating price…</p>
+            )}
+
+            {quote?.error && (
+              <p className="text-red-500 text-sm">
+                Unable to calculate FX rate. Please try again.
+              </p>
+            )}
+
+            {hasQuote && (
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Face Value</span>
+                  <span className="font-medium">
+                    {operatorAmount} {operatorCurrency}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">FX Rate</span>
+                  <span className="font-medium">
+                    1 USD = {quote.sellRate.toFixed(4)} {operatorCurrency}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Subtotal</span>
+                  <span className="font-medium">
+                    ${quote.operatorCostUSD.toFixed(4)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Service Fee</span>
+                  <span className="font-medium">
+                    ${quote.serviceFeeUSD.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between pt-2 border-t border-neutral-200">
+                  <span className="text-neutral-500">Total (USD)</span>
+                  <span className="font-semibold">
+                    ${quote.totalChargeUSD.toFixed(4)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">
+                    Your Total in {operatorCurrency}
+                  </span>
+                  <span className="font-semibold">
+                    {quote.approxLocal.toFixed(2)} {operatorCurrency}
+                  </span>
+                </div>
+
+                <div className="flex justify-between pt-2 border-t border-neutral-200">
+                  <span className="text-neutral-500">you’ll pay redatacom in ZAR</span>
+                  <span className="font-semibold">
+                    {quote.paystackAmount.toFixed(2)} ZAR
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
-          {!quote && (
-            <p className="text-neutral-500 text-sm">Calculating price…</p>
-          )}
-
-          {quote?.error && (
-            <p className="text-red-500 text-sm">
-              Unable to calculate FX rate. Please try again.
-            </p>
-          )}
-
-          {hasQuote && (
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-neutral-500">FX Rate</span>
-                <span className="font-medium">
-                  1 USD = {quote.sellRate.toFixed(4)} {operatorCurrency}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-neutral-500">Subtotal (USD)</span>
-                <span className="font-medium">
-                  ${quote.operatorCostUSD.toFixed(4)}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-neutral-500">Service Fee</span>
-                <span className="font-medium">
-                  ${quote.serviceFeeUSD.toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex justify-between pt-2 border-t border-neutral-200">
-                <span className="text-neutral-500">Total (USD)</span>
-                <span className="font-semibold">
-                  ${quote.totalChargeUSD.toFixed(4)}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-neutral-500">
-                  Approx. in {operatorCurrency}
-                </span>
-                <span className="font-semibold">
-                  {quote.approxLocal.toFixed(2)} {operatorCurrency}
-                </span>
-              </div>
-
-              <div className="flex justify-between pt-2 border-t border-neutral-200">
-                <span className="text-neutral-500">You'll pay in ZAR</span>
-                <span className="font-semibold">
-                  {quote.paystackAmount.toFixed(2)} ZAR
-                </span>
-              </div>
-            </div>
-          )}
+          {/* Bottom Section */}
+          <div className="p-6"></div>
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-xs text-neutral-500">
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-4 w-4 rounded-full bg-emerald-500" />
-            <span>Secure Paystack Payment</span>
-          </span>
-        </div>
-
+        {/* PAY BUTTON */}
         <button
           onClick={handlePay}
           disabled={!hasQuote || loading}
-          className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-semibold text-white 
-                     hover:bg-emerald-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="
+            w-full rounded-2xl bg-purple-600 py-3 text-sm font-semibold text-white 
+            hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed
+            shadow-lg
+          "
         >
-          {loading ? "Processing…" : "Pay with Paystack"}
+          {loading ? "Processing…" : "Pay"}
         </button>
       </div>
     </main>

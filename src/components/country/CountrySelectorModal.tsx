@@ -1,45 +1,115 @@
 "use client";
 
-interface Props {
+import { useState, useMemo } from "react";
+import { Country } from "@/components/topup/types";
+
+type Props = {
   open: boolean;
   onClose: () => void;
-  onSelect: (country: any) => void;
-  countries: any[];
-}
+  onSelect: (c: Country) => void;
+  countries: Country[];
+};
 
 export function CountrySelectorModal({ open, onClose, onSelect, countries }: Props) {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+  const q = query.toLowerCase();
+
+  return countries.filter((c) => {
+    const name = c.name?.toLowerCase() || "";
+    const iso = c.iso?.toLowerCase() || "";
+    const dial = c.dialCode || "";
+
+    return (
+      name.includes(q) ||
+      iso.includes(q) ||
+      dial.includes(query)
+    );
+  });
+}, [query, countries]);
+
+
   if (!open) return null;
 
-  // Sort alphabetically
-  const sorted = [...countries].sort((a, b) => a.name.localeCompare(b.name));
-
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-end md:items-center justify-center z-50">
-      <div className="w-full md:max-w-md bg-neutral-100 rounded-t-2xl md:rounded-2xl shadow-lg p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-neutral-700">Select Country</h2>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700">
-            ✕
-          </button>
+    <div
+      className="
+        fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm
+        flex items-center justify-center p-4 animate-[fadeIn_0.3s_ease-out]
+      "
+      onClick={onClose}
+    >
+      <div
+        className="
+          bg-white rounded-3xl w-full max-w-md max-h-[80vh]
+          overflow-hidden shadow-2xl border border-neutral-200
+          animate-[slideUp_0.35s_ease-out]
+        "
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-5 border-b border-neutral-200 bg-gradient-to-r from-purple-600 to-purple-500 text-white">
+          <h2 className="text-lg font-semibold">Select Country</h2>
+          <p className="text-sm opacity-80">Search or scroll to choose</p>
         </div>
 
-        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-          {sorted.map((c) => (
-            <button
-              key={c.code}
-              onClick={() => {
-                onSelect(c);   // <-- returns full country object including dialCode
-                onClose();
-              }}
-              className="w-full flex items-center justify-between bg-white border border-neutral-300 rounded-xl px-4 py-3 text-sm hover:bg-neutral-200 transition"
-            >
-              <span className="flex items-center gap-2">
-                <img src={c.flag} className="h-5 w-5 rounded-sm" />
-                <span className="text-neutral-800">{c.name}</span>
-              </span>
-              <span className="text-neutral-400">›</span>
-            </button>
-          ))}
+        {/* Search Bar */}
+        <div className="p-4 bg-white/70 backdrop-blur-xl border-b border-neutral-200">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search country name, ISO code, or dial code"
+            className="
+              w-full px-4 py-3 rounded-2xl text-sm
+              bg-white border border-neutral-300
+              focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+              transition-all duration-300
+              placeholder:text-neutral-400
+            "
+          />
+        </div>
+
+        {/* Country List */}
+        <div className="overflow-y-auto max-h-[60vh] p-2">
+          {filtered.length === 0 && (
+            <p className="text-center text-neutral-500 py-6">
+              No matching countries
+            </p>
+          )}
+
+          <div className="flex flex-col gap-1">
+            {filtered.map((c) => (
+  <button
+    key={`${c.iso || c.name}-${c.dialCode}`}
+    onClick={() => {
+      onSelect(c);
+      onClose();
+    }}
+    className="
+      flex items-center justify-between w-full px-4 py-3
+      rounded-xl bg-white hover:bg-purple-50
+      border border-neutral-200 hover:border-purple-400
+      transition-all duration-300 active:scale-[0.98]
+    "
+  >
+    <div className="flex items-center gap-3">
+      <img
+        src={c.flag}
+        className="h-6 w-8 rounded shadow-sm"
+      />
+      <span className="text-sm font-medium text-neutral-800">
+        {c.name}
+      </span>
+    </div>
+
+    <span className="text-neutral-500 text-sm">
+      {c.dialCode}
+    </span>
+  </button>
+))}
+          </div>
         </div>
       </div>
     </div>
