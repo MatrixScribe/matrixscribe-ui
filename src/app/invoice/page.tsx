@@ -4,11 +4,23 @@ export const dynamic = "force-dynamic";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
+interface Invoice {
+  reference: string;
+  operatorName: string;
+  phone: string;
+  amount: number;
+  currency: string;
+  serviceFee: number;
+  totalUSD: number;
+  date: string;
+  pdfUrl: string;
+}
+
 export default function InvoicePage() {
   const searchParams = useSearchParams();
   const ref = searchParams.get("reference");
 
-  const [invoice, setInvoice] = useState(null);
+  const [invoice, setInvoice] = useState<Invoice | null>(null);
 
   useEffect(() => {
     async function loadInvoice() {
