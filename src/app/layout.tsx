@@ -1,4 +1,3 @@
-"use client";
 import "./globals.css";
 
 export const metadata = {
@@ -6,12 +5,10 @@ export const metadata = {
   description: "Instant global airtime & data top-ups",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-neutral-50 text-neutral-900 antialiased">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
