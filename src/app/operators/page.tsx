@@ -94,7 +94,7 @@ export default function OperatorsDirectory() {
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <h1 className="text-[28px] font-semibold tracking-tight text-neutral-900">
-            Global Networks Directory
+            <img src="/logo-gnd.png" alt="Redatacom" className="h-20 opacity-90" />
           </h1>
 
           <div className="flex items-center gap-3 mt-3 sm:mt-0">

@@ -137,7 +137,7 @@ export default function CheckoutPageInner() {
 
   return (
     <main className="min-h-screen bg-neutral-100 px-4 py-10 flex justify-center">
-      <div className="w-full max-w-lg space-y-8">
+      <div className="w-full max-w-lg space-y-2">
 
         {/* HEADER */}
         <div className="flex items-center justify-between">
