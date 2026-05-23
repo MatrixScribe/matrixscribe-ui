@@ -235,7 +235,7 @@ export default function TopupPageInner() {
 
             <div>
               <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">
-                Redatacom Recharge Center
+               <img src="/logo-alone.png" alt="Redatacom" className="h-10 opacity-90" />
               </h1>
 
               <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">

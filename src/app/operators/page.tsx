@@ -55,39 +55,38 @@ export default function OperatorsDirectory() {
 
   const faq = [
     {
-      q: "What is this platform?",
-      a: "We provide fast, secure international mobile top‑ups. You can recharge your own number or send airtime/data to anyone worldwide in seconds."
+      q: "What is Redatacom?",
+      a: "Redatacom is a global platform for fast, secure international mobile top‑ups. You can recharge your own number or send airtime/data to anyone worldwide in seconds."
     },
     {
       q: "What is an international top‑up?",
-      a: "An international top‑up adds prepaid credit or data to a mobile number in another country. Once delivered, the recipient can call, text, or use mobile data immediately."
+      a: "An international top‑up adds prepaid credit or data to a mobile number in another country. Once delivered, the recipient can call, text, or use mobile data immediately. Redatacom handles this securely and instantly."
     },
     {
       q: "Can I send top‑ups from abroad?",
-      a: "Yes. You can recharge any supported number from anywhere in the world — no account required."
+      a: "Yes. With Redatacom, you can recharge any supported number from anywhere in the world — no account required."
     },
     {
-      q: "How do I send a top‑up?",
+      q: "How do I send a top‑up with Redatacom?",
       a: "Select a country, enter the number, choose an amount or bundle, and complete payment. Delivery is usually instant."
     },
     {
       q: "Can I send data bundles?",
-      a: "Yes. If the operator supports data bundles, you can send them directly. If not, you can send regular airtime which the recipient can convert to data."
+      a: "Yes. If the operator supports data bundles, you can send them directly via Redatacom. If not, you can send regular airtime which the recipient can convert to data."
     },
     {
-      q: "Which countries are most popular?",
-      a: "We support 150+ countries. Popular destinations include India, Mexico, Philippines, Afghanistan, and Sudan."
+      q: "Which countries are most popular on Redatacom?",
+      a: "Redatacom supports 150+ countries. Popular destinations include India, Mexico, Philippines, Afghanistan, and Sudan."
     },
     {
       q: "Which operators are most popular?",
-      a: "Airtel, MTN, Digicel, Claro, Etisalat, Zain, and many more across 700+ networks globally."
+      a: "Airtel, MTN, Digicel, Claro, Etisalat, Zain, and many more across 700+ networks globally are available on Redatacom."
     },
     {
-      q: "What payment methods do you accept?",
+      q: "What payment methods does Redatacom accept?",
       a: "We support major cards and secure online payments depending on your region."
     }
   ];
-
   return (
     <main className="min-h-screen bg-[#fafafa] px-4 py-10">
       <div className="max-w-5xl mx-auto">

@@ -32,14 +32,14 @@ export default function Home() {
 
   const headlines = [
     "re-data yourself & others",
-    "global airtime & data ",
+    "global airtime & data",
     "--connectivity--"
   ];
 
   const subMessages = [
     "no accounts. no friction. just premium simplicity.",
     "send airtime & data in seconds, anywhere.",
-    "click networks button to check your country availibilty."
+    "click networks button to check your country availability."
   ];
 
   // Typing effect for headline
@@ -109,80 +109,95 @@ export default function Home() {
   const operatorCount = countryCount > 0 ? countryCount * 5 : 0;
 
   return (
-    <main className="min-h-screen bg-[#fdfdfd] text-neutral-900 flex flex-col relative overflow-hidden">
+    <main className="min-h-screen flex flex-col relative overflow-hidden bg-white text-neutral-900">
 
-      {/* APPLE‑STYLE BACKGROUND GRADIENT */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#fafafa] to-[#f5f5f5]" />
+      {/* HEADER — NOW PURPLE */}
+      <header className="relative z-10 w-full border-b border-purple-500/30 bg-gradient-to-r from-purple-700 to-purple-600 backdrop-blur-xl">
+        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
 
-      {/* SOFT GLOW ACCENTS */}
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-72 w-72 bg-purple-300/20 blur-[120px] rounded-full" />
-      <div className="absolute bottom-0 right-0 h-72 w-72 bg-blue-300/20 blur-[120px] rounded-full" />
+          {/* LEFT: Networks */}
+          <button
+  onClick={() => router.push("/operators")}
+  className="
+    px-3 py-1.5 rounded-lg
+    bg-white
+    border border-yellow-400
+    text-purple-700 text-sm font-semibold
+    shadow-sm
+    animate-greenPulse
+    transition-all
+  "
+>
+  Networks
+</button>
 
-      {/* HEADER */}
-<header className="relative z-10 w-full border-b border-neutral-200/60 bg-white/70 backdrop-blur-xl">
-  <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+<style>{`
+  @keyframes greenPulse {
+    0% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
+    50% { box-shadow: 0 0 14px rgba(16,185,129,0.55); }
+    100% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
+  }
+  .animate-greenPulse {
+    animation: greenPulse 2.2s ease-in-out infinite;
+  }
+`}</style>
 
-    {/* LEFT: Operators Button */}
-    <button
-      onClick={() => router.push("/operators")}
-      className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
-        text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
-        transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
-    >
-      Networks
-    </button>
+          {/* CENTER LOGO */}
+          <div className="
+            hidden md:block
+            text-[20px] font-semibold tracking-tight text-white absolute left-1/2 -translate-x-1/2
+          ">
+            <img src="/logo3.png" alt="Redatacom" className="h-6 opacity-90" />
+          </div>
 
-    {/* CENTER LOGO — moves below header on mobile */}
-    <div className="
-      hidden
-      md:block
-      text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2
-    ">
-      <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
-    </div>
+          {/* RIGHT: Stats */}
+          <div className="flex items-center gap-2 text-sm font-medium text-purple-100">
+            <div className="flex items-center gap-1">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
 
-    {/* RIGHT: Connected Stats */}
-    <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
-      <div className="flex items-center gap-1">
-        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-energy"></span>
-        <span></span>
-      </div>
+            <span className="font-semibold text-white">
+              {operatorCount} Operators
+            </span>
+            <span className="text-purple-200">|</span>
+            <span className="font-semibold text-white">
+              {countryCount} Countries
+            </span>
+          </div>
 
-      <span className="font-semibold text-neutral-900">
-        {operatorCount} Operators
-      </span>
-      <span className="text-neutral-400">|</span>
-      <span className="font-semibold text-neutral-900">
-        {countryCount} Countries
-      </span>
-    </div>
+        </div>
 
-  </div>
+        {/* MOBILE LOGO */}
+        <div className="md:hidden w-full flex justify-center py-2">
+          <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
+        </div>
+      </header>
 
-  {/* MOBILE LOGO BELOW HEADER */}
-  <div className="md:hidden w-full flex justify-center py-2">
-    <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
-  </div>
-</header>
-
-      {/* HERO */}
+      {/* HERO — NOW WHITE, CLEAN, INTERACTIVE */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
 
-        {/* ANIMATED ICON BACKDROP */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        {/* Soft floating glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 h-72 w-72 bg-purple-300/20 blur-[120px] rounded-full" />
+          <div className="absolute bottom-10 right-10 h-56 w-56 bg-purple-400/10 blur-[100px] rounded-full" />
+        </div>
+
+        {/* Background subtle icon */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.06]">
           <img
             src="/loop-icon.svg"
             alt="background-icon"
-            className="animated-bg-icon"
+            className="w-[420px] md:w-[520px] animate-spin-slow"
           />
         </div>
 
+        {/* HEADLINE */}
         <div className="relative max-w-2xl w-full text-center mb-16">
-          {/* AI TYPING HEADLINE */}
           <h1 className="text-[40px] md:text-[52px] font-semibold tracking-tight leading-tight text-neutral-900 mb-4">
             {typedText}
             <span className="inline-block w-1 h-7 md:h-8 bg-neutral-900 ml-1 animate-pulse" />
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-900 mt-2">
+
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-900 mt-2">
               Simple. Intelligent. Instant.
             </span>
           </h1>
@@ -191,35 +206,49 @@ export default function Home() {
         {/* CTA BUTTON */}
         <button
           onClick={() => router.push("/topup")}
-          className="relative z-10 w-full sm:w-56 mx-auto flex items-center justify-center gap-2 
-            rounded-xl border border-neutral-300 bg-white/80 backdrop-blur 
-            text-neutral-900 py-3.5 text-[17px] font-medium 
-            hover:border-purple-500 hover:text-purple-600 
-            transition-all shadow-sm hover:shadow-md animate-energy"
+          className="
+            relative z-10 w-full sm:w-56 mx-auto flex items-center justify-center gap-2 
+            rounded-xl border border-purple-300 bg-white backdrop-blur 
+            text-purple-700 py-3.5 text-[17px] font-medium 
+            hover:bg-purple-50 hover:border-purple-400 
+            transition-all shadow-sm hover:shadow-md
+          "
         >
           Start Recharge
         </button>
 
-        {/* AI SUB‑MESSAGE TYPING EFFECT */}
+        {/* SUB MESSAGE */}
         <div className="mt-6 text-center text-neutral-600 text-[15px] min-h-[22px]">
           {subTyped}
           <span className="inline-block w-1 h-4 bg-neutral-600 ml-1 animate-pulse" />
         </div>
+
+        {/* Animations */}
+        <style>{`
+          @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          .animate-spin-slow {
+            animation: spin-slow 40s linear infinite;
+          }
+        `}</style>
+
       </section>
 
-      {/* FOOTER LINKS */}
-      <footer className="relative z-10 w-full bg-white/70 backdrop-blur-xl border-t border-neutral-200 py-4">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs text-neutral-500">
+      {/* FOOTER — NOW PURPLE */}
+      <footer className="relative z-10 w-full bg-gradient-to-r from-purple-700 to-purple-600 backdrop-blur-xl border-t border-purple-500/30 py-4 text-purple-100">
+        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs">
 
           {/* LEFT LINKS */}
           <div className="flex items-center gap-6">
-            <button onClick={() => router.push("/terms")} className="hover:text-neutral-800 transition">Terms</button>
-            <button onClick={() => router.push("/privacy")} className="hover:text-neutral-800 transition">Privacy</button>
-            <button onClick={() => router.push("/about")} className="hover:text-neutral-800 transition">About</button>
-            <button onClick={() => router.push("/support")} className="hover:text-neutral-800 transition">Support</button>
+            <button onClick={() => router.push("/terms")} className="hover:text-white transition">Terms</button>
+            <button onClick={() => router.push("/privacy")} className="hover:text-white transition">Privacy</button>
+            <button onClick={() => router.push("/about")} className="hover:text-white transition">About</button>
+            <button onClick={() => router.push("/support")} className="hover:text-white transition">Support</button>
           </div>
 
-          {/* RIGHT SHARE BUTTON */}
+          {/* SHARE */}
           <button
             onClick={() => {
               if (navigator.share) {
@@ -232,12 +261,29 @@ export default function Home() {
                 alert("Sharing not supported on this device");
               }
             }}
-            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
-              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
-              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
-          >
-            Share
-          </button>
+            className="
+    px-3 py-1.5 rounded-lg
+    bg-white
+    border border-yellow-400
+    text-purple-700 text-sm font-semibold
+    shadow-sm
+    animate-greenPulse
+    transition-all
+  "
+>
+  Share
+</button>
+
+<style>{`
+  @keyframes greenPulse {
+    0% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
+    50% { box-shadow: 0 0 14px rgba(16,185,129,0.55); }
+    100% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
+  }
+  .animate-greenPulse {
+    animation: greenPulse 2.2s ease-in-out infinite;
+  }
+`}</style>
 
         </div>
       </footer>
