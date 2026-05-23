@@ -17,6 +17,10 @@ export default function CheckoutPageInner() {
   const [quote, setQuote] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  // NEW: Terms checkbox + modal
+  const [agreed, setAgreed] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+
   // 3D tilt ref
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -28,10 +32,8 @@ export default function CheckoutPageInner() {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-
       const rotateX = (y / rect.height) * -10;
       const rotateY = (x / rect.width) * 10;
-
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
     };
 
@@ -68,8 +70,8 @@ export default function CheckoutPageInner() {
           body: JSON.stringify({
             operatorAmount,
             operatorCurrency,
-            userCurrency: "USD"
-          })
+            userCurrency: "USD",
+          }),
         });
 
         const data = await res.json();
@@ -85,6 +87,8 @@ export default function CheckoutPageInner() {
 
   async function handlePay() {
     if (!quote || quote.error) return;
+    if (!agreed) return;
+
     setLoading(true);
 
     const finalZar = Number(quote.paystackAmount.toFixed(2));
@@ -106,9 +110,9 @@ export default function CheckoutPageInner() {
             countryCode: payload.country,
             productId: payload.productId,
             productName: payload.productName,
-            operatorCostUSD: quote.operatorCostUSD
-          }
-        })
+            operatorCostUSD: quote.operatorCostUSD,
+          },
+        }),
       });
 
       const payData = await payRes.json();
@@ -142,11 +146,14 @@ export default function CheckoutPageInner() {
         {/* HEADER */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight"></h1>
+
           <button
             onClick={() => router.back()}
-            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur 
-              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600 
-              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy"
+            className="
+              px-3 py-1.5 rounded-lg border border-neutral-300 bg-white/80 backdrop-blur
+              text-neutral-700 text-sm hover:border-purple-500 hover:text-purple-600
+              transition-all shadow-sm hover:shadow-md whitespace-nowrap animate-energy
+            "
           >
             Cancel
           </button>
@@ -168,6 +175,12 @@ export default function CheckoutPageInner() {
               0% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
               50% { box-shadow: 0 0 32px rgba(234,179,8,0.55); }
               100% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
+            }
+
+            @keyframes greenCheck {
+              0% { transform: scale(0.4); opacity: 0; }
+              50% { transform: scale(1.2); opacity: 1; }
+              100% { transform: scale(1); opacity: 1; }
             }
           `}</style>
 
@@ -305,19 +318,118 @@ export default function CheckoutPageInner() {
           <div className="p-6"></div>
         </div>
 
+        {/* AGREEMENT CHECKBOX */}
+        <div className="px-1 pb-2">
+          <label className="flex items-start gap-3 cursor-pointer select-none">
+
+            {/* Animated Checkbox */}
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="
+                  h-5 w-5 rounded-md border border-purple-400 
+                  text-purple-600 focus:ring-purple-500 
+                  transition-all cursor-pointer
+                "
+              />
+
+              {agreed && (
+                <span
+                  className="
+                    absolute inset-0 flex items-center justify-center
+                    text-emerald-500 text-lg font-bold
+                    animate-[greenCheck_0.4s_ease-out]
+                  "
+                >
+                  ✓
+                </span>
+              )}
+            </div>
+
+            <span className="text-xs text-neutral-600 leading-tight">
+              I agree to the{" "}
+              <button
+                onClick={() => setShowTermsModal(true)}
+                className="text-purple-600 font-semibold underline hover:text-purple-800 transition"
+              >
+                Terms & Conditions
+              </button>{" "}
+              of Redatacom.
+            </span>
+          </label>
+        </div>
+
         {/* PAY BUTTON */}
         <button
           onClick={handlePay}
-          disabled={!hasQuote || loading}
+          disabled={!hasQuote || loading || !agreed}
           className="
             w-full rounded-2xl bg-purple-600 py-3 text-sm font-semibold text-white 
-            hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed
-            shadow-lg
+            hover:bg-purple-700 transition shadow-lg
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-purple-600
           "
         >
           {loading ? "Processing…" : "Pay"}
         </button>
       </div>
+
+      {/* TERMS MODAL */}
+      {showTermsModal && (
+        <div
+          className="
+            fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[999]
+            animate-[fadeIn_0.25s_ease-out]
+          "
+          onClick={() => setShowTermsModal(false)}
+        >
+          <div
+            className="
+              bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-xl
+              border border-neutral-200 animate-[slideUp_0.3s_ease-out]
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b bg-purple-600 text-white">
+              <h2 className="text-lg font-semibold">Terms & Conditions</h2>
+            </div>
+
+            <div className="p-4 overflow-y-auto text-sm text-neutral-700 max-h-[60vh] space-y-4">
+              <p>
+                These are the Redatacom Terms & Conditions. By using our platform,
+                you agree to our policies regarding payments, refunds, and service
+                delivery. Please review the full Terms on our main Terms page for
+                complete details.
+              </p>
+
+              <p>
+                • All top‑ups are final once delivered.  
+                <br />
+                • Ensure the phone number and operator are correct.  
+                <br />
+                • Payments are processed securely.  
+                <br />
+                • Refunds only apply if the operator confirms non‑delivery.  
+              </p>
+
+              <p>
+                For the full legal document, visit the official Terms page on our
+                website.
+              </p>
+            </div>
+
+            <div className="p-4 border-t flex justify-end">
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
