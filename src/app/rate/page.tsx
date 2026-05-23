@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,7 +19,6 @@ export default function RatePage() {
         Rate Your Experience
       </h1>
 
-      {/* Stars */}
       <div className="flex gap-3 mb-6">
         {[1,2,3,4,5].map((star) => (
           <button

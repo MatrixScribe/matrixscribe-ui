@@ -8,12 +8,13 @@ export default function InvoicePage() {
   const searchParams = useSearchParams();
   const ref = searchParams.get("reference");
 
-  const [invoice, setInvoice] = useState<any>(null);
+  const [invoice, setInvoice] = useState(null);
 
   useEffect(() => {
     async function loadInvoice() {
       const res = await fetch(
-        `https://redatacom-end.onrender.com/api/invoice?reference=${ref}`
+        `https://redatacom-end.onrender.com/api/invoice?reference=${ref}`,
+        { cache: "no-store" }
       );
       const data = await res.json();
       setInvoice(data);
