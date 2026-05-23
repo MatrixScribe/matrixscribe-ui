@@ -1,5 +1,9 @@
 "use client";
 
-export default function InvoiceLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default function RateLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen">
+      {children}
+    </div>
+  );
 }

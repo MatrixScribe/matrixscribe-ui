@@ -1,5 +1,15 @@
-"use client";
+import "./globals.css";
+import type { ReactNode } from "react";
 
-export default function RateLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export const metadata = {
+  title: "Redatacom Global Recharge",
+  description: "Instant global airtime & data top-ups",
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
 }
