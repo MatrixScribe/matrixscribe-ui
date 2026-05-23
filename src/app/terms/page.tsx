@@ -39,7 +39,7 @@ export default function TermsPage() {
 
         {/* TITLE */}
         <h1 className="text-xl font-bold text-purple-900 mb-1 flex items-center gap-2">
-          <img src="/logo-terms.png" alt="Redatacom" className="h-20 opacity-90" />
+          <img src="/logo-terms.png" alt="Redatacom" className="h-10 opacity-90" />
         </h1>
 
         {/* SUBTITLE */}
