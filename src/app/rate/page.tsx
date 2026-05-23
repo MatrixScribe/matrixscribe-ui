@@ -20,7 +20,7 @@ export default function RatePage() {
       </h1>
 
       <div className="flex gap-3 mb-6">
-        {[1,2,3,4,5].map((star) => (
+        {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
             onClick={() => setRating(star)}
