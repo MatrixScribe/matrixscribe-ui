@@ -2,7 +2,7 @@
 
 export default function SuccessLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="success-wrapper">
+    <div className="client-boundary">
       {children}
     </div>
   );
