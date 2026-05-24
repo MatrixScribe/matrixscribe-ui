@@ -1,5 +1,9 @@
 "use client";
 
 export default function SuccessLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <div className="success-wrapper">
+      {children}
+    </div>
+  );
 }
