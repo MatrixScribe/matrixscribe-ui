@@ -31,9 +31,9 @@ export default function Home() {
   const [subIndex, setSubIndex] = useState(0);
 
   const headlines = [
-    "re-data yourself & others",
-    "global airtime & data",
-    "--connectivity--"
+    "Its All Here:",
+    "Recharge Globally:",
+    "Do You Need:"
   ];
 
   const subMessages = [
@@ -190,8 +190,8 @@ export default function Home() {
             {typedText}
             <span className="inline-block w-1 h-8 bg-neutral-900 ml-1 animate-pulse" />
 
-            <span className="block mt-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-900">
-              global airtime & data. instant. reliable.
+            <span className="block mt-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-900">
+              Airtime | Data | Bundles | PIN
             </span>
           </h1>
         </div>

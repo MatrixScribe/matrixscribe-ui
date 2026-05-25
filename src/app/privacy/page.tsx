@@ -76,50 +76,64 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">2. Who We Are</h2>
             <p>
               Redatacom is a global digital platform that enables users to send prepaid
-              mobile airtime, data bundles, and digital top‑ups worldwide.
+              mobile Airtime, Data Bundles & other digital top‑ups worldwide.
             </p>
             <p className="mt-2">
-              We act as a data controller for the information we collect.  
-              <br />
-              <strong>You will fill in your company details here:</strong>
+              For the limited information we collect directly (such as phone numbers and
+              transaction details), we act as a <strong>data controller</strong>.
+              For payment card information, our payment partner acts as an independent
+              controller and we never see or store your full card details.
             </p>
             <ul className="list-disc ml-6 mt-2 text-sm space-y-1">
-              <li>Registered business name</li>
-              <li>Registered address</li>
-              <li>Company registration number</li>
-              <li>Data protection contact email</li>
+              <img src="/logo-ar.png" alt="Redatacom" className="h-10 opacity-90" />
+              <li>3 Narmada Street, Crown North</li>
+              <li>Johannesburg, Gauteng</li>
+              <li>Republic of South Africa</li>
+              <li>2024/ 101 823 /07</li>
+              <li>support@redatacom.com</li>
             </ul>
           </section>
 
           {/* SECTION 3 */}
           <section>
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">3. What Information We Collect</h2>
-            <p>We may collect the following types of personal data:</p>
+            <p>We intentionally collect only the minimum information required to complete your recharge and operate our Services.</p>
 
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li><strong>Contact details:</strong> name, email, phone number</li>
-              <li><strong>Payment details:</strong> cardholder name, masked card info, billing address</li>
-              <li><strong>Transaction details:</strong> amounts, operators, timestamps</li>
-              <li><strong>Device data:</strong> IP address, browser type, device identifiers</li>
-              <li><strong>Usage data:</strong> pages visited, actions taken, preferences</li>
-              <li><strong>Support interactions:</strong> messages, complaints, feedback</li>
-              <li><strong>Recipient details:</strong> mobile number or email of the person receiving a top‑up</li>
+              <li>
+                <strong>Recharge details:</strong> recipient phone number, selected country, operator, and product (airtime/data/bundle).
+              </li>
+              <li>
+                <strong>Transaction details:</strong> transaction reference, amount, currency, operator, timestamps, and status (success/failed).
+              </li>
+              <li>
+                <strong>Technical data:</strong> IP address, browser type, device information, and basic usage data used for security, fraud prevention, and service reliability.
+              </li>
+              <li>
+                <strong>Support interactions:</strong> messages you send to us (for example via email or support forms).
+              </li>
             </ul>
 
             <p className="mt-2">
-              We only collect the minimum information required to deliver our Services.
+              We do <strong>not</strong> collect or store your full payment card number, CVV, or 3‑D Secure authentication data. This is handled securely by our payment partner.
             </p>
           </section>
 
           {/* SECTION 4 */}
           <section>
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">4. How We Collect Your Data</h2>
-            <p>We collect data in three ways:</p>
+            <p>We collect data in the following ways:</p>
 
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li>Information you provide directly (e.g., during checkout)</li>
-              <li>Information collected automatically (e.g., device and usage data)</li>
-              <li>Information from third‑party partners (e.g., payment processors)</li>
+              <li>
+                <strong>Information you provide directly:</strong> for example, when you enter a phone number, select a country/operator/product, or contact support.
+              </li>
+              <li>
+                <strong>Information collected automatically:</strong> such as IP address, device and usage data for security, analytics, and service reliability.
+              </li>
+              <li>
+                <strong>Information from third‑party partners:</strong> such as payment status updates from our payment processor and delivery status from our recharge partners.
+              </li>
             </ul>
           </section>
 
@@ -129,12 +143,12 @@ export default function PrivacyPage() {
             <p>We use your personal data to:</p>
 
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li>Process and deliver mobile top‑ups</li>
-              <li>Send confirmations and receipts</li>
-              <li>Provide customer support</li>
-              <li>Improve our platform and user experience</li>
-              <li>Prevent fraud and secure our systems</li>
-              <li>Comply with legal and regulatory obligations</li>
+              <li>Process and deliver mobile top‑ups to the correct phone number and operator.</li>
+              <li>Send confirmations, receipts, and relevant service notifications.</li>
+              <li>Provide customer support and resolve issues.</li>
+              <li>Improve our platform, reliability, and user experience.</li>
+              <li>Prevent fraud, abuse, and secure our systems.</li>
+              <li>Comply with legal, regulatory, and accounting obligations.</li>
             </ul>
           </section>
 
@@ -144,24 +158,34 @@ export default function PrivacyPage() {
             <p>We process your data based on:</p>
 
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li>Performance of a contract (processing your top‑up)</li>
-              <li>Legitimate interests (fraud prevention, service improvement)</li>
-              <li>Legal obligations (financial compliance, record‑keeping)</li>
-              <li>Your consent (where required)</li>
+              <li>Performance of a contract (processing your top‑up and delivering the service).</li>
+              <li>Legitimate interests (fraud prevention, service improvement, security).</li>
+              <li>Legal obligations (financial compliance, record‑keeping, regulatory requirements).</li>
+              <li>Your consent (where required by law, for example certain marketing or cookies).</li>
             </ul>
           </section>
 
           {/* SECTION 7 */}
           <section>
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">7. Sharing Your Data</h2>
-            <p>We may share your data with:</p>
+            <p>We share your data only with trusted partners where necessary to provide the Service:</p>
 
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li>Mobile operators and telecom partners</li>
-              <li>Payment processors</li>
-              <li>Fraud prevention and security providers</li>
-              <li>Customer support tools</li>
-              <li>Regulators or law enforcement (when legally required)</li>
+              <li>
+                <strong>Payment processors:</strong> to handle payments securely. They receive payment details directly from you and act as independent controllers for card data.
+              </li>
+              <li>
+                <strong>Recharge partners and mobile operators:</strong> to deliver airtime and data to the correct phone number and network.
+              </li>
+              <li>
+                <strong>Fraud prevention and security providers:</strong> to protect our platform and users from abuse and fraud.
+              </li>
+              <li>
+                <strong>Customer support tools:</strong> to manage and respond to your support requests.
+              </li>
+              <li>
+                <strong>Regulators or law enforcement:</strong> when we are legally required to do so.
+              </li>
             </ul>
 
             <p className="mt-2">
@@ -174,8 +198,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">8. International Transfers</h2>
             <p>
               Some partners may operate outside your country. When this happens, we ensure
-              your data is protected using appropriate safeguards such as encryption and
-              contractual protections.
+              your data is protected using appropriate safeguards such as encryption,
+              access controls, and contractual protections.
             </p>
           </section>
 
@@ -185,7 +209,7 @@ export default function PrivacyPage() {
             <p>
               We use industry‑standard security measures to protect your data from
               unauthorized access, loss, or misuse. However, no online service can be
-              completely secure.
+              completely secure, and you should take care when sharing information online.
             </p>
           </section>
 
@@ -193,8 +217,9 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">10. Data Retention</h2>
             <p>
-              We keep your data only as long as necessary to provide our Services and meet
-              legal requirements. After that, we delete, anonymize, or securely archive it.
+              We keep your data only as long as necessary to provide our Services, comply
+              with legal and regulatory requirements, and resolve disputes. After that, we
+              delete, anonymize, or securely archive it.
             </p>
           </section>
 
@@ -204,16 +229,17 @@ export default function PrivacyPage() {
             <p>You may have the right to:</p>
 
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li>Access your personal data</li>
-              <li>Request corrections</li>
-              <li>Request deletion (where applicable)</li>
-              <li>Object to certain processing</li>
-              <li>Request data portability</li>
-              <li>Withdraw consent (where applicable)</li>
+              <li>Access the personal data we hold about you.</li>
+              <li>Request corrections to inaccurate or incomplete data.</li>
+              <li>Request deletion of your data (where applicable).</li>
+              <li>Object to certain types of processing.</li>
+              <li>Request data portability (where applicable).</li>
+              <li>Withdraw consent (where processing is based on consent).</li>
             </ul>
 
             <p className="mt-2">
-              You can exercise these rights by contacting us.
+              You can exercise these rights by contacting us using the details below. We may
+              need to verify your identity before responding to your request.
             </p>
           </section>
 
@@ -221,13 +247,10 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">12. Contact Us</h2>
             <p>
-              For privacy questions or requests, contact:
+              For privacy questions, concerns, or requests, contact:
             </p>
             <p className="mt-2 font-medium text-purple-700">
               privacy@redatacom.com
-            </p>
-            <p className="text-sm mt-1">
-              (You will fill in your official address and DPO details here.)
             </p>
           </section>
 
@@ -236,7 +259,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-neutral-900 mb-2">13. Updates to This Notice</h2>
             <p>
               We may update this Privacy Notice from time to time. When we do, we will
-              update the “Last Updated” date at the top of this page.
+              update the “Last Updated” date at the top of this page. We encourage you to
+              review this page periodically to stay informed about how we protect your data.
             </p>
           </section>
 

@@ -150,7 +150,7 @@ export function Step2Operator(props: Props) {
       {/* DETECTING STATE */}
       {!operatorsLoading && displayOperators.length === 0 && (
         <div className="text-sm text-neutral-500 animate-pulse mt-2">
-          Detecting operator do not close.....
+          Detecting operator do not close.... Network loading times may vary...
         </div>
       )}
 
