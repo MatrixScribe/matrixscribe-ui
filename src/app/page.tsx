@@ -22,49 +22,75 @@ export default function Home() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [operators, setOperators] = useState<Operator[]>([]);
 
-  // Typing headline
+  // ------------------------------------
+  // ⭐ ADVANCED TYPING ENGINE (20 lines, multi-line)
+  // ------------------------------------
   const [typedText, setTypedText] = useState("");
-  const [headlineIndex, setHeadlineIndex] = useState(0);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Typing sub-message
+  const headlines = [
+    "its all here",
+    "recharge globally",
+    "do you need",
+    "quick",
+    "worldwide",
+    "booundry-less",
+    "the power of connectivity",
+    "700+ operators",
+    "fast",
+    "global",
+    "its a worldwide affair",
+    "from 150+ countries",
+    "hey there, get your fix ",
+    "looking for",
+    "no strings attached",
+    "powered by global telecom",
+    "be anywhere",
+    "recharge reborn",
+    "instantly global",
+    "you found"
+  ];
+
+  useEffect(() => {
+    const currentLine = headlines[lineIndex % headlines.length];
+    const typingSpeed = isDeleting ? 40 : 70;
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        setTypedText(currentLine.slice(0, charIndex + 1));
+        setCharIndex((prev) => prev + 1);
+
+        if (charIndex + 1 === currentLine.length) {
+          setTimeout(() => setIsDeleting(true), 1200);
+        }
+      } else {
+        setTypedText(currentLine.slice(0, charIndex - 1));
+        setCharIndex((prev) => prev - 1);
+
+        if (charIndex === 0) {
+          setIsDeleting(false);
+          setLineIndex((prev) => prev + 1);
+        }
+      }
+    }, typingSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [charIndex, isDeleting, lineIndex]);
+
+  // ------------------------------------
+  // Sub‑message typing (unchanged)
+  // ------------------------------------
   const [subTyped, setSubTyped] = useState("");
   const [subIndex, setSubIndex] = useState(0);
 
-  const headlines = [
-    "Its All Here:",
-    "Recharge Globally:",
-    "Do You Need:"
-  ];
-
   const subMessages = [
-    "no accounts. no friction. just premium simplicity.",
-    "send airtime & data in seconds, anywhere.",
-    "click networks button to check your country availability."
+    "no accounts. no friction. premium simplicity.",
+    "send airtime & data in seconds, globally...",
+    "click networks to check your country availability"
   ];
 
-  // Typing effect for headline
-  useEffect(() => {
-    const current = headlines[headlineIndex];
-    let i = 0;
-
-    setTypedText("");
-
-    const interval = setInterval(() => {
-      setTypedText(current.slice(0, i));
-      i++;
-
-      if (i > current.length) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setHeadlineIndex((prev) => (prev + 1) % headlines.length);
-        }, 1500);
-      }
-    }, 70);
-
-    return () => clearInterval(interval);
-  }, [headlineIndex]);
-
-  // Typing effect for sub-message
   useEffect(() => {
     const current = subMessages[subIndex];
     let i = 0;
@@ -86,7 +112,9 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [subIndex]);
 
+  // ------------------------------------
   // Load countries
+  // ------------------------------------
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -172,11 +200,11 @@ export default function Home() {
       {/* HERO — TELECOM GLOBAL STYLE */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20 bg-white">
 
-        {/* World map background */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.06] flex items-center justify-center">
+        {/* Background GIF / Map */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.10] flex items-center justify-center">
           <img
-            src="/favicon.ico"
-            alt="world-map"
+            src="/logo2.gif"
+            alt="background"
             className="w-[900px] max-w-none"
           />
         </div>
@@ -184,16 +212,23 @@ export default function Home() {
         {/* Soft glow */}
         <div className="absolute top-32 left-1/2 -translate-x-1/2 h-80 w-80 bg-purple-300/20 blur-[140px] rounded-full pointer-events-none" />
 
-        {/* HEADLINE */}
-        <div className="relative max-w-3xl w-full text-center mb-10">
-          <h1 className="text-[42px] md:text-[56px] font-semibold tracking-tight leading-tight text-neutral-900">
-            {typedText}
-            <span className="inline-block w-1 h-8 bg-neutral-900 ml-1 animate-pulse" />
+        {/* HEADLINE BLOCK */}
+        <div className="relative max-w-3xl w-full text-center mb-10 px-2">
 
-            <span className="block mt-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-900">
-              Airtime | Data | Bundles | PIN
-            </span>
+          {/* MULTI-LINE TYPING HEADLINE */}
+          <h1 className="text-[34px] md:text-[52px] font-semibold tracking-tight leading-tight text-neutral-900 whitespace-pre-line">
+            {typedText}
+            <span className="inline-block w-1 h-7 md:h-8 bg-neutral-900 ml-1 animate-pulse" />
           </h1>
+
+          {/* PURPLE SUBHEAD — RESPONSIVE SIZE */}
+          <span className="
+            block mt-6 
+            text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-900
+            text-[20px] md:text-[32px] font-semibold tracking-tight
+          ">
+            Airtime • Data • Bundles • PIN
+          </span>
         </div>
 
         {/* CTA BUTTON */}
@@ -222,7 +257,6 @@ export default function Home() {
       <footer className="relative z-10 w-full bg-white/80 backdrop-blur-xl border-t border-neutral-200 py-4 text-neutral-700">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs">
 
-          {/* LEFT LINKS */}
           <div className="flex items-center gap-6">
             <button onClick={() => router.push("/terms")} className="hover:text-neutral-900 transition">Terms</button>
             <button onClick={() => router.push("/privacy")} className="hover:text-neutral-900 transition">Privacy</button>
@@ -230,7 +264,6 @@ export default function Home() {
             <button onClick={() => router.push("/support")} className="hover:text-neutral-900 transition">Support</button>
           </div>
 
-          {/* SHARE */}
           <button
             onClick={() => {
               if (navigator.share) {
