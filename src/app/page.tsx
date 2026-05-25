@@ -111,58 +111,54 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col relative overflow-hidden bg-white text-neutral-900">
 
-      {/* HEADER — NOW PURPLE */}
-      <header className="relative z-10 w-full border-b border-purple-500/30 bg-gradient-to-r from-purple-700 to-purple-600 backdrop-blur-xl">
+      {/* HEADER — UNCHANGED */}
+      <header className="relative z-10 w-full border-b border-neutral-200 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
 
           {/* LEFT: Networks */}
           <button
-  onClick={() => router.push("/operators")}
-  className="
-    px-3 py-1.5 rounded-lg
-    bg-white
-    border border-yellow-400
-    text-purple-700 text-sm font-semibold
-    shadow-sm
-    animate-greenPulse
-    transition-all
-  "
->
-  Networks
-</button>
+            onClick={() => router.push("/operators")}
+            className="
+              px-3 py-1.5 rounded-lg
+              bg-white
+              border border-yellow-400
+              text-purple-700 text-sm font-semibold
+              shadow-sm
+              animate-greenPulse
+              transition-all
+            "
+          >
+            Networks
+          </button>
 
-<style>{`
-  @keyframes greenPulse {
-    0% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
-    50% { box-shadow: 0 0 14px rgba(16,185,129,0.55); }
-    100% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
-  }
-  .animate-greenPulse {
-    animation: greenPulse 2.2s ease-in-out infinite;
-  }
-`}</style>
+          <style>{`
+            @keyframes greenPulse {
+              0% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
+              50% { box-shadow: 0 0 14px rgba(16,185,129,0.55); }
+              100% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
+            }
+            .animate-greenPulse {
+              animation: greenPulse 2.2s ease-in-out infinite;
+            }
+          `}</style>
 
           {/* CENTER LOGO */}
           <div className="
             hidden md:block
-            text-[20px] font-semibold tracking-tight text-white absolute left-1/2 -translate-x-1/2
+            text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2
           ">
             <img src="/logo3.png" alt="Redatacom" className="h-6 opacity-90" />
           </div>
 
           {/* RIGHT: Stats */}
-          <div className="flex items-center gap-2 text-sm font-medium text-purple-100">
+          <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
             <div className="flex items-center gap-1">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             </div>
 
-            <span className="font-semibold text-white">
-              {operatorCount} Operators
-            </span>
-            <span className="text-purple-200">|</span>
-            <span className="font-semibold text-white">
-              {countryCount} Countries
-            </span>
+            <span className="font-semibold">{operatorCount} Operators</span>
+            <span className="text-neutral-400">|</span>
+            <span className="font-semibold">{countryCount} Countries</span>
           </div>
 
         </div>
@@ -173,32 +169,29 @@ export default function Home() {
         </div>
       </header>
 
-      {/* HERO — NOW WHITE, CLEAN, INTERACTIVE */}
-      <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
+      {/* HERO — TELECOM GLOBAL STYLE */}
+      <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20 bg-white">
 
-        {/* Soft floating glow */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 h-72 w-72 bg-purple-300/20 blur-[120px] rounded-full" />
-          <div className="absolute bottom-10 right-10 h-56 w-56 bg-purple-400/10 blur-[100px] rounded-full" />
-        </div>
-
-        {/* Background subtle icon */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.06]">
+        {/* World map background */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.06] flex items-center justify-center">
           <img
-            src="/loop-icon.svg"
-            alt="background-icon"
-            className="w-[420px] md:w-[520px] animate-spin-slow"
+            src="/favicon.ico"
+            alt="world-map"
+            className="w-[900px] max-w-none"
           />
         </div>
 
-        {/* HEADLINE */}
-        <div className="relative max-w-2xl w-full text-center mb-16">
-          <h1 className="text-[40px] md:text-[52px] font-semibold tracking-tight leading-tight text-neutral-900 mb-4">
-            {typedText}
-            <span className="inline-block w-1 h-7 md:h-8 bg-neutral-900 ml-1 animate-pulse" />
+        {/* Soft glow */}
+        <div className="absolute top-32 left-1/2 -translate-x-1/2 h-80 w-80 bg-purple-300/20 blur-[140px] rounded-full pointer-events-none" />
 
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-900 mt-2">
-              Simple. Intelligent. Instant.
+        {/* HEADLINE */}
+        <div className="relative max-w-3xl w-full text-center mb-10">
+          <h1 className="text-[42px] md:text-[56px] font-semibold tracking-tight leading-tight text-neutral-900">
+            {typedText}
+            <span className="inline-block w-1 h-8 bg-neutral-900 ml-1 animate-pulse" />
+
+            <span className="block mt-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-900">
+              global airtime & data. instant. reliable.
             </span>
           </h1>
         </div>
@@ -223,29 +216,18 @@ export default function Home() {
           <span className="inline-block w-1 h-4 bg-neutral-600 ml-1 animate-pulse" />
         </div>
 
-        {/* Animations */}
-        <style>{`
-          @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          .animate-spin-slow {
-            animation: spin-slow 40s linear infinite;
-          }
-        `}</style>
-
       </section>
 
-      {/* FOOTER — NOW PURPLE */}
-      <footer className="relative z-10 w-full bg-gradient-to-r from-purple-700 to-purple-600 backdrop-blur-xl border-t border-purple-500/30 py-4 text-purple-100">
+      {/* FOOTER — UNCHANGED */}
+      <footer className="relative z-10 w-full bg-white/80 backdrop-blur-xl border-t border-neutral-200 py-4 text-neutral-700">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs">
 
           {/* LEFT LINKS */}
           <div className="flex items-center gap-6">
-            <button onClick={() => router.push("/terms")} className="hover:text-white transition">Terms</button>
-            <button onClick={() => router.push("/privacy")} className="hover:text-white transition">Privacy</button>
-            <button onClick={() => router.push("/about")} className="hover:text-white transition">About</button>
-            <button onClick={() => router.push("/support")} className="hover:text-white transition">Support</button>
+            <button onClick={() => router.push("/terms")} className="hover:text-neutral-900 transition">Terms</button>
+            <button onClick={() => router.push("/privacy")} className="hover:text-neutral-900 transition">Privacy</button>
+            <button onClick={() => router.push("/about")} className="hover:text-neutral-900 transition">About</button>
+            <button onClick={() => router.push("/support")} className="hover:text-neutral-900 transition">Support</button>
           </div>
 
           {/* SHARE */}
@@ -262,28 +244,17 @@ export default function Home() {
               }
             }}
             className="
-    px-3 py-1.5 rounded-lg
-    bg-white
-    border border-yellow-400
-    text-purple-700 text-sm font-semibold
-    shadow-sm
-    animate-greenPulse
-    transition-all
-  "
->
-  Share
-</button>
-
-<style>{`
-  @keyframes greenPulse {
-    0% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
-    50% { box-shadow: 0 0 14px rgba(16,185,129,0.55); }
-    100% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
-  }
-  .animate-greenPulse {
-    animation: greenPulse 2.2s ease-in-out infinite;
-  }
-`}</style>
+              px-3 py-1.5 rounded-lg
+              bg-white
+              border border-yellow-400
+              text-purple-700 text-sm font-semibold
+              shadow-sm
+              animate-greenPulse
+              transition-all
+            "
+          >
+            Share
+          </button>
 
         </div>
       </footer>
