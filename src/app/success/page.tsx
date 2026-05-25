@@ -2,9 +2,9 @@
 export const dynamic = "force-dynamic";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const ref = searchParams.get("reference");
@@ -29,8 +29,6 @@ export default function SuccessPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
       <div className="text-center">
-
-        {/* Success Icon */}
         <div className="flex items-center justify-center mb-6">
           <div className="h-28 w-28 rounded-full bg-emerald-100 flex items-center justify-center animate-[popIn_0.5s_ease-out] shadow-md">
             <span className="text-emerald-600 text-6xl font-bold animate-[pulse_1.5s_infinite]">
@@ -51,7 +49,6 @@ export default function SuccessPage() {
           Redirecting to ratings in <span className="font-semibold">{seconds}</span> seconds
         </p>
 
-        {/* Buttons */}
         <div className="mt-8 flex flex-col gap-3">
           <button
             onClick={() => router.push(`/rate?reference=${ref}`)}
@@ -69,5 +66,19 @@ export default function SuccessPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center bg-white px-6">
+          <p className="text-neutral-500">Loading payment status…</p>
+        </main>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }
