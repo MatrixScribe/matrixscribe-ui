@@ -8,25 +8,26 @@ export default function SupportPage() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
 
-  async function submitTicket(e) {
-    e.preventDefault();
-    setStatus("Submitting your ticket…");
+  async function submitTicket(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  setStatus("Submitting your ticket…");
 
-    const res = await fetch("/api/support-ticket", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ref, email, message })
-    });
+  const res = await fetch("/api/support-ticket", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ref, email, message })
+  });
 
-    if (res.ok) {
-      setStatus("Your ticket has been received. Our team will reach out shortly.");
-      setRef("");
-      setEmail("");
-      setMessage("");
-    } else {
-      setStatus("Something went wrong. Please try again.");
-    }
+  if (res.ok) {
+    setStatus("Your ticket has been received. Our team will reach out shortly.");
+    setRef("");
+    setEmail("");
+    setMessage("");
+  } else {
+    setStatus("Something went wrong. Please try again.");
   }
+}
+
 
   return (
     <main className="min-h-screen bg-white text-neutral-800 px-6 py-10 relative">
