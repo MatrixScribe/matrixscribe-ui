@@ -48,7 +48,7 @@ export default function TermsPage() {
             <span className="text-emerald-500 font-semibold animate-pulse">
               Global
             </span>
-            <span>Airtime | Data | Bundles | PIN</span>
+            <span>Airtime • Data • Bundles • PIN</span>
           </p>
         </div>
 

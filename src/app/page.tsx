@@ -149,7 +149,7 @@ export default function Home() {
             className="
               px-3 py-1.5 rounded-lg
               bg-white
-              border border-yellow-400
+              border border-black
               text-purple-700 text-sm font-semibold
               shadow-sm
               animate-greenPulse
@@ -236,9 +236,9 @@ export default function Home() {
           onClick={() => router.push("/topup")}
           className="
             relative z-10 w-full sm:w-56 mx-auto flex items-center justify-center gap-2 
-            rounded-xl border border-purple-300 bg-white backdrop-blur 
-            text-purple-700 py-3.5 text-[17px] font-medium 
-            hover:bg-purple-50 hover:border-purple-400 
+            rounded-xl border border-white bg-purple-900 backdrop-blur 
+            text-white py-3.5 text-[17px] font-medium 
+            hover:bg-black hover:border-yellow-700 
             transition-all shadow-sm hover:shadow-md
           "
         >
@@ -279,7 +279,7 @@ export default function Home() {
             className="
               px-3 py-1.5 rounded-lg
               bg-white
-              border border-yellow-400
+              border border-black
               text-purple-700 text-sm font-semibold
               shadow-sm
               animate-greenPulse

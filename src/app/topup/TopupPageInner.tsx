@@ -198,7 +198,7 @@ export default function TopupPageInner() {
       {selectedCountry && (
         <div
           className="
-            absolute inset-0 opacity-[0.08]
+            absolute inset-0 opacity-[0.2]
             bg-center bg-no-repeat bg-contain
             pointer-events-none
           "
@@ -248,7 +248,7 @@ export default function TopupPageInner() {
                   <span className="text-emerald-500 font-semibold animate-pulse">
                     Global
                   </span>
-                  <span>Airtime | Data | Bundles | PIN</span>
+                  <span>Airtime • Data • Bundles • PIN</span>
                 </p>
               </div>
             </div>

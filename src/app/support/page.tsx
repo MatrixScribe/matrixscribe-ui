@@ -73,7 +73,7 @@ export default function SupportPage() {
         <div className="mb-8">
           <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">
             <span className="text-emerald-500 font-semibold animate-pulse">Global</span>
-            <span>Airtime | Data | Bundles | PIN</span>
+            <span>Airtime • Data • Bundles • PIN</span>
           </p>
         </div>
 

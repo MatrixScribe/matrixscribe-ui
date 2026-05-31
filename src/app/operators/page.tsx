@@ -149,7 +149,7 @@ export default function OperatorsDirectory() {
       {selectedCountry && (
         <div
           className="
-            absolute inset-0 opacity-[0.08]
+            absolute inset-0 opacity-[0.2]
             bg-center bg-no-repeat bg-contain
             pointer-events-none
           "
@@ -202,7 +202,7 @@ export default function OperatorsDirectory() {
                 <span>{countries.find((c) => extractIso2(c.flag) === selectedCountry)?.name}</span>
               </div>
             ) : (
-              <span className="text-neutral-500">Select Country to see Networks and Plans</span>
+              <span className="text-neutral-500">Country • Networks • Plans</span>
             )}
             <span>▾</span>
           </button>
@@ -230,6 +230,24 @@ export default function OperatorsDirectory() {
             </div>
           )}
         </div>
+
+        {/* ⭐ NETWORK COUNT BANNER */}
+        {selectedCountry && operators.length > 0 && (
+          <div className="
+            w-full mb-6 px-4 py-3 
+            bg-white/80 backdrop-blur 
+            border border-neutral-300 
+            rounded-xl shadow-sm
+            flex items-center justify-between
+          ">
+            <span className="text-sm text-neutral-700">
+              Networks Found:
+            </span>
+            <span className="text-sm font-semibold text-purple-600">
+              {operators.length}
+            </span>
+          </div>
+        )}
 
         {/* OPERATORS */}
         {selectedCountry && (
@@ -264,7 +282,7 @@ export default function OperatorsDirectory() {
                         onClick={() => handleRangeClick(op, rangeProduct)}
                         className="w-full border rounded-lg px-3 py-3 bg-neutral-50 hover:bg-purple-50 hover:border-purple-400 transition text-left"
                       >
-                        <div className="font-medium">Custom Airtime</div>
+                        <div className="font-medium">Choose How Much Airtime To Load</div>
                         <div className="text-[12px] text-neutral-600">
                           {rangeProduct.currency} {rangeProduct.min} – {rangeProduct.currency} {rangeProduct.max}
                         </div>
