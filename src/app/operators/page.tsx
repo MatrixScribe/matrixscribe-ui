@@ -149,10 +149,11 @@ export default function OperatorsDirectory() {
       {selectedCountry && (
         <div
           className="
-            absolute inset-0 opacity-[0.2]
-            bg-center bg-no-repeat bg-contain
-            pointer-events-none
-          "
+  absolute inset-0 opacity-[0.2]
+  bg-center bg-no-repeat
+  bg-cover sm:bg-contain
+  pointer-events-none
+"
           style={{
             backgroundImage: `url('${
               countries.find((c) => extractIso2(c.flag) === selectedCountry)?.flag

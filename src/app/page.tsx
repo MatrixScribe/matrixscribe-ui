@@ -88,7 +88,7 @@ export default function Home() {
   const subMessages = [
     "no accounts. no friction. premium simplicity.",
     "send airtime & data in seconds, globally...",
-    "click networks to check your country availability"
+    "click plans to check your country availability"
   ];
 
   useEffect(() => {
