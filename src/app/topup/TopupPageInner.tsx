@@ -13,6 +13,7 @@ import { usePhoneRules } from "@/hooks/usePhoneRules";
 import { useOperators } from "@/hooks/useOperators";
 import { useAutoDetectOperator } from "@/hooks/useAutoDetectOperator";
 import { useProducts } from "@/hooks/useProducts";
+
 import { getCountryCode } from "@/utils/topup";
 
 export default function TopupPageInner() {
@@ -134,12 +135,10 @@ export default function TopupPageInner() {
       dialCode: selectedCountry.dialCode,
       phone,
       countryFlag: selectedCountry.flag,
-
       operatorId: selectedOperator.operatorId,
       operatorName: selectedOperator.name,
       operatorLogo:
         (selectedOperator as any).logoUrls?.[0] || selectedOperator.logo,
-
       productId: selectedProduct.id,
       productName: selectedProduct.label || selectedProduct.name,
       amount,
@@ -156,36 +155,28 @@ export default function TopupPageInner() {
     setSelectedCountry(null);
     setPhone("");
     setStep1Done(false);
-
     setSelectedOperator(null);
     setStep2Done(false);
-
     setSelectedProduct(null);
     setStep3Done(false);
-
-    setTimeLeft(420); // reset timer
+    setTimeLeft(420);
 
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  // -------------------------------
-  // ⭐ TIMER LOGIC (7 minutes)
-  // -------------------------------
-  const [timeLeft, setTimeLeft] = useState(420); // 7 minutes
+  // TIMER LOGIC
+  const [timeLeft, setTimeLeft] = useState(420);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
-
     const interval = setInterval(() => {
       setTimeLeft((t) => t - 1);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [timeLeft]);
 
-  // auto-reset when timer expires
   useEffect(() => {
     if (timeLeft === 0) {
       handleRestart();
@@ -201,161 +192,177 @@ export default function TopupPageInner() {
   const progress = (timeLeft / 420) * 100;
 
   return (
-    <main className="min-h-screen bg-[#fafafa] text-neutral-900 px-4 py-10">
+    <main className="relative min-h-screen bg-[#fafafa] text-neutral-900 px-4 py-10 overflow-hidden">
 
-      {/* Sticky premium header */}
-      <div
-        className="
-          sticky top-0 z-50 
-          bg-[#fafafa]/80 backdrop-blur-xl 
-          border-b border-neutral-200 
-          mb-8 py-4
-        "
-      >
-        <div className="max-w-3xl mx-auto flex items-center justify-between px-1">
+      {/* ⭐ COUNTRY FLAG BACKGROUND */}
+      {selectedCountry && (
+        <div
+          className="
+            absolute inset-0 opacity-[0.08]
+            bg-center bg-no-repeat bg-contain
+            pointer-events-none
+          "
+          style={{
+            backgroundImage: `url('${selectedCountry.flag}')`
+          }}
+        />
+      )}
 
-          {/* LEFT SIDE */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => router.push("/")}
-              className="
-                h-9 w-9 flex items-center justify-center rounded-full
-                border border-neutral-300 bg-white shadow-sm
-                hover:border-neutral-500 hover:shadow-md transition
-              "
-              title="Home"
-            >
-              <img
-                src="/favicon.ico"
-                alt="Home"
-                className="h-10 w-10 object-contain"
-              />
-            </button>
+      {/* CONTENT WRAPPER */}
+      <div className="relative z-10">
 
-            <div>
-              <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">
-               <img src="/logo-alone.png" alt="Redatacom" className="h-10 opacity-90" />
-              </h1>
+        {/* Sticky premium header */}
+        <div
+          className="
+            sticky top-0 z-50
+            bg-[#fafafa]/80 backdrop-blur-xl
+            border-b border-neutral-200
+            mb-8 py-4
+          "
+        >
+          <div className="max-w-3xl mx-auto flex items-center justify-between px-1">
 
-              <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">
-                <span className="text-emerald-500 font-semibold animate-pulse">
-                  Global
-                </span>
-                <span>Airtime | Data | Bundles | PIN</span>
-              </p>
+            {/* LEFT SIDE */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                className="
+                  h-9 w-9 flex items-center justify-center rounded-full
+                  border border-neutral-300 bg-white shadow-sm
+                  hover:border-neutral-500 hover:shadow-md transition
+                "
+              >
+                <img
+                  src="/favicon.ico"
+                  alt="Home"
+                  className="h-10 w-10 object-contain"
+                />
+              </button>
+
+              <div>
+                <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">
+                  <img src="/logo-alone.png" alt="Redatacom" className="h-10 opacity-90" />
+                </h1>
+                <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">
+                  <span className="text-emerald-500 font-semibold animate-pulse">
+                    Global
+                  </span>
+                  <span>Airtime | Data | Bundles | PIN</span>
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* RIGHT SIDE: TIMER + RESTART */}
-          <div className="flex items-center gap-4">
+            {/* RIGHT SIDE: TIMER + RESTART */}
+            <div className="flex items-center gap-4">
 
-            {/* Circular Timer */}
-            <div className="relative h-10 w-10 flex items-center justify-center">
-              <svg className="absolute inset-0 h-full w-full">
-                <circle
-                  cx="20"
-                  cy="20"
-                  r="18"
-                  stroke="#e5e7eb"
-                  strokeWidth="3"
-                  fill="none"
-                />
-                <circle
-                  cx="20"
-                  cy="20"
-                  r="18"
-                  stroke={timeLeft <= 60 ? "#ef4444" : "#10b981"}
-                  strokeWidth="3"
-                  fill="none"
-                  strokeDasharray={113}
-                  strokeDashoffset={113 - (113 * progress) / 100}
-                  className={timeLeft <= 60 ? "animate-pulse" : ""}
-                  strokeLinecap="round"
-                />
-              </svg>
+              {/* Circular Timer */}
+              <div className="relative h-10 w-10 flex items-center justify-center">
+                <svg className="absolute inset-0 h-full w-full">
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="18"
+                    stroke="#e5e7eb"
+                    strokeWidth="3"
+                    fill="none"
+                  />
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="18"
+                    stroke={timeLeft <= 60 ? "#ef4444" : "#10b981"}
+                    strokeWidth="3"
+                    fill="none"
+                    strokeDasharray={113}
+                    strokeDashoffset={113 - (113 * progress) / 100}
+                    className={timeLeft <= 60 ? "animate-pulse" : ""}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span
+                  className={`
+                    text-[11px] font-semibold
+                    ${timeLeft <= 60 ? "text-red-600 animate-pulse" : "text-neutral-700"}
+                  `}
+                >
+                  {formatTime(timeLeft)}
+                </span>
+              </div>
 
-              <span
+              {/* Restart Button */}
+              <button
+                type="button"
+                onClick={handleRestart}
+                disabled={timeLeft > 0}
                 className={`
-                  text-[11px] font-semibold 
-                  ${timeLeft <= 60 ? "text-red-600 animate-pulse" : "text-neutral-700"}
+                  h-9 w-9 flex items-center justify-center rounded-full
+                  border bg-white shadow-sm text-sm transition-all
+                  ${
+                    timeLeft <= 0
+                      ? "border-purple-500 text-purple-600 animate-energy"
+                      : "border-neutral-300 text-neutral-700 opacity-50 cursor-not-allowed"
+                  }
                 `}
               >
-                {formatTime(timeLeft)}
-              </span>
+                ↻
+              </button>
             </div>
-
-            {/* Restart Button */}
-            <button
-              type="button"
-              onClick={handleRestart}
-              disabled={timeLeft > 0}
-              className={`
-                h-9 w-9 flex items-center justify-center rounded-full
-                border bg-white shadow-sm text-sm transition-all
-                ${
-                  timeLeft <= 0
-                    ? "border-purple-500 text-purple-600 animate-energy"
-                    : "border-neutral-300 text-neutral-700 opacity-50 cursor-not-allowed"
-                }
-              `}
-              title="Restart"
-            >
-              ↻
-            </button>
           </div>
         </div>
-      </div>
 
-      {/* Steps container */}
-      <div className="max-w-3xl mx-auto space-y-6">
-        <Step1Recipient
-          apiBase={API_BASE}
-          countries={countries}
-          countriesLoading={countriesLoading}
-          selectedCountry={selectedCountry}
-          setSelectedCountry={(c) => {
-            setSelectedCountry(c);
-            setPhone("");
-            setStep1Done(false);
-          }}
-          phone={phone}
-          setPhone={setPhone}
-          phoneRules={phoneRules}
-          isPhoneValid={isPhoneValid}
-          step1Done={step1Done}
-          setStep1Done={setStep1Done}
-        />
+        {/* Steps container */}
+        <div className="max-w-3xl mx-auto space-y-6">
 
-        <Step2Operator
-          step1Done={step1Done}
-          operatorsLoading={operatorsLoading}
-          displayOperators={displayOperators}
-          selectedOperator={selectedOperator}
-          setSelectedOperator={setSelectedOperator}
-          setStep2Done={setStep2Done}
-        />
+          <Step1Recipient
+            apiBase={API_BASE}
+            countries={countries}
+            countriesLoading={countriesLoading}
+            selectedCountry={selectedCountry}
+            setSelectedCountry={(c) => {
+              setSelectedCountry(c);
+              setPhone("");
+              setStep1Done(false);
+            }}
+            phone={phone}
+            setPhone={setPhone}
+            phoneRules={phoneRules}
+            isPhoneValid={isPhoneValid}
+            step1Done={step1Done}
+            setStep1Done={setStep1Done}
+          />
 
-        <Step3Products
-          step2Done={step2Done}
-          productsLoading={productsLoading}
-          products={products}
-          groupedProducts={groupedProducts}
-          selectedProduct={selectedProduct}
-          setSelectedProduct={setSelectedProduct}
-          step3Done={step3Done}
-          setStep3Done={setStep3Done}
-        />
+          <Step2Operator
+            step1Done={step1Done}
+            operatorsLoading={operatorsLoading}
+            displayOperators={displayOperators}
+            selectedOperator={selectedOperator}
+            setSelectedOperator={setSelectedOperator}
+            setStep2Done={setStep2Done}
+          />
 
-        <Step4Review
-          step3Done={step3Done}
-          selectedCountry={selectedCountry}
-          phone={phone}
-          selectedOperator={selectedOperator}
-          selectedProduct={selectedProduct}
-          topupType={topupType}
-          onContinue={handleContinue}
-        />
+          <Step3Products
+            step2Done={step2Done}
+            productsLoading={productsLoading}
+            products={products}
+            groupedProducts={groupedProducts}
+            selectedProduct={selectedProduct}
+            setSelectedProduct={setSelectedProduct}
+            step3Done={step3Done}
+            setStep3Done={setStep3Done}
+          />
+
+          <Step4Review
+            step3Done={step3Done}
+            selectedCountry={selectedCountry}
+            phone={phone}
+            selectedOperator={selectedOperator}
+            selectedProduct={selectedProduct}
+            topupType={topupType}
+            onContinue={handleContinue}
+          />
+
+        </div>
       </div>
     </main>
   );

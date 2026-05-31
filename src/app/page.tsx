@@ -36,7 +36,7 @@ export default function Home() {
     "do you need",
     "quick",
     "worldwide",
-    "booundry-less",
+    "boundry-less",
     "the power of connectivity",
     "700+ operators",
     "fast",
@@ -156,7 +156,7 @@ export default function Home() {
               transition-all
             "
           >
-            Networks
+            Plans
           </button>
 
           <style>{`
