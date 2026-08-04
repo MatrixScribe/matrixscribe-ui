@@ -1,0 +1,73 @@
+<svg width="180" height="130" viewBox="0 0 180 130" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Outer gold body -->
+    <linearGradient id="chipOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF7D1"/>
+      <stop offset="20%" stop-color="#F7D472"/>
+      <stop offset="50%" stop-color="#D4A63A"/>
+      <stop offset="80%" stop-color="#B07C16"/>
+      <stop offset="100%" stop-color="#7C5710"/>
+    </linearGradient>
+
+    <!-- Inner plate -->
+    <linearGradient id="chipInner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFBE3"/>
+      <stop offset="40%" stop-color="#F2C95C"/>
+      <stop offset="100%" stop-color="#C8942A"/>
+    </linearGradient>
+
+    <!-- Pad gradient -->
+    <linearGradient id="padFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBE7A4"/>
+      <stop offset="50%" stop-color="#E2B955"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+
+    <!-- Highlight overlay -->
+    <linearGradient id="chipHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.85)"/>
+      <stop offset="40%" stop-color="rgba(255,255,255,0.25)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer rounded body -->
+  <rect x="4" y="4" width="172" height="122" rx="18"
+        fill="url(#chipOuter)" stroke="#6A4A08" stroke-width="4" />
+
+  <!-- Inner plate -->
+  <rect x="26" y="22" width="128" height="86" rx="10"
+        fill="url(#chipInner)" stroke="#8A6412" stroke-width="3" />
+
+  <!-- Vertical tracks -->
+  <path d="M52 22 v86 M82 22 v86 M112 22 v86"
+        stroke="#8A6412" stroke-width="3.2" />
+
+  <!-- Horizontal tracks -->
+  <path d="M26 46 h128 M26 70 h128"
+        stroke="#8A6412" stroke-width="3.2" />
+
+  <!-- Central core (controller) -->
+  <rect x="68" y="48" width="44" height="34" rx="6"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2.2" />
+
+  <!-- Left pads -->
+  <rect x="32" y="30" width="26" height="20" rx="4"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2" />
+  <rect x="32" y="54" width="26" height="20" rx="4"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2" />
+  <rect x="32" y="78" width="26" height="20" rx="4"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2" />
+
+  <!-- Right pads -->
+  <rect x="122" y="30" width="26" height="20" rx="4"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2" />
+  <rect x="122" y="54" width="26" height="20" rx="4"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2" />
+  <rect x="122" y="78" width="26" height="20" rx="4"
+        fill="url(#padFill)" stroke="#8A6412" stroke-width="2" />
+
+  <!-- Top highlight -->
+  <rect x="4" y="4" width="172" height="60" rx="18"
+        fill="url(#chipHighlight)" opacity="0.55" />
+</svg>

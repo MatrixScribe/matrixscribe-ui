@@ -3,50 +3,59 @@
 import { useState } from "react";
 
 export default function TestEsimPage() {
-  const [slug, setSlug] = useState("united-arab-emirates");
-  const [airalo, setAiralo] = useState(null);
+  const [slug, setSlug] = useState("south-africa");
+  const [holafly, setHolafly] = useState(null);
   const [plans, setPlans] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function fetchAiraloPackages(countrySlug) {
-    const html = await fetch(`https://www.airalo.com/country/${countrySlug}`)
-      .then(r => r.text());
+  async function fetchHolaflyPackages(countrySlug) {
+    const url = `https://holafly.com/esim/${countrySlug}/`;
 
-    const match = html.match(/window\.__APOLLO_STATE__ = (.*?);\s*<\/script>/);
+    const html = await fetch(
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+    ).then(r => r.text());
+
+    const match = html.match(
+      /<script id="__NEXT_DATA__" type="application\/json">(.+?)<\/script>/
+    );
 
     if (!match) return [];
 
-    const apolloState = JSON.parse(match[1]);
+    const json = JSON.parse(match[1]);
 
-    const packages = Object.values(apolloState)
-      .filter(v => v && v.__typename === "Package");
+    const product = json?.props?.pageProps?.product;
 
-    return packages.map(p => ({
-      id: p.id,
-      name: p.name,
-      price_usd: p.priceUsd,
-      data_gb: p.dataGb,
-      validity: p.validity,
+    if (!product || !product.variants) return [];
+
+    return product.variants.map(v => ({
+      id: v.id,
+      name: v.name,
+      price_usd: v.price?.usd || v.price?.amount || null,
+      data_gb: v.data || null,
+      validity: v.days || null,
     }));
   }
 
   async function runTest() {
     setLoading(true);
-    setAiralo(null);
+    setHolafly(null);
     setPlans(null);
 
-    const airaloPackages = await fetchAiraloPackages(slug);
-    setAiralo(airaloPackages);
+    // 1️⃣ Fetch Holafly competitor packages
+    const holaflyPackages = await fetchHolaflyPackages(slug);
+    setHolafly(holaflyPackages);
 
-    await fetch("http://localhost:4000/api/esim/competitors/airalo", {
+    // 2️⃣ Send competitor data to backend
+    await fetch("http://localhost:4000/api/esim/competitors/holafly", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         countrySlug: slug,
-        packages: airaloPackages
-      })
+        packages: holaflyPackages,
+      }),
     });
 
+    // 3️⃣ Fetch your eSIMGo plans
     const res = await fetch(
       `http://localhost:4000/api/esim/plans?country=${slug}`
     );
@@ -58,7 +67,7 @@ export default function TestEsimPage() {
 
   return (
     <div style={{ padding: 30 }}>
-      <h1>eSIM Competitor Pricing Test</h1>
+      <h1>Holafly Competitor Pricing Test</h1>
 
       <label>Country Slug:</label>
       <input
@@ -76,16 +85,16 @@ export default function TestEsimPage() {
 
       {loading && <p>Loading...</p>}
 
-      {airalo && (
+      {holafly && (
         <div style={{ marginTop: 30 }}>
-          <h2>Airalo Packages</h2>
-          <pre>{JSON.stringify(airalo, null, 2)}</pre>
+          <h2>Holafly Packages</h2>
+          <pre>{JSON.stringify(holafly, null, 2)}</pre>
         </div>
       )}
 
       {plans && (
         <div style={{ marginTop: 30 }}>
-          <h2>Your eSIMGo Plans (Undercut)</h2>
+          <h2>Your eSIMGo Plans (With Undercut Pricing)</h2>
           <pre>{JSON.stringify(plans, null, 2)}</pre>
         </div>
       )}

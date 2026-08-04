@@ -28,7 +28,6 @@ export function Step2Operator(props: Props) {
     ? "bg-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.7)]"
     : "bg-neutral-300";
 
-  // 3D tilt
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -68,7 +67,6 @@ export function Step2Operator(props: Props) {
         backdrop-blur-2xl border border-white/40
         shadow-[0_20px_40px_rgba(0,0,0,0.06)]
         transition-all duration-500
-        hover:shadow-[0_25px_50px_rgba(0,0,0,0.10)]
         ${step1Done ? "opacity-100" : "opacity-40 pointer-events-none"}
         ${selectedOperator ? "animate-[neonPulse_1.8s_ease-in-out_infinite]" : ""}
       `}
@@ -81,15 +79,6 @@ export function Step2Operator(props: Props) {
           100% { box-shadow: 0 0 0px rgba(168,85,247,0.0); }
         }
       `}</style>
-
-      {/* Floating Glow */}
-      <div
-        className="
-          absolute inset-0 rounded-3xl pointer-events-none
-          bg-gradient-to-br from-purple-500/10 to-transparent
-          opacity-0 hover:opacity-100 transition duration-700
-        "
-      />
 
       {/* Step Dot */}
       <div
@@ -106,57 +95,32 @@ export function Step2Operator(props: Props) {
           Network Detection
         </h2>
         <p className="text-neutral-500 text-sm mt-1">
-          Choose the preferred network found with this phone number
+          Choose the preferred network found for this number
         </p>
       </div>
 
-      {/* AUTO-DETECTED OPERATOR */}
-      {selectedOperator && (
-        <div
-          className="
-            flex items-center gap-4 p-4 mb-6 rounded-2xl
-            bg-white/70 backdrop-blur-xl border border-neutral-200
-            shadow-[0_10px_25px_rgba(0,0,0,0.05)]
-            transition-all duration-300
-          "
-        >
-          {selectedOperator.logo && (
-            <img
-              src={selectedOperator.logo}
-              className="h-10 w-auto object-contain drop-shadow-sm"
-            />
-          )}
-          <span className="font-medium text-neutral-900 text-[15px]">
-            {selectedOperator.name}
-          </span>
-        </div>
-      )}
-
-      {/* LOADING SKELETON */}
+      {/* LOADING */}
       {operatorsLoading && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-4">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="
-                h-24 rounded-2xl bg-neutral-200/60 backdrop-blur-xl
-                animate-pulse border border-neutral-300
-              "
+              className="h-24 rounded-2xl bg-neutral-200/60 animate-pulse border border-neutral-300"
             />
           ))}
         </div>
       )}
 
-      {/* DETECTING STATE */}
+      {/* NO OPERATORS */}
       {!operatorsLoading && displayOperators.length === 0 && (
-        <div className="text-sm text-neutral-500 animate-pulse mt-2">
-          Detecting operator do not close.... Network loading times may vary...
-        </div>
+        <p className="text-sm text-neutral-500 mt-2 animate-pulse">
+          Detecting operator… please wait
+        </p>
       )}
 
       {/* OPERATOR GRID */}
       {!operatorsLoading && displayOperators.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-4">
           {displayOperators.map((op) => {
             const isSelected = selectedOperator?.operatorId === op.operatorId;
 
@@ -168,24 +132,19 @@ export function Step2Operator(props: Props) {
                   setStep2Done(true);
                 }}
                 className={`
-                  rounded-2xl px-4 py-5 transition-all duration-300
-                  bg-white/70 backdrop-blur-xl border shadow-sm
-                  flex flex-col items-center gap-3
+                  rounded-2xl px-4 py-5 bg-white/70 backdrop-blur-xl border shadow-sm
+                  flex flex-col items-center gap-3 transition-all duration-300
                   ${
                     isSelected
-                      ? "border-purple-500 shadow-[0_10px_25px_rgba(168,85,247,0.25)] bg-purple-50"
+                      ? "border-purple-500 bg-purple-50 shadow-[0_10px_25px_rgba(168,85,247,0.25)] scale-[1.03]"
                       : "border-neutral-200 hover:border-purple-400 hover:shadow-md"
                   }
-                  active:scale-[0.97]
                 `}
               >
                 {op.logo && (
                   <img
                     src={op.logo}
-                    className="
-                      h-10 w-auto object-contain drop-shadow-sm
-                      transition-transform duration-300
-                    "
+                    className="h-10 w-auto object-contain drop-shadow-sm"
                   />
                 )}
 
