@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+
 import { useUserStore } from "@/store/userStore";
 
 import { LocalSimSection } from "@/components/sim/local/LocalSimSection";
@@ -16,10 +17,13 @@ export default function Dashboard() {
   const [countriesLoading, setCountriesLoading] = useState(true);
 
   const { loading, user, wallet, simCards, loadUser } = useUserStore();
+
   const [tab, setTab] = useState<"local" | "esim" | "profile" | "wallet" | "topup">("local");
   const [showTopupModal, setShowTopupModal] = useState(false);
 
-  // Load countries
+  /* -------------------------------------------
+     LOAD COUNTRIES
+  ------------------------------------------- */
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -34,23 +38,29 @@ export default function Dashboard() {
         setCountriesLoading(false);
       }
     }
+
     loadCountries();
   }, []);
 
-  // Load user
+  /* -------------------------------------------
+     LOAD USER + WALLET + SIM
+  ------------------------------------------- */
   useEffect(() => {
     loadUser();
   }, []);
 
-  // ⭐ Listen for WalletPage → Topup event
-useEffect(() => {
-  const handler = () => setShowTopupModal(true);
-  window.addEventListener("open-topup-modal", handler);
-  return () => window.removeEventListener("open-topup-modal", handler);
-}, []);
+  /* -------------------------------------------
+     LISTEN FOR WALLET TOPUP EVENT
+  ------------------------------------------- */
+  useEffect(() => {
+    const handler = () => setShowTopupModal(true);
+    window.addEventListener("open-topup-modal", handler);
+    return () => window.removeEventListener("open-topup-modal", handler);
+  }, []);
 
-
-  // SIM card (if exists)
+  /* -------------------------------------------
+     SIM CARD DETAILS
+  ------------------------------------------- */
   const sim = simCards?.[0] || null;
 
   const phone = sim?.msisdn || user?.phone || "";
@@ -63,7 +73,9 @@ useEffect(() => {
   const cardholderName =
     `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || phone;
 
-  // Enriched user
+  /* -------------------------------------------
+     ENRICHED USER
+  ------------------------------------------- */
   const enrichedUser = useMemo(() => {
     return {
       ...user,
@@ -75,6 +87,9 @@ useEffect(() => {
     };
   }, [user, operatorName, operatorLogo, flag, signupDate, phone]);
 
+  /* -------------------------------------------
+     LOADING / AUTH CHECK
+  ------------------------------------------- */
   if (loading) {
     return <p className="text-black p-10">Loading dashboard...</p>;
   }
@@ -83,6 +98,9 @@ useEffect(() => {
     return <p className="text-black p-10">Not authenticated</p>;
   }
 
+  /* -------------------------------------------
+     RENDER DASHBOARD
+  ------------------------------------------- */
   return (
     <main className="relative min-h-screen bg-white text-black overflow-hidden">
 
@@ -122,94 +140,85 @@ useEffect(() => {
           </button>
         </div>
       </div>
-{/* TABS — MOBILE OPTIMIZED WITH PARTICLES */}
-<div className="relative z-10 px-6 mb-3 flex flex-col gap-3">
 
-  {/* PARTICLE LAYER INSIDE TABS */}
-  <div className="absolute inset-0 pointer-events-none opacity-50">
-    <ParticleBackground />
-  </div>
+      {/* TABS */}
+      <div className="relative z-10 px-6 mb-3 flex flex-col gap-3">
+        <div className="absolute inset-0 pointer-events-none opacity-50">
+          <ParticleBackground />
+        </div>
 
-  {/* ROW 1 — PRIMARY TABS */}
-  <div className="relative flex items-center gap-2 rounded-2xl px-2 py-2 bg-ffff">
+        {/* ROW 1 */}
+        <div className="relative flex items-center gap-2 rounded-2xl px-2 py-2 bg-ffff">
+          <button
+            onClick={() => setTab("local")}
+            className={`flex-1 px-5 py-3 rounded-xl transition-all ${
+              tab === "local" ? "bg-purple-100 text-purple-700 shadow-md" : "bg-white text-neutral-700"
+            }`}
+          >
+            <img src="/sim-local1.png" className="h-18 w-auto opacity-90 mx-auto" />
+          </button>
 
-    <button
-      onClick={() => setTab("local")}
-      className={`
-        flex-1 px-5 py-3 rounded-xl transition-all
-        ${tab === "local" ? "bg-purple-100 text-purple-700 shadow-md" : "bg-white text-neutral-700"}
-      `}
-    >
-      <img src="/sim-local1.png" className="h-18 w-auto opacity-90 mx-auto" />
-    </button>
+          <button
+            onClick={() => setTab("esim")}
+            className={`flex-1 px-5 py-3 rounded-xl transition-all ${
+              tab === "esim" ? "bg-purple-100 text-purple-700 shadow-md" : "bg-white text-neutral-700"
+            }`}
+          >
+            <img src="/sim-esim1.png" className="h-18 w-auto opacity-90 mx-auto" />
+          </button>
+        </div>
 
-    <button
-      onClick={() => setTab("esim")}
-      className={`
-        flex-1 px-5 py-3 rounded-xl transition-all
-        ${tab === "esim" ? "bg-purple-100 text-purple-700 shadow-md" : "bg-white text-neutral-700"}
-      `}
-    >
-      <img src="/sim-esim1.png" className="h-18 w-auto opacity-90 mx-auto" />
-    </button>
+        {/* ROW 2 */}
+        <div className="relative flex items-center gap-2 rounded-2xl px-1 py-1 bg-ffff">
+          <button
+            onClick={() => setTab("wallet")}
+            className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
+              tab === "wallet" ? "bg-purple-300 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"
+            }`}
+          >
+            <img src="/WalletIcon.png" className="h-12 w-auto opacity-80" />
+          </button>
 
-  </div>
+          <button
+            onClick={() => setTab("profile")}
+            className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
+              tab === "profile" ? "bg-purple-300 text-blue-700 shadow-md" : "bg-ffff text-neutral-700"
+            }`}
+          >
+            <img src="/profile-icon.png" className="h-12 w-auto opacity-80" />
+          </button>
 
-  {/* ROW 2 — SECONDARY TABS */}
-  <div className="relative flex items-center gap-2 rounded-2xl px-1 py-1 bg-ffff">
-
-    <button
-      onClick={() => setTab("wallet")}
-      className={`
-        flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center
-        ${tab === "wallet" ? "bg-purple-300 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"}
-      `}
-    >
-      <img src="/WalletIcon.png" className="h-12 w-auto opacity-80" />
-    </button>
-
-    <button
-      onClick={() => setTab("profile")}
-      className={`
-        flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center
-        ${tab === "profile" ? "bg-purple-300 text-blue-700 shadow-md" : "bg-ffff text-neutral-700"}
-      `}
-    >
-      <img src="/profile-icon.png" className="h-12 w-auto opacity-80" />
-    </button>
-
-    <button
-      onClick={() => setTab("topup")}
-      className={`
-        flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center
-        ${tab === "topup" ? "bg-orange-400 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"}
-      `}
-    >
-      <img src="/topup-icon.png" className="h-12 w-auto opacity-80" />
-    </button>
-
-  </div>
-</div>
-
+          <button
+            onClick={() => setTab("topup")}
+            className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
+              tab === "topup" ? "bg-orange-400 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"
+            }`}
+          >
+            <img src="/topup-icon.png" className="h-12 w-auto opacity-80" />
+          </button>
+        </div>
+      </div>
 
       {/* CONTENT */}
       <div className="relative z-10 px-6 mt-6 flex flex-col gap-10">
 
+        {/* LOCAL SIM */}
         {tab === "local" && (
           <LocalSimSection
-  phone={phone}
-  cardholderName={cardholderName}
-  simCategory={sim?.type || "Local SIM"}
-  operatorLogo={operatorLogo}
-  flag={flag}
-  country={country}
-  signupDate={signupDate}
-  simStatus={sim?.simStatus || "active"}
-  isActive={sim?.isActive ?? true}
-/>
+            phone={phone}
+            cardholderName={cardholderName}
+            simCategory={sim?.type || "Local SIM"}
+            operatorLogo={operatorLogo}
+            flag={flag}
+            country={country}
+            signupDate={signupDate}
+            simStatus={sim?.simStatus || "active"}
+            isActive={sim?.isActive ?? true}
+          />
         )}
 
-        {tab === "esim" && (
+        {/* ESIM */}
+        {tab === "esim" && wallet && (
           <EsimSection
             flag={flag}
             cardholderName={cardholderName}
@@ -218,25 +227,29 @@ useEffect(() => {
           />
         )}
 
+        {/* PROFILE */}
         {tab === "profile" && <ProfileSection user={enrichedUser} />}
 
+        {/* WALLET */}
         {tab === "wallet" && (
-  <>
-    <WalletPage />
+          <>
+            <WalletPage />
 
-    {showTopupModal && (
-      <TopupModal
-        preferredCurrency={wallet?.preferred_currency}
-        onClose={() => setShowTopupModal(false)}
-        onComplete={() => {
-          loadUser();        // ⭐ refresh wallet after callback
-          setShowTopupModal(false);
-        }}
-      />
-    )}
-  </>
-)}
+            {showTopupModal && (
+              <TopupModal
+                preferredCurrency={wallet?.preferred_currency}
+                onClose={() => setShowTopupModal(false)}
+                onComplete={() => {
+                  loadUser(); // refresh wallet after callback
+                  setShowTopupModal(false);
+                }}
+              />
+            )}
+          </>
+        )}
 
+        {/* TOPUP */}
+        {tab === "topup" && <TopUpSection />}
       </div>
     </main>
   );
