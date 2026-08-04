@@ -197,14 +197,16 @@ useEffect(() => {
 
         {tab === "local" && (
           <LocalSimSection
-            phone={phone}
-            cardholderName={cardholderName}
-            simCategory={sim?.type || "Local SIM"}
-            operatorLogo={operatorLogo}
-            flag={flag}
-            country={country}
-            signupDate={signupDate}
-          />
+  phone={phone}
+  cardholderName={cardholderName}
+  simCategory={sim?.type || "Local SIM"}
+  operatorLogo={operatorLogo}
+  flag={flag}
+  country={country}
+  signupDate={signupDate}
+  simStatus={sim?.simStatus || "active"}
+  isActive={sim?.isActive ?? true}
+/>
         )}
 
         {tab === "esim" && (
