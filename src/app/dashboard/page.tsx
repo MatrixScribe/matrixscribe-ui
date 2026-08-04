@@ -228,7 +228,7 @@ export default function Dashboard() {
 
             {showTopupModal && (
               <TopupModal
-                preferredCurrency={wallet?.preferred_currency}
+                preferredCurrency={wallet?.preferred_currency ?? null}
                 onClose={() => setShowTopupModal(false)}
                 onComplete={() => {
                   loadUser(); // refresh wallet after callback
