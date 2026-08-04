@@ -21,9 +21,7 @@ export default function Dashboard() {
   const [tab, setTab] = useState<"local" | "esim" | "profile" | "wallet" | "topup">("local");
   const [showTopupModal, setShowTopupModal] = useState(false);
 
-  /* -------------------------------------------
-     LOAD COUNTRIES
-  ------------------------------------------- */
+  /* LOAD COUNTRIES */
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -42,25 +40,19 @@ export default function Dashboard() {
     loadCountries();
   }, []);
 
-  /* -------------------------------------------
-     LOAD USER + WALLET + SIM
-  ------------------------------------------- */
+  /* LOAD USER */
   useEffect(() => {
     loadUser();
   }, []);
 
-  /* -------------------------------------------
-     LISTEN FOR WALLET TOPUP EVENT
-  ------------------------------------------- */
+  /* LISTEN FOR WALLET TOPUP EVENT */
   useEffect(() => {
     const handler = () => setShowTopupModal(true);
     window.addEventListener("open-topup-modal", handler);
     return () => window.removeEventListener("open-topup-modal", handler);
   }, []);
 
-  /* -------------------------------------------
-     SIM CARD DETAILS
-  ------------------------------------------- */
+  /* SIM CARD DETAILS */
   const sim = simCards?.[0] || null;
 
   const phone = sim?.msisdn || user?.phone || "";
@@ -73,9 +65,7 @@ export default function Dashboard() {
   const cardholderName =
     `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || phone;
 
-  /* -------------------------------------------
-     ENRICHED USER
-  ------------------------------------------- */
+  /* ENRICHED USER */
   const enrichedUser = useMemo(() => {
     return {
       ...user,
@@ -87,9 +77,7 @@ export default function Dashboard() {
     };
   }, [user, operatorName, operatorLogo, flag, signupDate, phone]);
 
-  /* -------------------------------------------
-     LOADING / AUTH CHECK
-  ------------------------------------------- */
+  /* LOADING / AUTH CHECK */
   if (loading) {
     return <p className="text-black p-10">Loading dashboard...</p>;
   }
@@ -98,9 +86,7 @@ export default function Dashboard() {
     return <p className="text-black p-10">Not authenticated</p>;
   }
 
-  /* -------------------------------------------
-     RENDER DASHBOARD
-  ------------------------------------------- */
+  /* RENDER DASHBOARD */
   return (
     <main className="relative min-h-screen bg-white text-black overflow-hidden">
 
@@ -228,7 +214,12 @@ export default function Dashboard() {
         )}
 
         {/* PROFILE */}
-        {tab === "profile" && <ProfileSection user={enrichedUser} />}
+        {tab === "profile" && (
+          <ProfileSection
+            user={enrichedUser}
+            wallet={wallet}
+          />
+        )}
 
         {/* WALLET */}
         {tab === "wallet" && (
