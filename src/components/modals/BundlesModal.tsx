@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CountrySelectorModal } from "@/components/country/CountrySelectorModal";
+import BundleCheckoutModal from "@/components/sim/esim/BundleCheckoutModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -33,7 +34,6 @@ interface BundlesModalProps {
   onSelectBundle: (bundle: Bundle) => void;
   onCountryChange: (iso2: string) => void;
   countries: Country[];
-
   preferredCurrency: string | null;
   token: string | null;
   fxMidRate: number | null;
@@ -56,13 +56,21 @@ export default function BundlesModal({
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [expandedFamily, setExpandedFamily] = useState<string | null>(null);
 
-  // Load bundles with token (USD-only from backend)
+  // ⭐ NEW: Checkout modal state
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedBundle, setSelectedBundle] = useState<Bundle | null>(null);
+
+  // ⭐ NEW: ZAR FX rate for Paystack
+  const [fxZarRate, setFxZarRate] = useState<number | null>(null);
+
+  /* ---------------------------------------------------
+     LOAD BUNDLES
+  --------------------------------------------------- */
   useEffect(() => {
     if (!open || !countryIso) return;
 
     const c = countries.find((x) => x.iso2 === countryIso);
     setSelectedCountry(c || null);
-
     setLoading(true);
 
     fetch(`${API_BASE}/api/esim/catalogue/${countryIso}`, {
@@ -78,9 +86,29 @@ export default function BundlesModal({
       .finally(() => setLoading(false));
   }, [open, countryIso, token, countries]);
 
+  /* ---------------------------------------------------
+     LOAD ZAR FX RATE
+  --------------------------------------------------- */
+  useEffect(() => {
+    async function loadZarFx() {
+      try {
+        const res = await fetch("https://redatacom-end.onrender.com/api/fx");
+        const json = await res.json();
+        const zar = json.rates.find((r: any) => r.currency === "ZAR");
+        setFxZarRate(zar ? zar.sell_rate : null);
+      } catch {
+        setFxZarRate(null);
+      }
+    }
+
+    if (open) loadZarFx();
+  }, [open]);
+
   if (!open) return null;
 
-  // Group bundles by family
+  /* ---------------------------------------------------
+     GROUP BY FAMILY
+  --------------------------------------------------- */
   const grouped: Record<string, Bundle[]> = {
     COSMIC_DAILY: [],
     TRAVEL_LITE: [],
@@ -117,6 +145,17 @@ export default function BundlesModal({
     },
   };
 
+  /* ---------------------------------------------------
+     HANDLE BUNDLE CLICK → OPEN CHECKOUT MODAL
+  --------------------------------------------------- */
+  function openCheckout(bundle: Bundle) {
+  setSelectedBundle(bundle);
+  setCheckoutOpen(true);
+}
+
+  /* ---------------------------------------------------
+     RENDER
+  --------------------------------------------------- */
   return (
     <>
       <div
@@ -130,18 +169,18 @@ export default function BundlesModal({
           {/* HEADER */}
           <div className="p-5 bg-gradient-to-r from-black to-purple-700 text-white border-b border-purple-300/20">
             <img src="/selectplanicon1.png" className="w-auto h-12 opacity-100" />
-            <h2 className="text-lg font-semibold tracking-wide"></h2>
-            <p className="text-sm opacity-80"></p>
+            <h2 className="text-lg font-semibold tracking-wide">
+              Select your eSIM bundle
+            </h2>
+            <p className="text-sm opacity-80">
+              Direct checkout via Paystack. Wallet balance is not required.
+            </p>
           </div>
 
           {/* BODY */}
           <div className="p-5 flex flex-col gap-6">
             {/* COUNTRY SELECTOR */}
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-purple-200 tracking-wide">
-                
-              </label>
-
               <button
                 onClick={() => setCountryModalOpen(true)}
                 className="
@@ -161,14 +200,18 @@ export default function BundlesModal({
                       src={selectedCountry.flag}
                       className="h-auto w-10 rounded-full shadow-md border border-white/20"
                     />
-                    <span className="font-medium tracking-wide">{selectedCountry.name}</span>
+                    <span className="font-medium tracking-wide">
+                      {selectedCountry.name}
+                    </span>
                   </span>
                 ) : (
                   <span className="text-purple-200/70">Select country</span>
                 )}
-
                 <span className="flex items-center gap-2">
-                  <img src="/chip-gold.png" className="h-5 w-auto opacity-90 drop-shadow-md" />
+                  <img
+                    src="/chip-gold.png"
+                    className="h-5 w-auto opacity-90 drop-shadow-md"
+                  />
                   <span className="text-purple-300 text-lg leading-none">›</span>
                 </span>
               </button>
@@ -176,7 +219,9 @@ export default function BundlesModal({
 
             {/* LOADING */}
             {loading && (
-              <p className="text-xs text-purple-200 animate-pulse">Loading bundles…</p>
+              <p className="text-xs text-purple-200 animate-pulse">
+                Loading bundles…
+              </p>
             )}
 
             {/* FAMILY CARDS */}
@@ -216,19 +261,20 @@ export default function BundlesModal({
                           {familyBundles.map((b) => {
                             const usd = b.finalPriceUsd;
 
-                            // ⭐ Client-side FX conversion
                             const hasPreferred =
                               preferredCurrency &&
                               preferredCurrency !== "USD" &&
                               fxMidRate;
 
                             const computedFx =
-                              hasPreferred ? usd * (fxMidRate as number) : null;
+                              hasPreferred && fxMidRate
+                                ? usd * (fxMidRate as number)
+                                : null;
 
                             return (
                               <button
                                 key={b.id}
-                                onClick={() => onSelectBundle(b)}
+                                onClick={() => openCheckout(b)}
                                 className="
                                   snap-center shrink-0 w-42 h-40 rounded-4xl
                                   bg-white border-purple-400
@@ -239,7 +285,6 @@ export default function BundlesModal({
                                 <p className="text-purple-600 text-sm font-bold leading-tight">
                                   {b.name}
                                 </p>
-
                                 <p className="text-[10px] text-neutral-600 line-clamp-2">
                                   {b.description}
                                 </p>
@@ -285,7 +330,7 @@ export default function BundlesModal({
         </div>
       </div>
 
-      {/* COUNTRY SELECTOR MODAL */}
+      {/* COUNTRY SELECTOR */}
       <CountrySelectorModal
         open={countryModalOpen}
         onClose={() => setCountryModalOpen(false)}
@@ -295,6 +340,18 @@ export default function BundlesModal({
           setCountryModalOpen(false);
         }}
         countries={countries}
+      />
+
+      {/* ⭐ CHECKOUT SUMMARY MODAL */}
+      <BundleCheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        bundle={selectedBundle}
+        preferredCurrency={preferredCurrency}
+        fxMidRate={fxMidRate}
+        fxZarRate={fxZarRate}
+        token={token}
+        countryIso={countryIso}
       />
     </>
   );

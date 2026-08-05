@@ -11,6 +11,7 @@ import WalletPage from "@/components/wallet/WalletPage";
 import TopUpSection from "@/components/topup/TopUpSection";
 import ParticleBackground from "@/components/ParticleBackground";
 import { TopupModal } from "@/components/wallet/TopupModal";
+import CurrencyBadge from "@/components/wallet/CurrencyBadge";
 
 export default function Dashboard() {
   const [countries, setCountries] = useState([]);
@@ -157,15 +158,6 @@ export default function Dashboard() {
         {/* ROW 2 */}
         <div className="relative flex items-center gap-2 rounded-2xl px-1 py-1 bg-ffff">
           <button
-            onClick={() => setTab("wallet")}
-            className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
-              tab === "wallet" ? "bg-purple-300 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"
-            }`}
-          >
-            <img src="/WalletIcon.png" className="h-12 w-auto opacity-80" />
-          </button>
-
-          <button
             onClick={() => setTab("profile")}
             className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
               tab === "profile" ? "bg-purple-300 text-blue-700 shadow-md" : "bg-ffff text-neutral-700"
@@ -182,6 +174,20 @@ export default function Dashboard() {
           >
             <img src="/topup-icon.png" className="h-12 w-auto opacity-80" />
           </button>
+          <button
+  onClick={() => setTab("wallet")}
+  className={`
+    flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2
+    ${tab === "wallet" ? "bg-purple-300 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"}
+  `}
+>
+  
+
+  {/* ⭐ Preferred Currency Badge */}
+  <CurrencyBadge currency={wallet?.preferred_currency} />
+</button>
+
+          
         </div>
       </div>
 
