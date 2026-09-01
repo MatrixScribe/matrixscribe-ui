@@ -102,17 +102,23 @@ export default function SignupNumber() {
   const handleContinue = () => {
   if (!selectedOperator || !isPhoneValid || !selectedCountry) return;
 
+  // ⭐ Build full MSISDN
+  const fullMsisdn =
+    "+" +
+    selectedCountry.dialCode.replace(/\D/g, "") +
+    phone.replace(/\D/g, "");
+
   router.push(
-  `/signup/pin?` +
-  `country=${encodeURIComponent(selectedCountry.name)}` +
-  `&countryCode=${encodeURIComponent(selectedCountry.iso2)}` +
-  `&dialCode=${encodeURIComponent(selectedCountry.dialCode)}` +
-  `&flag=${encodeURIComponent(selectedCountry.flag)}` +
-  `&phone=${encodeURIComponent(phone)}` +
-  `&operatorLogo=${encodeURIComponent(selectedOperator.logo || "")}` +
-  `&operatorName=${encodeURIComponent(selectedOperator.name || "")}` +
-  `&operatorId=${encodeURIComponent(selectedOperator.operatorId || "")}`
-);
+    `/signup/pin?` +
+      `country=${encodeURIComponent(selectedCountry.name)}` +
+      `&countryCode=${encodeURIComponent(selectedCountry.iso2)}` +
+      `&dialCode=${encodeURIComponent(selectedCountry.dialCode)}` +
+      `&flag=${encodeURIComponent(selectedCountry.flag)}` +
+      `&phone=${encodeURIComponent(fullMsisdn)}` +   // ⭐ FIXED
+      `&operatorLogo=${encodeURIComponent(selectedOperator.logo || "")}` +
+      `&operatorName=${encodeURIComponent(selectedOperator.name || "")}` +
+      `&operatorId=${encodeURIComponent(selectedOperator.operatorId || "")}`
+  );
 };
 
   // Particle animation

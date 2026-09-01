@@ -17,9 +17,15 @@ export default function LoginPage() {
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
 
+  // mode: phone or email
+  const [mode, setMode] = useState<"phone" | "email">("phone");
+
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+
   const [pin, setPin] = useState(["", "", "", ""]);
 
+  // load countries
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -50,13 +56,37 @@ export default function LoginPage() {
 
   const login = async () => {
     const pinCode = pin.join("");
-    const msisdn = `${selectedCountry?.dialCode}${phone}`.replace(/\D/g, "");
+
+    let identifier = "";
+
+    if (mode === "email") {
+      if (!email.trim()) {
+        alert("Please enter your email");
+        return;
+      }
+      identifier = email.trim();
+    } else {
+      if (!selectedCountry) {
+        alert("Please select your country");
+        return;
+      }
+      if (!phone.trim()) {
+        alert("Please enter your phone number");
+        return;
+      }
+
+      // full MSISDN: +<countryCode><localNumber>
+      identifier =
+        "+" +
+        selectedCountry.dialCode.replace(/\D/g, "") +
+        phone.replace(/\D/g, "");
+    }
 
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mobileNumber: msisdn,
+        identifier,
         pin: pinCode,
       }),
     });
@@ -72,7 +102,7 @@ export default function LoginPage() {
     }
   };
 
-  // Particle animation (unchanged)
+  // particle background
   useEffect(() => {
     const canvas = document.getElementById("particleCanvas") as HTMLCanvasElement;
     if (!canvas) return;
@@ -124,7 +154,7 @@ export default function LoginPage() {
         <canvas id="particleCanvas" className="w-full h-full opacity-99"></canvas>
       </div>
 
-      {selectedCountry && (
+      {selectedCountry && mode === "phone" && (
         <div
           className="absolute inset-0 bg-center bg-cover opacity-[0.08] pointer-events-none"
           style={{ backgroundImage: `url(${selectedCountry.flag})` }}
@@ -140,52 +170,93 @@ export default function LoginPage() {
 
         <div className="mt-6 w-full max-w-xl rounded-3xl p-8 bg-ffff shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
 
-          {/* COUNTRY SELECTOR */}
-          <div className="mb-8">
+          {/* mode toggle */}
+          <div className="flex justify-center gap-6 mb-8">
             <button
-              onClick={() => setCountryModalOpen(true)}
-              className="w-full rounded-2xl px-4 py-4 bg-ffff border border-white/20 flex items-center justify-between"
+              onClick={() => setMode("phone")}
+              className={`px-4 py-2 rounded-xl ${
+                mode === "phone"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white/10 text-neutral-300"
+              }`}
             >
-              <span className="flex items-center gap-3">
-                {selectedCountry && (
-                  <img src={selectedCountry.flag} className="h-7 w-7 rounded-md" />
-                )}
-                <span className="text-white font-medium">
-                  {selectedCountry?.name || "Country"}
-                </span>
-              </span>
-              <span className="text-neutral-400 text-lg">›</span>
+              Enter my number
             </button>
 
-            <CountrySelectorModal
-              open={countryModalOpen}
-              onClose={() => setCountryModalOpen(false)}
-              onSelect={(c: any) => {
-                setSelectedCountry(c);
-                setPhone("");
-              }}
-              countries={countries}
-            />
+            <button
+              onClick={() => setMode("email")}
+              className={`px-4 py-2 rounded-xl ${
+                mode === "email"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white/10 text-neutral-300"
+              }`}
+            >
+              Use my email
+            </button>
           </div>
 
-          {/* PHONE INPUT */}
-          <div className="mb-10">
-            <div className="flex gap-3">
-              <div className="w-28 rounded-2xl px-4 py-4 bg-ffff border border-white/20 flex items-center justify-center text-neutral-200 font-medium">
-                {selectedCountry?.dialCode}
+          {/* phone mode */}
+          {mode === "phone" && (
+            <>
+              <div className="mb-8">
+                <button
+                  onClick={() => setCountryModalOpen(true)}
+                  className="w-full rounded-2xl px-4 py-4 bg-ffff border border-white/20 flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-3">
+                    {selectedCountry && (
+                      <img src={selectedCountry.flag} className="h-7 w-7 rounded-md" />
+                    )}
+                    <span className="text-white font-medium">
+                      {selectedCountry?.name || "Country"}
+                    </span>
+                  </span>
+                  <span className="text-neutral-400 text-lg">›</span>
+                </button>
+
+                <CountrySelectorModal
+                  open={countryModalOpen}
+                  onClose={() => setCountryModalOpen(false)}
+                  onSelect={(c: any) => {
+                    setSelectedCountry(c);
+                    setPhone("");
+                  }}
+                  countries={countries}
+                />
               </div>
 
+              <div className="mb-10">
+                <div className="flex gap-3">
+                  <div className="w-28 rounded-2xl px-4 py-4 bg-ffff border border-white/20 flex items-center justify-center text-neutral-200 font-medium">
+                    {selectedCountry?.dialCode}
+                  </div>
+
+                  <input
+                    type="tel"
+                    className="flex-1 rounded-2xl px-4 py-4 bg-ffff border border-white/20 text-white placeholder:text-neutral-400"
+                    placeholder="enter phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* email mode */}
+          {mode === "email" && (
+            <div className="mb-10">
               <input
-                type="tel"
-                className="flex-1 rounded-2xl px-4 py-4 bg-ffff border border-white/20 text-white placeholder:text-neutral-400"
-                placeholder="enter phone number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                type="email"
+                className="w-full rounded-2xl px-4 py-4 bg-ffff border border-white/20 text-white placeholder:text-neutral-400"
+                placeholder="enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-          </div>
+          )}
 
-          {/* PIN INPUT (MASKED) */}
+          {/* PIN */}
           <div className="mt-8">
             <label className="block text-sm text-neutral-300 mb-3">
               Enter PIN
@@ -205,19 +276,17 @@ export default function LoginPage() {
               ))}
             </div>
 
-            {/* BUTTONS */}
             <div className="flex flex-col gap-4">
-
               <button
                 onClick={login}
-                className="w-full py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 active:scale-[0.97] transition"
+                className="w-full py-4 rounded-2xl bg-ffff text-purple-600 font-semibold hover:bg-purple-700 active:scale-[0.97] transition"
               >
                 Login
               </button>
 
               <button
                 onClick={() => router.push("/signup/number")}
-                className="w-full py-4 rounded-2xl bg-white/10 text-white font-medium hover:bg-white/20 transition"
+                className="w-full py-4 rounded-2xl bg-ffff text-white font-medium hover:bg-white/20 transition"
               >
                 Create Account
               </button>
@@ -226,9 +295,8 @@ export default function LoginPage() {
                 onClick={() => router.push("/reset-pin")}
                 className="w-full py-3 text-neutral-300 text-sm underline hover:text-white transition"
               >
-                Forgot PIN?
+                Reset PIN
               </button>
-
             </div>
           </div>
         </div>

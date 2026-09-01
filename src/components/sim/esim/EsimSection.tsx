@@ -36,7 +36,9 @@ export default function EsimSection({
           `}
         >
           <span className="inline-block w-2 h-2 rounded-full bg-purple-500" />
-          <span>eSIM Shop</span>
+          
+          <img src="/esimshopicon.png" className="w-5 h-auto opacity-100" />
+          <span>Shop</span>
         </button>
 
         <button

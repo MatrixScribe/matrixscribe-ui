@@ -20,7 +20,7 @@ export default function CurrencyBadge({ currency }: CurrencyBadgeProps) {
     <span
       className="
         px-2 py-1 text-[20px] font-bold
-        bg-ffff opacity-90 text-green-300
+        bg-ffff opacity-90 text-purple-500
       "
     >
       {currency}

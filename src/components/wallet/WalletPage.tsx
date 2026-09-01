@@ -64,7 +64,7 @@ export default function WalletPage() {
   if (!wallet) {
     return (
       <div className="p-6 text-center text-neutral-600">
-        Loading wallet...
+        Loading your preferred currency.....
       </div>
     );
   }
