@@ -1,6 +1,18 @@
+"use client";
+
 import ProfileSection from "./ProfileSection";
 
-export function ProfileModal({ open, onClose, user }) {
+interface ProfileModalProps {
+  open: boolean;
+  onClose: () => void;
+  user: any; // You can tighten this later if you want
+}
+
+export function ProfileModal({
+  open,
+  onClose,
+  user,
+}: ProfileModalProps) {
   if (!open) return null;
 
   return (
