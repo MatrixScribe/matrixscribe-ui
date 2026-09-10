@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import SIMCard from "@/components/SIMCard";
-import { BundlesModal } from "@/components/modals/BundlesModal";
+import BundlesModal from "@/components/modals/BundlesModal";
 import { CreateEsimModal } from "@/components/modals/CreateEsimModal";
 
 export function EsimSection({ flag, cardholderName }: any) {
