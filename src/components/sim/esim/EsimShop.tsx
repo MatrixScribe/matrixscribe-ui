@@ -69,7 +69,7 @@ type Country = {
   iso2: string;
   iso?: string;
   flag: string;
-  dialCode?: string;
+  dialCode: string;
 };
 
 type Bundle = any;
