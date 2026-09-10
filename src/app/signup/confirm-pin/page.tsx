@@ -20,7 +20,10 @@ export default function ConfirmPin() {
 
   // PIN state
   const [pin, setPin] = useState(["", "", "", ""]);
-  const inputsRef = useRef<HTMLInputElement[]>([]);
+
+  // ⭐ FIXED: allow null in the ref array
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
   const [shake, setShake] = useState(false);
 
   const isComplete = pin.every((d) => d !== "");
@@ -53,7 +56,6 @@ export default function ConfirmPin() {
       return;
     }
 
-    // Pass everything to profile page
     router.push(
       `/signup/profile?` +
         `pin=${encodeURIComponent(finalPin)}` +
@@ -91,8 +93,8 @@ export default function ConfirmPin() {
               <input
                 key={index}
                 ref={(el) => {
-  inputsRef.current[index] = el;
-}}
+                  inputsRef.current[index] = el;
+                }}
                 type="password"
                 maxLength={1}
                 value={digit}
