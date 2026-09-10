@@ -77,9 +77,14 @@ type Bundle = any;
 type EsimShopProps = {
   cardholderName: string;
   wallet: WalletData;
+  isActive: boolean;   // ⭐ Added
 };
 
-export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
+export default function EsimShop({
+  cardholderName,
+  wallet,
+  isActive,
+}: EsimShopProps) {
   /* ---------------------------------------------------
      STATE
   --------------------------------------------------- */
