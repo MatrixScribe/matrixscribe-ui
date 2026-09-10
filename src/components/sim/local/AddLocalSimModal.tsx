@@ -86,7 +86,7 @@ export function AddLocalSimModal({
           <div className="mb-6">
             <LocalSimCard
               phone={phone}
-              cardholder="" // removed
+              cardholder=""
               simCategory="Local SIM"
               operatorLogo={
                 selectedOperator?.logo ||
@@ -95,6 +95,7 @@ export function AddLocalSimModal({
               }
               flag={selectedCountry.flag}
               signupDate="Preview"
+              simStatus="active"   // ⭐ REQUIRED FIX
             />
           </div>
         )}
@@ -295,6 +296,7 @@ export function AddLocalSimModal({
                 country: selectedCountry.name,
                 dialCode: selectedCountry.dialCode,
                 operator: selectedOperator.name,
+                simStatus: "active",   // ⭐ REQUIRED FIX
               });
             }}
             className="
