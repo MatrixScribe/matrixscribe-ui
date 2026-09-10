@@ -95,16 +95,17 @@ export function EsimSection({ flag, cardholderName }: any) {
       {/* BUNDLES MODAL — updated to match new API */}
       {pendingEsimConfig && (
         <BundlesModal
-          open={showBundles}
-          onClose={() => setShowBundles(false)}
-          groupName={pendingEsimConfig.label}
-          bundles={pendingEsimConfig.bundles || []}
-          loading={false}
-          preferredCurrency={null}
-          token={null}
-          fxMidRate={1}
-          countries={countries}
-        />
+  open={showBundles}
+  onClose={() => setShowBundles(false)}
+  groupName={pendingEsimConfig.label}
+  bundles={pendingEsimConfig.bundles}
+  loading={false}
+  preferredCurrency={null}
+  token={null}
+  fxMidRate={1}
+  countries={countries}
+  count={pendingEsimConfig.bundles?.length ?? 0}
+/>
       )}
 
       {/* EMPTY STATE */}
