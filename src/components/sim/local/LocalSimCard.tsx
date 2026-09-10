@@ -9,6 +9,7 @@ export function LocalSimCard({
   flag,
   signupDate,
   simStatus,
+  simCategory,     // ⭐ NEW PROP
   onTopUp,
 }: {
   phone: string;
@@ -17,6 +18,7 @@ export function LocalSimCard({
   flag: string;
   signupDate: string;
   simStatus: string;
+  simCategory: string;   // ⭐ REQUIRED
   onTopUp?: () => void;
 }) {
   console.log("LocalSimCard props:", {
@@ -26,6 +28,7 @@ export function LocalSimCard({
     flag,
     signupDate,
     simStatus,
+    simCategory,
   });
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -116,10 +119,15 @@ export function LocalSimCard({
       />
 
       <div className="relative z-10">
+
+        {/* Category Badge */}
+        <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-purple-600/70 text-[10px] font-semibold tracking-wide">
+          {simCategory}
+        </div>
+
         {/* Brand Row */}
         <div className="flex items-center justify-between mb-3">
           <img src="/logogrey.png" className="h-7 w-auto opacity-80" />
-          <span className="text-[10px] opacity-50 tracking-wide"></span>
         </div>
 
         {/* Embossed Redatacom Logo */}
