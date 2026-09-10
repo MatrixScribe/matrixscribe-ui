@@ -9,6 +9,7 @@ const API_BASE =
 
 type MyEsimsProps = {
   cardholderName: string;
+  isActive: boolean;   // ⭐ REQUIRED
 };
 
 type EsimItem = {
@@ -24,7 +25,7 @@ type EsimItem = {
   status: "PENDING_ACTIVATION" | "ACTIVE" | "EXPIRED";
 };
 
-export default function MyEsims({ cardholderName }: MyEsimsProps) {
+export default function MyEsims({ cardholderName, isActive }: MyEsimsProps) {
   const [esims, setEsims] = useState<EsimItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,6 +84,19 @@ export default function MyEsims({ cardholderName }: MyEsimsProps) {
           <img src="/icon-esimp.png" className="h-10 opacity-80" />
         </div>
       </div>
+
+      {/* ACTIVE STATUS */}
+      {!isActive && (
+        <div className="p-4 rounded-xl bg-neutral-100 border text-neutral-700">
+          You do not have an active eSIM yet. Purchase one from the eSIM Shop.
+        </div>
+      )}
+
+      {isActive && (
+        <div className="p-4 rounded-xl bg-green-600 text-white shadow-lg">
+          Your eSIM is active ✓
+        </div>
+      )}
 
       {/* EMPTY / LOADING */}
       {loading && <p className="text-xs text-neutral-500">Loading your eSIMs...</p>}
