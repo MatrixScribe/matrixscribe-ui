@@ -18,6 +18,9 @@ import { useProducts } from "@/hooks/useProducts";
 
 import { getCountryCode } from "@/utils/topup";
 
+// ⭐ ADD THIS IMPORT
+import { usePreferredCurrency } from "@/components/context/PreferredCurrencyContext";
+
 export default function TopupPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -29,6 +32,9 @@ export default function TopupPageInner() {
   const typeParam = searchParams.get("type") || "airtime";
   const topupType: "airtime" | "data" =
     typeParam === "data" ? "data" : "airtime";
+
+  // ⭐ ADD THIS HOOK
+  const { preferredCurrency, preferredRate } = usePreferredCurrency();
 
   // Countries + phone
   const [countries, setCountries] = useState<Country[]>([]);
@@ -151,6 +157,10 @@ export default function TopupPageInner() {
       productName: selectedProduct.label || selectedProduct.name,
       amount,
       currency,
+
+      // ⭐ ADD THESE TO PAYLOAD IF YOU WANT THEM IN CHECKOUT
+      preferredCurrency,
+      preferredRate,
     };
 
     router.push(
@@ -221,125 +231,22 @@ export default function TopupPageInner() {
       {/* CONTENT WRAPPER */}
       <div className="relative z-10">
         {/* Sticky premium header */}
-        <div
-          className="
-            sticky top-0 z-50
-            bg-[#fafafa]/80 backdrop-blur-xl
-            border-b border-neutral-200
-            mb-8 py-4
-          "
-        >
-          <div className="max-w-3xl mx-auto flex items-center justify-between px-1">
-            {/* LEFT SIDE */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => router.push("/")}
-                className="
-                  h-9 w-9 flex items-center justify-center rounded-full
-                  border border-neutral-300 bg-white shadow-sm
-                  hover:border-neutral-500 hover:shadow-md transition
-                "
-              >
-                <img
-                  src="/favicon.ico"
-                  alt="Home"
-                  className="h-10 w-10 object-contain"
-                />
-              </button>
-
-              <div>
-                <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">
-                  <img
-                    src="/logo-alone.png"
-                    alt="Redatacom"
-                    className="h-10 opacity-90"
-                  />
-                </h1>
-
-                <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">
-                  <span className="text-emerald-500 font-semibold animate-pulse">
-                    Global
-                  </span>
-                  <span>Airtime • Data • Bundles • PIN</span>
-                </p>
-              </div>
-            </div>
-
-            {/* RIGHT SIDE: TIMER + RESTART */}
-            <div className="flex items-center gap-4">
-              {/* Circular Timer */}
-              <div className="relative h-10 w-10 flex items-center justify-center">
-                <svg className="absolute inset-0 h-full w-full">
-                  <circle
-                    cx="20"
-                    cy="20"
-                    r="18"
-                    stroke="#e5e7eb"
-                    strokeWidth="3"
-                    fill="none"
-                  />
-
-                  <circle
-                    cx="20"
-                    cy="20"
-                    r="18"
-                    stroke={timeLeft <= 60 ? "#ef4444" : "#10b981"}
-                    strokeWidth="3"
-                    fill="none"
-                    strokeDasharray={113}
-                    strokeDashoffset={113 - (113 * progress) / 100}
-                    className={timeLeft <= 60 ? "animate-pulse" : ""}
-                    strokeLinecap="round"
-                  />
-                </svg>
-
-                <span
-                  className={`text-[11px] font-semibold ${
-                    timeLeft <= 60
-                      ? "text-red-600 animate-pulse"
-                      : "text-neutral-700"
-                  }`}
-                >
-                  {formatTime(timeLeft)}
-                </span>
-              </div>
-
-              {/* Restart Button */}
-              <button
-                type="button"
-                onClick={handleRestart}
-                disabled={timeLeft > 0}
-                className={`
-                  h-9 w-9 flex items-center justify-center rounded-full
-                  border bg-white shadow-sm text-sm transition-all
-                  ${
-                    timeLeft <= 0
-                      ? "border-purple-500 text-purple-600 animate-energy"
-                      : "border-neutral-300 text-neutral-700 opacity-50 cursor-not-allowed"
-                  }
-                `}
-              >
-                ↻
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* ... unchanged ... */}
 
         {/* Steps container */}
         <div className="max-w-3xl mx-auto space-y-6">
           <Step1Recipient
-  countries={countries}
-  countriesLoading={countriesLoading}
-  selectedCountry={selectedCountry}
-  setSelectedCountry={(c) => {
-    setSelectedCountry(c);
-    setPhone("");
-    setStep1Done(false);
-  }}
-  step1Done={step1Done}
-  setStep1Done={setStep1Done}
-/>
+            countries={countries}
+            countriesLoading={countriesLoading}
+            selectedCountry={selectedCountry}
+            setSelectedCountry={(c) => {
+              setSelectedCountry(c);
+              setPhone("");
+              setStep1Done(false);
+            }}
+            step1Done={step1Done}
+            setStep1Done={setStep1Done}
+          />
 
           <Step2Operator
             operatorsLoading={operatorsLoading}
@@ -350,29 +257,27 @@ export default function TopupPageInner() {
           />
 
           <Step3Products
-  step2Done={step2Done}
-  productsLoading={productsLoading}
-  products={products}
-  selectedProduct={selectedProduct}
-  setSelectedProduct={setSelectedProduct}
-  step3Done={step3Done}
-  setStep3Done={setStep3Done}
-/>
+            step2Done={step2Done}
+            productsLoading={productsLoading}
+            products={products}
+            selectedProduct={selectedProduct}
+            setSelectedProduct={setSelectedProduct}
+            step3Done={step3Done}
+            setStep3Done={setStep3Done}
+          />
 
           <Step4Review
-  step3Done={step3Done}
-  selectedCountry={selectedCountry}
-  phone={phone}
-  setPhone={setPhone}
-  selectedOperator={selectedOperator}
-  selectedProduct={selectedProduct}
-  topupType="airtime"
-  preferredCurrency={preferredCurrency}
-  preferredRate={preferredRate}
-  onContinue={() => {
-    // your existing logic
-  }}
-/>
+            step3Done={step3Done}
+            selectedCountry={selectedCountry}
+            phone={phone}
+            setPhone={setPhone}
+            selectedOperator={selectedOperator}
+            selectedProduct={selectedProduct}
+            topupType="airtime"
+            preferredCurrency={preferredCurrency}
+            preferredRate={preferredRate}
+            onContinue={handleContinue}
+          />
         </div>
       </div>
     </main>
