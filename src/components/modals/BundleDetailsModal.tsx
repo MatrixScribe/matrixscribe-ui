@@ -309,7 +309,7 @@ export default function BundleDetailsModal({
 
             {showCoverage && (
               <div className="mt-4 grid grid-cols-3 gap-4">
-                {baseCountries.map((c, idx) => (
+                {baseCountries.map((c: any, idx: number) => (
                   <div
                     key={idx}
                     className="flex flex-col items-center gap-2 text-center"
