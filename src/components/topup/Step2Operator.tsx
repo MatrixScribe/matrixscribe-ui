@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Operator } from "./types";
+
+/* ------------------------------------------------------------
+   FIX: Define Operator type locally (matches your API + hooks)
+------------------------------------------------------------ */
+export type Operator = {
+  id?: string;
+  operatorId?: string;
+  name: string;
+  logo?: string;
+  logoUrls?: string[];
+};
 
 type Props = {
   operatorsLoading: boolean;
