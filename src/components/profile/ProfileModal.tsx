@@ -5,13 +5,15 @@ import ProfileSection from "./ProfileSection";
 interface ProfileModalProps {
   open: boolean;
   onClose: () => void;
-  user: any; // You can tighten this later if you want
+  user: any;
+  wallet: any; // required by ProfileSection
 }
 
 export function ProfileModal({
   open,
   onClose,
   user,
+  wallet,
 }: ProfileModalProps) {
   if (!open) return null;
 
@@ -26,7 +28,7 @@ export function ProfileModal({
           ✕
         </button>
 
-        <ProfileSection user={user} />
+        <ProfileSection user={user} wallet={wallet} />
       </div>
     </div>
   );
