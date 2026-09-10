@@ -11,9 +11,7 @@ type Props = {
   selectedOperator: Operator | null;
   selectedProduct: Product | null;
   topupType: "airtime" | "data";
-  preferredCurrency: string | null;        // ⭐ NEW
-  preferredRate: number | null;            // ⭐ NEW
-  onContinue: (payload: any) => void;
+  onContinue: () => void; // ⭐ aligned with TopupPageInner
 };
 
 export function Step4Review({
@@ -24,9 +22,7 @@ export function Step4Review({
   selectedOperator,
   selectedProduct,
   topupType,
-  preferredCurrency,      // ⭐ NEW
-  preferredRate,          // ⭐ NEW
-  onContinue
+  onContinue,
 }: Props) {
   const [clicked, setClicked] = useState(false);
 
@@ -52,7 +48,6 @@ export function Step4Review({
     ? "bg-yellow-400 shadow-[0_0_14px_rgba(234,179,8,0.8)]"
     : "bg-neutral-300";
 
-  /* 3D tilt */
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -83,14 +78,10 @@ export function Step4Review({
     };
   }, []);
 
-  /* ⭐ Preferred currency conversion */
   const operatorAmount =
-    selectedProduct?.customAmount ?? selectedProduct?.price ?? null;
-
-  const preferredAmount =
-    preferredCurrency && preferredRate && operatorAmount
-      ? (operatorAmount / preferredRate).toFixed(2)
-      : null;
+    (selectedProduct as any)?.customAmount ??
+    (selectedProduct as any)?.price ??
+    null;
 
   return (
     <div
@@ -133,7 +124,7 @@ export function Step4Review({
       {/* Title */}
       <div className="mb-6">
         <h2 className="text-[19px] font-semibold tracking-tight">
-          <img src="/review.png" className="w-55 h-auto opacity-100"/>
+          <img src="/review.png" className="w-55 h-auto opacity-100" />
         </h2>
         <p className="text-white/80 text-sm mt-1">
           Final check before checkout
@@ -142,7 +133,6 @@ export function Step4Review({
 
       {/* REVIEW CARD */}
       <div className="space-y-5 text-sm mb-8">
-
         {/* COUNTRY */}
         <div className="flex justify-between items-center">
           <span className="text-white/70">Country</span>
@@ -224,17 +214,9 @@ export function Step4Review({
         <div className="flex justify-between items-center">
           <span className="text-white/70">Amount</span>
           <span className="font-medium flex flex-col items-end">
-            {/* Operator currency */}
             {operatorAmount && (
               <span>
-                {selectedProduct?.currency} {operatorAmount}
-              </span>
-            )}
-
-            {/* Preferred currency */}
-            {preferredAmount && (
-              <span className="text-[11px] text-yellow-200/90">
-                ≈ {preferredCurrency} {preferredAmount}
+                {(selectedProduct as any)?.currency} {operatorAmount}
               </span>
             )}
           </span>
@@ -254,23 +236,8 @@ export function Step4Review({
         <button
           onClick={() => {
             if (!step4Ready) return;
-
-            const payload = {
-              country: selectedCountry?.iso2,
-              msisdn,
-              operatorId: selectedOperator?.id,
-              productId: selectedProduct?.id,
-              amount: operatorAmount,
-              currency: selectedProduct?.currency,
-
-              // ⭐ Preferred currency included in payload
-              preferredCurrency,
-              preferredRate,
-              preferredAmount,
-            };
-
             setClicked(true);
-            setTimeout(() => onContinue(payload), 350);
+            setTimeout(() => onContinue(), 350);
           }}
           disabled={!step4Ready}
           className={`
