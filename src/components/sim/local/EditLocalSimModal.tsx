@@ -84,23 +84,23 @@ export function EditLocalSimModal({
         <h2 className="text-lg font-semibold mb-6">Edit Local SIM</h2>
 
         {/* LIVE PREVIEW */}
-        {{selectedCountry && phone.length > 3 && (
-  <div className="mb-6">
-    <LocalSimCard
-      phone={phone}
-      cardholder=""
-      simCategory={sim.simCategory}
-      operatorLogo={
-        selectedOperator?.logo ||
-        selectedOperator?.logoUrls?.[0] ||
-        sim.operatorLogo
-      }
-      flag={selectedCountry.flag}
-      signupDate={sim.signupDate || "Preview"}
-      simStatus={sim.simStatus || "active"}   // simStatus required
-    />
-  </div>
-)}
+        {selectedCountry && phone.length > 3 && (
+          <div className="mb-6">
+            <LocalSimCard
+              phone={phone}
+              cardholder=""
+              simCategory={sim.simCategory}
+              operatorLogo={
+                selectedOperator?.logo ||
+                selectedOperator?.logoUrls?.[0] ||
+                sim.operatorLogo
+              }
+              flag={selectedCountry.flag}
+              signupDate={sim.signupDate || "Preview"}
+              simStatus={sim.simStatus || "active"}
+            />
+          </div>
+        )}
 
         {/* COUNTRY SELECTOR */}
         <div className="mb-5">
