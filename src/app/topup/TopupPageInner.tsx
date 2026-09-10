@@ -363,11 +363,15 @@ export default function TopupPageInner() {
   step3Done={step3Done}
   selectedCountry={selectedCountry}
   phone={phone}
-  setPhone={setPhone}          // ⭐ REQUIRED
+  setPhone={setPhone}
   selectedOperator={selectedOperator}
   selectedProduct={selectedProduct}
-  topupType={topupType}
-  onContinue={handleContinue}
+  topupType="airtime"
+  preferredCurrency={preferredCurrency}
+  preferredRate={preferredRate}
+  onContinue={() => {
+    // your existing logic
+  }}
 />
         </div>
       </div>
