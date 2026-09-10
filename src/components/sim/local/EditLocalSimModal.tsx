@@ -96,7 +96,8 @@ export function EditLocalSimModal({
                 sim.operatorLogo
               }
               flag={selectedCountry.flag}
-              signupDate={sim.signupDate}
+              signupDate={sim.signupDate || "Preview"}
+              simStatus={sim.simStatus || "active"}   {/* ⭐ REQUIRED FIX */}
             />
           </div>
         )}
