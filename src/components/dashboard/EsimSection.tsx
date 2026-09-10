@@ -43,21 +43,19 @@ export function EsimSection({ flag, cardholderName }: any) {
       iso2: config.country.iso2 || config.country.iso,
     };
 
-    // ⭐ Set config FIRST
     setPendingEsimConfig({
       ...config,
       country: fixedCountry,
     });
 
-    // ⭐ THEN open BundlesModal AFTER state is applied
     setTimeout(() => {
       setShowCreate(false);
       setShowBundles(true);
     }, 0);
   };
 
-  // ⭐ When user selects a bundle
-  const handleBundleSelected = (bundle: any) => {
+  // ⭐ When checkout completes inside BundlesModal
+  const handleCheckoutComplete = (bundle: any) => {
     setShowBundles(false);
 
     setESims((prev) => [
@@ -103,26 +101,20 @@ export function EsimSection({ flag, cardholderName }: any) {
         countries={countries}
       />
 
-      {/* BUNDLES MODAL */}
-      <BundlesModal
-        open={showBundles}
-        onClose={() => setShowBundles(false)}
-        countryIso={pendingEsimConfig?.country?.iso2}
-        onSelectBundle={handleBundleSelected}
-        onCountryChange={(iso2) => {
-          setShowBundles(false);
-
-          setPendingEsimConfig((prev) => ({
-            ...prev,
-            country: { ...prev.country, iso2 },
-          }));
-
-          setTimeout(() => {
-            setShowBundles(true);
-          }, 0);
-        }}
-        countries={countries}
-      />
+      {/* BUNDLES MODAL — updated to match new API */}
+      {pendingEsimConfig && (
+        <BundlesModal
+          open={showBundles}
+          onClose={() => setShowBundles(false)}
+          groupName={pendingEsimConfig.label}
+          bundles={pendingEsimConfig.bundles || []}
+          loading={false}
+          preferredCurrency={null}
+          token={null}
+          fxMidRate={1}
+          countries={countries}
+        />
+      )}
 
       {/* EMPTY STATE */}
       {eSims.length === 0 && (
