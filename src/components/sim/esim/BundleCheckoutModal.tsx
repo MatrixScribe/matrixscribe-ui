@@ -35,13 +35,15 @@ export default function BundleCheckoutModal({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   /* ---------------------------------------------------
-     PARTICLE SHIMMER BACKGROUND (always runs)
+     PARTICLE SHIMMER BACKGROUND
   --------------------------------------------------- */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
     let particles: any[] = [];
     const count = 45;
 
@@ -106,6 +108,7 @@ export default function BundleCheckoutModal({
      PAYSTACK INIT
   --------------------------------------------------- */
   async function handlePay() {
+    if (!bundle) return; // ⭐ TS safety
     if (!fxZarRate || !token) return;
 
     setLoading(true);
@@ -117,7 +120,7 @@ export default function BundleCheckoutModal({
         type: "esim_purchase",
         bundleName: bundle.name,
         priceUsd: usd,
-        countryIso,
+        countryIso: countryIso ?? "",
         validityDays: bundle.validityDays,
       };
 
