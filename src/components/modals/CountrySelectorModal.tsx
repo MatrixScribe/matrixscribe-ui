@@ -1,6 +1,25 @@
 "use client";
 
-export function CountrySelectorModal({ open, onClose, onSelect, countries }) {
+interface Country {
+  name: string;
+  iso2: string;
+  flag: string;
+  dialCode?: string;
+}
+
+interface CountrySelectorModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (country: Country) => void;
+  countries: Country[];
+}
+
+export function CountrySelectorModal({
+  open,
+  onClose,
+  onSelect,
+  countries,
+}: CountrySelectorModalProps) {
   if (!open) return null;
 
   return (
@@ -15,7 +34,7 @@ export function CountrySelectorModal({ open, onClose, onSelect, countries }) {
         <h2 className="text-lg font-semibold mb-3">Select Country</h2>
 
         <div className="flex flex-col gap-2">
-          {countries.map((c) => (
+          {countries.map((c: Country) => (
             <button
               key={c.iso2}
               onClick={() => onSelect(c)}
