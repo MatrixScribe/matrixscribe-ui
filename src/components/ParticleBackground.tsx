@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function ParticleBackground() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null); // ⭐ FIXED
+
   useEffect(() => {
-    const canvas = document.getElementById("particleCanvas");
+    const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let particles = [];
-    let animationFrameId;
+    let particles: any[] = [];
+    let animationFrameId: number;
 
     const PARTICLE_COUNT = 120;
 
@@ -69,6 +71,7 @@ export default function ParticleBackground() {
 
   return (
     <canvas
+      ref={canvasRef} // ⭐ FIXED
       id="particleCanvas"
       className="absolute inset-0 w-full h-full opacity-90 pointer-events-none"
     />
