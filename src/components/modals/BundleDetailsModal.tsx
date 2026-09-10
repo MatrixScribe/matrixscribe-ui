@@ -351,7 +351,7 @@ export default function BundleDetailsModal({
                     px-1 py-2
                   "
                 >
-                  {roamingCountries.map((c, idx) => (
+                  {roamingCountries.map((c: any, idx: number) => (
                     <div key={idx} className="flex-shrink-0">
                       {c.flag && (
                         <img
