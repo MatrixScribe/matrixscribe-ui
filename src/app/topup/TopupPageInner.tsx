@@ -350,15 +350,14 @@ export default function TopupPageInner() {
           />
 
           <Step3Products
-            step2Done={step2Done}
-            productsLoading={productsLoading}
-            products={products}
-            groupedProducts={groupedProducts}
-            selectedProduct={selectedProduct}
-            setSelectedProduct={setSelectedProduct}
-            step3Done={step3Done}
-            setStep3Done={setStep3Done}
-          />
+  step2Done={step2Done}
+  productsLoading={productsLoading}
+  products={products}
+  selectedProduct={selectedProduct}
+  setSelectedProduct={setSelectedProduct}
+  step3Done={step3Done}
+  setStep3Done={setStep3Done}
+/>
 
           <Step4Review
             step3Done={step3Done}
