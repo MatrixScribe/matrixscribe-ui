@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-import { Country, Operator, Product } from "@/components/topup/types";
+// ⭐ FIXED — only import Country
+import { Country } from "@/components/topup/types";
+
 import { Step1Recipient } from "@/components/topup/Step1Recipient";
 import { Step2Operator } from "@/components/topup/Step2Operator";
 import { Step3Products } from "@/components/topup/Step3Products";
@@ -44,7 +46,7 @@ export default function TopupPageInner() {
     setSelectedOperator,
     loading: operatorsLoading,
     step2Done,
-    setStep2Done
+    setStep2Done,
   } = useOperators(step1Done, selectedCountry, API_BASE);
 
   // Products
@@ -55,7 +57,7 @@ export default function TopupPageInner() {
     selectedProduct,
     setSelectedProduct,
     step3Done,
-    setStep3Done
+    setStep3Done,
   } = useProducts(
     step2Done,
     selectedOperator,
@@ -70,6 +72,7 @@ export default function TopupPageInner() {
       try {
         const res = await fetch(`${API_BASE}/api/countries`);
         const data = await res.json();
+
         if (Array.isArray(data.countries)) {
           setCountries(data.countries);
           setSelectedCountry(null);
@@ -80,6 +83,7 @@ export default function TopupPageInner() {
         setCountriesLoading(false);
       }
     }
+
     loadCountries();
   }, [API_BASE]);
 
@@ -87,15 +91,19 @@ export default function TopupPageInner() {
 
   const isPhoneValid = useMemo(() => {
     if (!phoneRules) return false;
+
     const digits = phone.replace(/\D/g, "");
+
     if (digits.length < phoneRules.minLength) return false;
     if (digits.length > phoneRules.maxLength) return false;
+
     if (phoneRules.regex) {
       try {
         const re = new RegExp(phoneRules.regex);
         if (!re.test(digits)) return false;
       } catch {}
     }
+
     return true;
   }, [phone, phoneRules]);
 
@@ -109,7 +117,7 @@ export default function TopupPageInner() {
     apiBase: API_BASE,
     setSelectedOperator,
     setDisplayOperators,
-    setStep2Done
+    setStep2Done,
   });
 
   // Continue to checkout
@@ -142,7 +150,7 @@ export default function TopupPageInner() {
       productId: selectedProduct.id,
       productName: selectedProduct.label || selectedProduct.name,
       amount,
-      currency
+      currency,
     };
 
     router.push(
@@ -171,9 +179,11 @@ export default function TopupPageInner() {
 
   useEffect(() => {
     if (timeLeft <= 0) return;
+
     const interval = setInterval(() => {
       setTimeLeft((t) => t - 1);
     }, 1000);
+
     return () => clearInterval(interval);
   }, [timeLeft]);
 
@@ -193,25 +203,23 @@ export default function TopupPageInner() {
 
   return (
     <main className="relative min-h-screen bg-[#fafafa] text-neutral-900 px-4 py-10 overflow-hidden">
-
-      {/* ⭐ COUNTRY FLAG BACKGROUND */}
+      {/* COUNTRY FLAG BACKGROUND */}
       {selectedCountry && (
         <div
           className="
-  absolute inset-0 opacity-[0.2]
-  bg-center bg-no-repeat
-  bg-cover sm:bg-contain
-  pointer-events-none
-"
+            absolute inset-0 opacity-[0.2]
+            bg-center bg-no-repeat
+            bg-cover sm:bg-contain
+            pointer-events-none
+          "
           style={{
-            backgroundImage: `url('${selectedCountry.flag}')`
+            backgroundImage: `url('${selectedCountry.flag}')`,
           }}
         />
       )}
 
       {/* CONTENT WRAPPER */}
       <div className="relative z-10">
-
         {/* Sticky premium header */}
         <div
           className="
@@ -222,7 +230,6 @@ export default function TopupPageInner() {
           "
         >
           <div className="max-w-3xl mx-auto flex items-center justify-between px-1">
-
             {/* LEFT SIDE */}
             <div className="flex items-center gap-3">
               <button
@@ -243,8 +250,13 @@ export default function TopupPageInner() {
 
               <div>
                 <h1 className="text-[20px] md:text-[24px] font-semibold tracking-tight">
-                  <img src="/logo-alone.png" alt="Redatacom" className="h-10 opacity-90" />
+                  <img
+                    src="/logo-alone.png"
+                    alt="Redatacom"
+                    className="h-10 opacity-90"
+                  />
                 </h1>
+
                 <p className="text-neutral-600 text-xs md:text-[10px] mt-0.5 flex items-center gap-1">
                   <span className="text-emerald-500 font-semibold animate-pulse">
                     Global
@@ -256,7 +268,6 @@ export default function TopupPageInner() {
 
             {/* RIGHT SIDE: TIMER + RESTART */}
             <div className="flex items-center gap-4">
-
               {/* Circular Timer */}
               <div className="relative h-10 w-10 flex items-center justify-center">
                 <svg className="absolute inset-0 h-full w-full">
@@ -268,6 +279,7 @@ export default function TopupPageInner() {
                     strokeWidth="3"
                     fill="none"
                   />
+
                   <circle
                     cx="20"
                     cy="20"
@@ -281,11 +293,13 @@ export default function TopupPageInner() {
                     strokeLinecap="round"
                   />
                 </svg>
+
                 <span
-                  className={`
-                    text-[11px] font-semibold
-                    ${timeLeft <= 60 ? "text-red-600 animate-pulse" : "text-neutral-700"}
-                  `}
+                  className={`text-[11px] font-semibold ${
+                    timeLeft <= 60
+                      ? "text-red-600 animate-pulse"
+                      : "text-neutral-700"
+                  }`}
                 >
                   {formatTime(timeLeft)}
                 </span>
@@ -314,7 +328,6 @@ export default function TopupPageInner() {
 
         {/* Steps container */}
         <div className="max-w-3xl mx-auto space-y-6">
-
           <Step1Recipient
             apiBase={API_BASE}
             countries={countries}
@@ -362,7 +375,6 @@ export default function TopupPageInner() {
             topupType={topupType}
             onContinue={handleContinue}
           />
-
         </div>
       </div>
     </main>
