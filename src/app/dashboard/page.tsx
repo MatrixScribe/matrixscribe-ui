@@ -178,7 +178,7 @@ export default function Dashboard() {
   onClick={() => setTab("wallet")}
   className={`
     flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2
-    ${tab === "wallet" ? "bg-purple-300 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"}
+    ${tab === "wallet" ? "bg-ffff text-purple-600 shadow-md" : "bg-ffff text-neutral-700"}
   `}
 >
   

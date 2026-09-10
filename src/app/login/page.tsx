@@ -165,7 +165,7 @@ export default function LoginPage() {
         <img src="/logo-signup.png" className="h-12 opacity-90 mb-6" />
 
         <h1 className="text-2xl font-semibold tracking-tight">
-          Login to Your Account
+          <img src="/loginicon.png" className="w-auto h-25 opacity-100" />
         </h1>
 
         <div className="mt-6 w-full max-w-xl rounded-3xl p-8 bg-ffff shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
@@ -177,10 +177,10 @@ export default function LoginPage() {
               className={`px-4 py-2 rounded-xl ${
                 mode === "phone"
                   ? "bg-purple-600 text-white"
-                  : "bg-white/10 text-neutral-300"
+                  : "bg-ffff text-neutral-300"
               }`}
             >
-              Enter my number
+              Enter Phone Number
             </button>
 
             <button
@@ -188,10 +188,10 @@ export default function LoginPage() {
               className={`px-4 py-2 rounded-xl ${
                 mode === "email"
                   ? "bg-purple-600 text-white"
-                  : "bg-white/10 text-neutral-300"
+                  : "bg-ffff text-neutral-300"
               }`}
             >
-              Use my email
+              Login with Email
             </button>
           </div>
 

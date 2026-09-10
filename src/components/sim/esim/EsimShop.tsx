@@ -281,7 +281,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
       </div>
 
       {/* GROUP SELECTOR WITH PARTICLE BACKGROUND */}
-      <div className="relative bg-white/90 rounded-2xl p-4 shadow-sm border border-neutral-200/70 backdrop-blur overflow-hidden">
+      <div className="relative bg-ffff rounded-2xl p-4 shadow-sm border border-neutral-200/70 backdrop-blur overflow-hidden">
 
         {/* ⭐ PARTICLE CANVAS */}
         <canvas

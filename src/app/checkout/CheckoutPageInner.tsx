@@ -3,9 +3,20 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
+// ⭐ Preferred currency context
+import { usePreferredCurrency } from "@/components/context/PreferredCurrencyContext";
+
+// ⭐ Auth store (token)
+import { useAuthStore } from "@/store/authStore";
+
 export default function CheckoutPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const { preferredCurrency, preferredRate } = usePreferredCurrency();
+
+  // ⭐ Get token from auth store
+  const token = useAuthStore((s) => s.token);
 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE ||
@@ -17,13 +28,12 @@ export default function CheckoutPageInner() {
   const [quote, setQuote] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // NEW: Terms checkbox + modal
   const [agreed, setAgreed] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
 
-  // 3D tilt ref
   const cardRef = useRef<HTMLDivElement | null>(null);
 
+  /* 3D tilt */
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
@@ -32,8 +42,10 @@ export default function CheckoutPageInner() {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
+
       const rotateX = (y / rect.height) * -10;
       const rotateY = (x / rect.width) * 10;
+
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
     };
 
@@ -61,6 +73,13 @@ export default function CheckoutPageInner() {
   const operatorAmount = payload.amount;
   const operatorCurrency = payload.currency;
 
+  /* ⭐ Preferred currency conversion */
+  const preferredAmount =
+    preferredCurrency && preferredRate
+      ? operatorAmount / preferredRate
+      : null;
+
+  /* ⭐ Load quote using preferred currency */
   useEffect(() => {
     async function loadQuote() {
       try {
@@ -70,7 +89,7 @@ export default function CheckoutPageInner() {
           body: JSON.stringify({
             operatorAmount,
             operatorCurrency,
-            userCurrency: "USD",
+            userCurrency: preferredCurrency || "USD",
           }),
         });
 
@@ -83,8 +102,9 @@ export default function CheckoutPageInner() {
     }
 
     loadQuote();
-  }, [API_BASE, operatorAmount, operatorCurrency]);
+  }, [API_BASE, operatorAmount, operatorCurrency, preferredCurrency]);
 
+  /* ⭐ Paystack → Reloadly → Dashboard */
   async function handlePay() {
     if (!quote || quote.error) return;
     if (!agreed) return;
@@ -96,21 +116,28 @@ export default function CheckoutPageInner() {
     try {
       const payRes = await fetch(`${API_BASE}/api/paystack/initiate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ⭐ FIXED — REQUIRED
+        },
         body: JSON.stringify({
           amountZar: finalZar,
-          totalChargeUSD: quote.totalChargeUSD,
+          totalChargePreferred: quote.totalChargeUSD,
+          preferredCurrency,
+          preferredRate,
+          preferredAmount,
+
           topupPayload: {
             type: payload.type,
             operatorId: payload.operatorId,
             operatorName: payload.operatorName,
-            operatorAmount: operatorAmount,
-            operatorCurrency: operatorCurrency,
+            operatorAmount,
+            operatorCurrency,
             phone: payload.phone,
             countryCode: payload.country,
             productId: payload.productId,
             productName: payload.productName,
-            operatorCostUSD: quote.operatorCostUSD,
+            operatorCostPreferred: quote.operatorCostUSD,
           },
         }),
       });
@@ -123,6 +150,7 @@ export default function CheckoutPageInner() {
         return;
       }
 
+      // ⭐ Redirect to Paystack
       window.location.href = payData.authorization_url;
     } catch (err) {
       console.error("PAYSTACK INIT ERROR", err);
@@ -138,11 +166,10 @@ export default function CheckoutPageInner() {
     typeof quote.serviceFeeUSD === "number" &&
     typeof quote.totalChargeUSD === "number" &&
     typeof quote.sellRate === "number";
-
+    
   return (
     <main className="min-h-screen bg-neutral-100 px-4 py-10 flex justify-center">
       <div className="w-full max-w-lg space-y-2">
-
         {/* HEADER */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight"></h1>
@@ -169,21 +196,6 @@ export default function CheckoutPageInner() {
           "
           style={{ transformStyle: "preserve-3d" }}
         >
-          {/* Gold Pulse Keyframes */}
-          <style>{`
-            @keyframes goldPulse {
-              0% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
-              50% { box-shadow: 0 0 32px rgba(234,179,8,0.55); }
-              100% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
-            }
-
-            @keyframes greenCheck {
-              0% { transform: scale(0.4); opacity: 0; }
-              50% { transform: scale(1.2); opacity: 1; }
-              100% { transform: scale(1); opacity: 1; }
-            }
-          `}</style>
-
           {/* PURPLE HEADER */}
           <div className="p-6 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
             <div className="flex items-center justify-between">
@@ -194,6 +206,7 @@ export default function CheckoutPageInner() {
                     className="h-15 w-15 object-contain rounded-md shadow"
                   />
                 )}
+
                 <div>
                   <h2 className="text-lg font-semibold">{payload.operatorName}</h2>
                   <p className="text-xs opacity-80 tracking-wide">
@@ -260,52 +273,50 @@ export default function CheckoutPageInner() {
 
             {hasQuote && (
               <div className="space-y-3 text-sm">
+                {/* Operator face value */}
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">Face Value</span>
+                  <span className="text-neutral-500">Airtime or Data Bundle</span>
                   <span className="font-medium">
                     {operatorAmount} {operatorCurrency}
                   </span>
                 </div>
 
+                {/* Preferred currency */}
+                {preferredAmount && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">
+                      Preferred ({preferredCurrency})
+                    </span>
+                    <span className="font-medium">
+                      {preferredCurrency} {preferredAmount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+
+                {/* FX Rate */}
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">FX Rate</span>
+                  <span className="text-neutral-500">Rate</span>
                   <span className="font-medium">
-                    1 USD = {quote.sellRate.toFixed(4)} {operatorCurrency}
+                    {quote.sellRate.toFixed(4)}{" "}
+                    {operatorCurrency}
                   </span>
                 </div>
 
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Subtotal</span>
-                  <span className="font-medium">
-                    ${quote.operatorCostUSD.toFixed(4)}
-                  </span>
-                </div>
+                
 
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Service Fee</span>
-                  <span className="font-medium">
-                    ${quote.serviceFeeUSD.toFixed(2)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between pt-2 border-t border-neutral-200">
-                  <span className="text-neutral-500">Total (USD)</span>
-                  <span className="font-semibold">
-                    ${quote.totalChargeUSD.toFixed(4)}
-                  </span>
-                </div>
-
+                {/* Local currency */}
                 <div className="flex justify-between">
                   <span className="text-neutral-500">
-                    Your Total in {operatorCurrency}
+                    Total in {operatorCurrency} (including service fees)
                   </span>
                   <span className="font-semibold">
                     {quote.approxLocal.toFixed(2)} {operatorCurrency}
                   </span>
                 </div>
 
+                {/* Paystack ZAR */}
                 <div className="flex justify-between pt-2 border-t border-neutral-200">
-                  <span className="text-neutral-500">you’ll pay redatacom in ZAR</span>
+                  <span className="text-neutral-500">You’ll pay Redatacom in ZAR</span>
                   <span className="font-semibold">
                     {quote.paystackAmount.toFixed(2)} ZAR
                   </span>
@@ -321,16 +332,14 @@ export default function CheckoutPageInner() {
         {/* AGREEMENT CHECKBOX */}
         <div className="px-1 pb-2">
           <label className="flex items-start gap-3 cursor-pointer select-none">
-
-            {/* Animated Checkbox */}
             <div className="relative">
               <input
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="
-                  h-5 w-5 rounded-md border border-purple-400 
-                  text-purple-600 focus:ring-purple-500 
+                  h-5 w-5 rounded-md border border-purple-400
+                  text-purple-600 focus:ring-purple-500
                   transition-all cursor-pointer
                 "
               />
@@ -366,70 +375,70 @@ export default function CheckoutPageInner() {
           onClick={handlePay}
           disabled={!hasQuote || loading || !agreed}
           className="
-            w-full rounded-2xl bg-purple-600 py-3 text-sm font-semibold text-white 
+            w-full rounded-2xl bg-purple-600 py-3 text-sm font-semibold text-white
             hover:bg-purple-700 transition shadow-lg
             disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-purple-600
           "
         >
           {loading ? "Processing…" : "Pay"}
         </button>
-      </div>
 
-      {/* TERMS MODAL */}
-      {showTermsModal && (
-        <div
-          className="
-            fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[999]
-            animate-[fadeIn_0.25s_ease-out]
-          "
-          onClick={() => setShowTermsModal(false)}
-        >
+        {/* TERMS MODAL */}
+        {showTermsModal && (
           <div
             className="
-              bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-xl
-              border border-neutral-200 animate-[slideUp_0.3s_ease-out]
+              fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[999]
+              animate-[fadeIn_0.25s_ease-out]
             "
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setShowTermsModal(false)}
           >
-            <div className="p-4 border-b bg-purple-600 text-white">
-              <h2 className="text-lg font-semibold">Terms & Conditions</h2>
-            </div>
+            <div
+              className="
+                bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-xl
+                border border-neutral-200 animate-[slideUp_0.3s_ease-out]
+              "
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b bg-purple-600 text-white">
+                <h2 className="text-lg font-semibold">Terms & Conditions</h2>
+              </div>
 
-            <div className="p-4 overflow-y-auto text-sm text-neutral-700 max-h-[60vh] space-y-4">
-              <p>
-                These are the Redatacom Terms & Conditions. By using our platform,
-                you agree to our policies regarding payments, refunds, and service
-                delivery. Please review the full Terms on our main Terms page for
-                complete details.
-              </p>
+              <div className="p-4 overflow-y-auto text-sm text-neutral-700 max-h-[60vh] space-y-4">
+                <p>
+                  These are the Redatacom Terms & Conditions. By using our platform,
+                  you agree to our policies regarding payments, refunds, and service
+                  delivery. Please review the full Terms on our main Terms page for
+                  complete details.
+                </p>
 
-              <p>
-                • All top‑ups are final once delivered.  
-                <br />
-                • Ensure the phone number and operator are correct.  
-                <br />
-                • Payments are processed securely.  
-                <br />
-                • Refunds only apply if the operator confirms non‑delivery.  
-              </p>
+                <p>
+                  • All top‑ups are final once delivered.
+                  <br />
+                  • Ensure the phone number and operator are correct.
+                  <br />
+                  • Payments are processed securely.
+                  <br />
+                  • Refunds only apply if the operator confirms non‑delivery.
+                </p>
 
-              <p>
-                For the full legal document, visit the official Terms page on our
-                website.
-              </p>
-            </div>
+                <p>
+                  For the full legal document, visit the official Terms page on our
+                  website.
+                </p>
+              </div>
 
-            <div className="p-4 border-t flex justify-end">
-              <button
-                onClick={() => setShowTermsModal(false)}
-                className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700 transition"
-              >
-                Close
-              </button>
+              <div className="p-4 border-t flex justify-end">
+                <button
+                  onClick={() => setShowTermsModal(false)}
+                  className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700 transition"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   );
 }

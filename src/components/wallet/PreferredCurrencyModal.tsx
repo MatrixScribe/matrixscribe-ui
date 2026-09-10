@@ -2,18 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import { FxRate } from "@/types/fx";
+import { usePreferredCurrency } from "@/components/context/PreferredCurrencyContext";
 
 interface PreferredCurrencyModalProps {
   onClose: () => void;
-  onSelect: (currency: string, sellRate: number) => void; // ⭐ FIXED
 }
 
-export function PreferredCurrencyModal({
-  onClose,
-  onSelect,
-}: PreferredCurrencyModalProps) {
+export function PreferredCurrencyModal({ onClose }: PreferredCurrencyModalProps) {
   const [rates, setRates] = useState<FxRate[]>([]);
   const [search, setSearch] = useState("");
+
+  const { setPreferredCurrency } = usePreferredCurrency(); // ⭐ GLOBAL CONTEXT
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -134,7 +133,10 @@ export function PreferredCurrencyModal({
           {filtered.map((r) => (
             <button
               key={r.currency}
-              onClick={() => onSelect(r.currency, r.sell_rate)} // ⭐ FIXED
+              onClick={() => {
+                setPreferredCurrency(r.currency, r.sell_rate); // ⭐ GLOBAL UPDATE
+                onClose();
+              }}
               className="
                 w-full flex items-center justify-between
                 px-4 py-3 rounded-xl
@@ -148,7 +150,7 @@ export function PreferredCurrencyModal({
                   {r.currency}
                 </p>
                 <p className="text-xs text-purple-200 opacity-80">
-                  1 USD = {r.sell_rate.toFixed(4)} {r.currency} {/* ⭐ FIXED */}
+                  {r.sell_rate.toFixed(4)} {r.currency}
                 </p>
               </div>
 

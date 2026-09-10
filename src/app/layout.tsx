@@ -2,6 +2,9 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import Script from "next/script";
 
+// ⭐ Add the provider
+import { PreferredCurrencyProvider } from "@/components/context/PreferredCurrencyContext";
+
 export const metadata = {
   title: "Redatacom Global Recharge",
   description: "Instant global airtime & data top-ups",
@@ -36,7 +39,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
 
       <body>
-        {children}
+        {/* ⭐ Wrap entire app in PreferredCurrencyProvider */}
+        <PreferredCurrencyProvider>
+          {children}
+        </PreferredCurrencyProvider>
 
         {/* Service Worker Registration */}
         <Script id="sw-register">

@@ -7,7 +7,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSelect: (c: Country) => void;
-  countries: Country[];
+  countries: Country[] | null | undefined;
 };
 
 export function CountrySelectorModal({
@@ -18,15 +18,19 @@ export function CountrySelectorModal({
 }: Props) {
   const [query, setQuery] = useState("");
 
+  // ⭐ Always ensure countries is an array
+  const safeCountries = Array.isArray(countries) ? countries : [];
+
+  // ⭐ Filtering logic
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return countries.filter((c) => {
+    return safeCountries.filter((c) => {
       const name = c.name?.toLowerCase() || "";
-      const iso = (c.iso2 || c.iso)?.toLowerCase() || "";   // ⭐ FIX
-      const dial = c.dialCode || "";
-      return name.includes(q) || iso.includes(q) || dial.includes(query);
+      const iso = (c.iso2 || c.iso || "").toLowerCase();
+      const dial = (c.dialCode || "").toLowerCase();
+      return name.includes(q) || iso.includes(q) || dial.includes(q);
     });
-  }, [query, countries]);
+  }, [query, safeCountries]);
 
   if (!open) return null;
 
@@ -36,27 +40,24 @@ export function CountrySelectorModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md max-h-[80vh] bg-ffff rounded-3xl overflow-hidden"
+        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* HEADER */}
-        <div className="p-5 border-b border-white/30 bg-ffff text-white">
-          <h2 className="text-lg font-semibold tracking-wide">Select Country</h2>
-          <p className="text-sm opacity-80">type or scroll to choose:</p>
+        <div className="p-5 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold">Select Country</h2>
+          <p className="text-sm text-neutral-500">Search or scroll to choose</p>
         </div>
 
-        {/* SEARCH BAR */}
-        <div className="p-2 bg-ffff">
-          <div className="flex items-center gap-3 bg-ffff rounded-2xl px-4 py-3">
-            <span className="text-purple-600 text-lg">🔍</span>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search country, ISO code, or dial code"
-              className="w-full bg-transparent outline-none text-sm placeholder:text-grey"
-            />
-          </div>
+        {/* SEARCH */}
+        <div className="p-3">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search country, ISO code, or dial code"
+            className="w-full px-4 py-3 rounded-xl border bg-white"
+          />
         </div>
 
         {/* LIST */}
@@ -67,30 +68,44 @@ export function CountrySelectorModal({
             </p>
           )}
 
-          <div className="flex flex-col gap-2">
-            {filtered.map((c, index) => (
+          {filtered.map((c, index) => {
+            const iso2 = c.iso2 || c.iso || ""; // ⭐ FIXED
+
+            return (
               <button
-                key={`${c.iso2 || c.iso}-${index}`}
+                key={`${iso2}-${c.name}-${index}`} // ⭐ ALWAYS UNIQUE
                 onClick={() => {
                   onSelect({
-                    ...c,
-                    iso2: c.iso2 || c.iso,   // ⭐ FIX
+                    name: c.name,
+                    iso2, // ⭐ ALWAYS RETURN ISO2
+                    dialCode: c.dialCode,
+                    flag: c.flag,
                   });
                   onClose();
                 }}
-                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-ffff border border-neutral-200 hover:border-purple-500 transition-all"
+                className="
+                  flex items-center justify-between w-full px-4 py-3
+                  rounded-xl border border-neutral-200 bg-white
+                  hover:border-purple-500 hover:bg-purple-50
+                  transition-all mb-2
+                "
               >
                 <div className="flex items-center gap-3">
-                  <img src={c.flag} className="h-auto w-10 rounded-md" />
-                  <span className="text-sm font-medium text-white">{c.name}</span>
+                  <img
+                    src={c.flag}
+                    className="h-6 w-6 rounded-md shadow-sm"
+                  />
+                  <span className="text-sm font-medium text-neutral-800">
+                    {c.name}
+                  </span>
                 </div>
 
-                <span className="text-purple-300 text-sm font-semibold">
+                <span className="text-purple-600 text-sm font-semibold">
                   {c.dialCode}
                 </span>
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>

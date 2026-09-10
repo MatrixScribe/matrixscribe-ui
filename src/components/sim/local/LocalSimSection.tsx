@@ -3,10 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 
 import { LocalSimCard } from "./LocalSimCard";
-import { DashboardAutoDetect } from "@/components/DashboardAutoDetect";
-import { DashboardTopupProducts } from "@/components/DashboardTopupProducts";
 
-import { AddLocalSimModal } from "./AddLocalSimModal";
+// Removed AddLocalSimModal import
 import { EditLocalSimModal } from "./EditLocalSimModal";
 import { DeleteLocalSimModal } from "./DeleteLocalSimModal";
 
@@ -19,7 +17,7 @@ export function LocalSimSection({
   country,
   signupDate,
   simStatus,
-  isActive, // ⭐ passed from Dashboard
+  isActive,
 }) {
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE || "https://redatacom-end.onrender.com";
@@ -70,15 +68,9 @@ export function LocalSimSection({
   /* ------------------------------------------------------------
      MODALS
   ------------------------------------------------------------ */
-  const [showAddModal, setShowAddModal] = useState(false);
+  // Removed Add SIM modal state
   const [editingSim, setEditingSim] = useState<any | null>(null);
   const [deletingSim, setDeletingSim] = useState<any | null>(null);
-
-  /* ------------------------------------------------------------
-     TOPUP FLOW
-  ------------------------------------------------------------ */
-  const [selectedOperator, setSelectedOperator] = useState<any>(null);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   /* ------------------------------------------------------------
      SWIPE ENGINE
@@ -108,24 +100,6 @@ export function LocalSimSection({
 
     const index = Math.round(container.scrollLeft / total);
     setCurrentIndex(index);
-  };
-
-  /* ------------------------------------------------------------
-     ADD SIM
-  ------------------------------------------------------------ */
-  const handleAddLocalSim = (sim: any) => {
-    const newSim = {
-      ...sim,
-      id: `sim-${Date.now()}`,
-      isPrimary: false,
-    };
-
-    setLocalSims((prev) => [...prev, newSim]);
-    setShowAddModal(false);
-
-    setTimeout(() => {
-      scrollToIndex(localSims.length);
-    }, 50);
   };
 
   /* ------------------------------------------------------------
@@ -164,12 +138,7 @@ export function LocalSimSection({
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">Local SIMs</h2>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 rounded-xl bg-ffff text-purple-700 font-semibold hover:bg-white transition"
-        >
-          + Add Local SIM
-        </button>
+        {/* Removed Add Local SIM button */}
       </div>
 
       {/* SWIPEABLE SIM CARDS */}
@@ -192,7 +161,7 @@ export function LocalSimSection({
               signupDate={sim.signupDate}
               simStatus={sim.simStatus}
               onTopUp={() => {
-                const el = document.getElementById("dashboard-autodetect");
+                const el = document.getElementById("topup-section");
                 if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
             />
@@ -240,41 +209,6 @@ export function LocalSimSection({
           ))}
         </div>
       )}
-
-      {/* AUTO-DETECT — ONLY RUN IF TAB ACTIVE + VALID MSISDN */}
-      {isActive &&
-        currentSim &&
-        currentSim.phone &&
-        currentSim.phone.length >= 10 && (
-          <div id="dashboard-autodetect">
-            <DashboardAutoDetect
-              countryName={currentSim.country}
-              flag={currentSim.flag}
-              phone={currentSim.phone}
-              onSelectOperator={(op) => {
-                setSelectedOperator(op);
-                setSelectedProduct(null);
-              }}
-            />
-          </div>
-        )}
-
-      {/* PRODUCTS */}
-      {isActive && selectedOperator && (
-        <DashboardTopupProducts
-          operatorId={selectedOperator.operatorId}
-          operatorName={selectedOperator.name}
-          onSelectProduct={(prod) => setSelectedProduct(prod)}
-        />
-      )}
-
-      {/* ADD SIM MODAL */}
-      <AddLocalSimModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSave={handleAddLocalSim}
-        countries={countries}
-      />
 
       {/* EDIT SIM MODAL */}
       {editingSim && (

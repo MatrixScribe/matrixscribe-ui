@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function LocalSimCard({
   phone,
@@ -8,7 +8,7 @@ export function LocalSimCard({
   operatorLogo,
   flag,
   signupDate,
-  simStatus,       // ⭐ NEW
+  simStatus,
   onTopUp,
 }: {
   phone: string;
@@ -16,7 +16,7 @@ export function LocalSimCard({
   operatorLogo: string;
   flag: string;
   signupDate: string;
-  simStatus: string;   // ⭐ NEW
+  simStatus: string;
   onTopUp?: () => void;
 }) {
   console.log("LocalSimCard props:", {
@@ -81,28 +81,6 @@ export function LocalSimCard({
   }, []);
 
   /* -------------------------------------------
-     VERIFICATION TIMER
-  ------------------------------------------- */
-  const [secondsLeft, setSecondsLeft] = useState(180); // 3 minutes
-  const [verified, setVerified] = useState(simStatus === "active");
-
-  useEffect(() => {
-    if (verified) return; // stop timer when verified
-
-    const interval = setInterval(() => {
-      setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [verified]);
-
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec < 10 ? "0" + sec : sec}`;
-  };
-
-  /* -------------------------------------------
      STATUS DOT COLORS
   ------------------------------------------- */
   const getStatusColor = (status: string) => {
@@ -118,14 +96,6 @@ export function LocalSimCard({
       default:
         return "bg-neutral-500";
     }
-  };
-
-  /* -------------------------------------------
-     VERIFY BUTTON LOGIC
-  ------------------------------------------- */
-  const handleVerify = () => {
-    // ⭐ For now: instant verification
-    setVerified(true);
   };
 
   return (
@@ -149,15 +119,13 @@ export function LocalSimCard({
         {/* Brand Row */}
         <div className="flex items-center justify-between mb-3">
           <img src="/logogrey.png" className="h-7 w-auto opacity-80" />
-          <span className="text-[10px] opacity-50 tracking-wide">
-            
-          </span>
+          <span className="text-[10px] opacity-50 tracking-wide"></span>
         </div>
 
-              {/* Embossed Redatacom Logo */}
-      <div className="absolute top-0 left-10 text-md font-extrabold tracking-widest opacity-30 select-none">
-      PRIMARY SIM
-      </div>
+        {/* Embossed Redatacom Logo */}
+        <div className="absolute top-0 left-10 text-md font-extrabold tracking-widest opacity-30 select-none">
+          PRIMARY SIM
+        </div>
 
         {/* Operator + Flag */}
         <div className="flex items-center justify-between mb-5">
@@ -178,7 +146,6 @@ export function LocalSimCard({
 
         {/* Cardholder */}
         <div className="mt-2">
-          <p className="text-[9px] opacity-40"></p>
           <p className="text-sm font-semibold tracking-wide">
             {cardholder?.trim().length ? cardholder : phone}
           </p>
@@ -189,7 +156,7 @@ export function LocalSimCard({
           {/* STATUS DOT */}
           <div
             className={`absolute -top-2 right-0 h-3 w-3 rounded-full ${getStatusColor(
-              verified ? "active" : simStatus
+              simStatus
             )} animate-pulse`}
           />
 
@@ -203,33 +170,6 @@ export function LocalSimCard({
             Member Since: {new Date(signupDate).toLocaleDateString()}
           </p>
         )}
-
-        {/* Verification Section */}
-        <div className="mt-4 flex items-center justify-between">
-          {verified ? (
-            <p className="text-[10px] text-green-400 font-semibold">
-              SIM Verified ✓
-            </p>
-          ) : (
-            <>
-              <p className="text-[10px] opacity-60">
-                Verify SIM • {formatTime(secondsLeft)}
-              </p>
-
-              <button
-                className="
-                  px-3 py-1 rounded-lg bg-purple-600 text-white text-xs
-                  hover:bg-purple-700 transition
-                "
-                onClick={handleVerify}
-              >
-                Verify
-              </button>
-            </>
-          )}
-        </div>
-
-        
       </div>
     </div>
   );

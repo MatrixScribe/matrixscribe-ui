@@ -1,16 +1,7 @@
 "use client";
 
-export function CountrySelectorModal({ open, onClose, onSelectCountry }) {
+export function CountrySelectorModal({ open, onClose, onSelect, countries }) {
   if (!open) return null;
-
-  const countries = [
-    { name: "South Africa", iso2: "ZA", flag: "🇿🇦" },
-    { name: "United Arab Emirates", iso2: "AE", flag: "🇦🇪" },
-    { name: "Qatar", iso2: "QA", flag: "🇶🇦" },
-    { name: "United States", iso2: "US", flag: "🇺🇸" },
-    { name: "United Kingdom", iso2: "GB", flag: "🇬🇧" },
-    { name: "Singapore", iso2: "SG", flag: "🇸🇬" },
-  ];
 
   return (
     <div
@@ -27,10 +18,10 @@ export function CountrySelectorModal({ open, onClose, onSelectCountry }) {
           {countries.map((c) => (
             <button
               key={c.iso2}
-              onClick={() => onSelectCountry(c)}
+              onClick={() => onSelect(c)}
               className="flex items-center gap-3 p-3 rounded-xl border hover:bg-purple-50"
             >
-              <span className="text-xl">{c.flag}</span>
+              <img src={c.flag} className="h-6 w-6 rounded-md" />
               <span className="font-medium">{c.name}</span>
             </button>
           ))}

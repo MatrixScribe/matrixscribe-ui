@@ -6,11 +6,17 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import jsPDF from "jspdf";
 
+// ⭐ ADD THIS
+import { useAuthStore } from "@/store/authStore";
+
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const ref = searchParams.get("reference");
+
+  // ⭐ GET TOKEN
+  const token = useAuthStore((s) => s.token);
 
   const [wallet, setWallet] = useState<any>(null);
   const [loadingWallet, setLoadingWallet] = useState(true);
@@ -25,7 +31,13 @@ function SuccessContent() {
   useEffect(() => {
     async function fetchWallet() {
       try {
-        const res = await fetch("/api/wallet", { cache: "no-store" });
+        const res = await fetch("/api/wallet", {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${token}`, // ⭐ FIXED
+          },
+        });
+
         const json = await res.json();
         setWallet(json);
       } catch (err) {
@@ -35,8 +47,10 @@ function SuccessContent() {
       }
     }
 
-    fetchWallet();
-  }, []);
+    if (token) {
+      fetchWallet();
+    }
+  }, [token]);
 
   /* ------------------------------
      AUTO‑REDIRECT TO DASHBOARD

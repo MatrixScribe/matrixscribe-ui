@@ -7,27 +7,44 @@ type Props = {
   step3Done: boolean;
   selectedCountry: Country | null;
   phone: string;
+  setPhone: (v: string) => void;
   selectedOperator: Operator | null;
   selectedProduct: Product | null;
   topupType: "airtime" | "data";
-  onContinue: () => void;
+  preferredCurrency: string | null;        // ⭐ NEW
+  preferredRate: number | null;            // ⭐ NEW
+  onContinue: (payload: any) => void;
 };
 
-export function Step4Review(props: Props) {
-  const {
-    step3Done,
-    selectedCountry,
-    phone,
-    selectedOperator,
-    selectedProduct,
-    topupType,
-    onContinue
-  } = props;
-
+export function Step4Review({
+  step3Done,
+  selectedCountry,
+  phone,
+  setPhone,
+  selectedOperator,
+  selectedProduct,
+  topupType,
+  preferredCurrency,      // ⭐ NEW
+  preferredRate,          // ⭐ NEW
+  onContinue
+}: Props) {
   const [clicked, setClicked] = useState(false);
 
+  const msisdn = selectedCountry
+    ? `${selectedCountry.dialCode}${phone.replace(/\D/g, "")}`
+    : "";
+
+  const isPhoneValid =
+    selectedCountry &&
+    phone.length >= 6 &&
+    /^\d+$/.test(phone.replace(/\D/g, ""));
+
   const step4Ready =
-    step3Done && !!selectedCountry && !!selectedOperator && !!selectedProduct;
+    step3Done &&
+    !!selectedCountry &&
+    !!selectedOperator &&
+    !!selectedProduct &&
+    isPhoneValid;
 
   const dotColor = step4Ready
     ? "bg-emerald-400 shadow-[0_0_14px_rgba(16,185,129,0.9)]"
@@ -35,9 +52,7 @@ export function Step4Review(props: Props) {
     ? "bg-yellow-400 shadow-[0_0_14px_rgba(234,179,8,0.8)]"
     : "bg-neutral-300";
 
-  // ------------------------------------
-  // ⭐ 3D TILT EFFECT
-  // ------------------------------------
+  /* 3D tilt */
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -68,6 +83,15 @@ export function Step4Review(props: Props) {
     };
   }, []);
 
+  /* ⭐ Preferred currency conversion */
+  const operatorAmount =
+    selectedProduct?.customAmount ?? selectedProduct?.price ?? null;
+
+  const preferredAmount =
+    preferredCurrency && preferredRate && operatorAmount
+      ? (operatorAmount / preferredRate).toFixed(2)
+      : null;
+
   return (
     <div
       ref={cardRef}
@@ -82,7 +106,6 @@ export function Step4Review(props: Props) {
       `}
       style={{ transformStyle: "preserve-3d" }}
     >
-      {/* Gold Pulse Keyframes */}
       <style>{`
         @keyframes goldPulse {
           0% { box-shadow: 0 0 0px rgba(234,179,8,0.0); }
@@ -91,7 +114,6 @@ export function Step4Review(props: Props) {
         }
       `}</style>
 
-      {/* Gold Glow on Click */}
       {clicked && (
         <div className="
           absolute inset-0 rounded-3xl pointer-events-none
@@ -111,10 +133,10 @@ export function Step4Review(props: Props) {
       {/* Title */}
       <div className="mb-6">
         <h2 className="text-[19px] font-semibold tracking-tight">
-          Review
+          <img src="/review.png" className="w-55 h-auto opacity-100"/>
         </h2>
         <p className="text-white/80 text-sm mt-1">
-          Connectivity In Waiting:
+          Final check before checkout
         </p>
       </div>
 
@@ -135,12 +157,45 @@ export function Step4Review(props: Props) {
           </span>
         </div>
 
-        {/* PHONE */}
-        <div className="flex justify-between items-center">
-          <span className="text-white/70">Phone Number</span>
-          <span className="font-medium">
-            {selectedCountry?.dialCode} {phone}
-          </span>
+        {/* PHONE INPUT */}
+        <div>
+          <label className="block text-white/70 mb-2">Phone Number</label>
+
+          <div className="flex gap-3">
+            <div
+              className="
+                w-28 rounded-2xl px-4 py-3 text-sm
+                bg-white/20 backdrop-blur-xl
+                border border-white/30
+                flex items-center justify-center
+                text-white font-medium
+              "
+            >
+              {selectedCountry?.dialCode}
+            </div>
+
+            <input
+              type="tel"
+              className="
+                flex-1 rounded-2xl px-4 py-3 text-sm
+                bg-white/20 backdrop-blur-xl
+                border border-white/30
+                text-white
+                placeholder:text-white/50
+                focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300
+                transition-all duration-300
+              "
+              placeholder="Enter phone number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          {!isPhoneValid && phone.length > 0 && (
+            <p className="text-xs text-yellow-300 mt-2">
+              Invalid phone number
+            </p>
+          )}
         </div>
 
         {/* OPERATOR */}
@@ -161,7 +216,27 @@ export function Step4Review(props: Props) {
         <div className="flex justify-between items-center">
           <span className="text-white/70">Product</span>
           <span className="font-medium">
-            {selectedProduct?.label || selectedProduct?.name}
+            {selectedProduct?.name}
+          </span>
+        </div>
+
+        {/* AMOUNT */}
+        <div className="flex justify-between items-center">
+          <span className="text-white/70">Amount</span>
+          <span className="font-medium flex flex-col items-end">
+            {/* Operator currency */}
+            {operatorAmount && (
+              <span>
+                {selectedProduct?.currency} {operatorAmount}
+              </span>
+            )}
+
+            {/* Preferred currency */}
+            {preferredAmount && (
+              <span className="text-[11px] text-yellow-200/90">
+                ≈ {preferredCurrency} {preferredAmount}
+              </span>
+            )}
           </span>
         </div>
 
@@ -179,8 +254,23 @@ export function Step4Review(props: Props) {
         <button
           onClick={() => {
             if (!step4Ready) return;
+
+            const payload = {
+              country: selectedCountry?.iso2,
+              msisdn,
+              operatorId: selectedOperator?.id,
+              productId: selectedProduct?.id,
+              amount: operatorAmount,
+              currency: selectedProduct?.currency,
+
+              // ⭐ Preferred currency included in payload
+              preferredCurrency,
+              preferredRate,
+              preferredAmount,
+            };
+
             setClicked(true);
-            setTimeout(() => onContinue(), 350);
+            setTimeout(() => onContinue(payload), 350);
           }}
           disabled={!step4Ready}
           className={`
