@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import SIMCard from "@/components/SIMCard";
 import BundlesModal from "@/components/modals/BundlesModal";
-import { CreateEsimModal } from "@/components/modals/CreateEsimModal";
 
 export function EsimSection({ flag, cardholderName }: any) {
   const [eSims, setESims] = useState<any[]>([]);
@@ -92,14 +91,6 @@ export function EsimSection({ flag, cardholderName }: any) {
           + Create eSIM
         </button>
       </div>
-
-      {/* CREATE MODAL */}
-      <CreateEsimModal
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-        onContinue={handleCreateEsimContinue}
-        countries={countries}
-      />
 
       {/* BUNDLES MODAL — updated to match new API */}
       {pendingEsimConfig && (
