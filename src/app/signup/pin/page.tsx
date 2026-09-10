@@ -19,7 +19,9 @@ export default function CreatePin() {
 
   // PIN state
   const [pin, setPin] = useState(["", "", "", ""]);
-  const inputsRef = useRef<HTMLInputElement[]>([]);
+
+  // ⭐ FIXED: allow null in the ref array
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   const isComplete = pin.every((d) => d !== "");
 
@@ -51,7 +53,7 @@ export default function CreatePin() {
         y: Math.random() * canvas.height,
         r: Math.random() * 2 + 1,
         dx: (Math.random() - 0.5) * 0.4,
-        dy: (Math.random() - 0.5) * 0.4
+        dy: (Math.random() - 0.5) * 0.4,
       });
     }
 
@@ -112,7 +114,6 @@ export default function CreatePin() {
 
   return (
     <main className="relative min-h-screen bg-[#0f0f0f] text-white overflow-hidden">
-
       {/* Animated Particle Background */}
       <div className="absolute inset-0 pointer-events-none">
         <canvas id="particleCanvas" className="w-full h-full opacity-99"></canvas>
@@ -152,7 +153,9 @@ export default function CreatePin() {
             {pin.map((digit, index) => (
               <input
                 key={index}
-                ref={(el) => (inputsRef.current[index] = el!)}
+                ref={(el) => {
+                  inputsRef.current[index] = el; // ⭐ FIXED
+                }}
                 type="password"
                 maxLength={1}
                 value={digit}
