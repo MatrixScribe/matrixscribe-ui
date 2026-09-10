@@ -434,13 +434,15 @@ useEffect(() => {
       />
 
       <BundleCheckoutModal
-        open={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-        bundle={selectedBundle}
-        preferredCurrency={safeCurrency}
-        fxMidRate={safeRate}
-        token={token}
-      />
+  open={checkoutOpen}
+  onClose={() => setCheckoutOpen(false)}
+  bundle={selectedBundle}
+  preferredCurrency={safeCurrency}
+  fxMidRate={safeRate}
+  fxZarRate={1}                 // ⭐ required by BundleCheckoutModalProps
+  countryIso={selectedIso}      // ⭐ required by BundleCheckoutModalProps
+  token={token}
+/>
     </>
   );
 }
