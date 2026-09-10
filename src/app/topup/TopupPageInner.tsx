@@ -329,22 +329,17 @@ export default function TopupPageInner() {
         {/* Steps container */}
         <div className="max-w-3xl mx-auto space-y-6">
           <Step1Recipient
-            apiBase={API_BASE}
-            countries={countries}
-            countriesLoading={countriesLoading}
-            selectedCountry={selectedCountry}
-            setSelectedCountry={(c) => {
-              setSelectedCountry(c);
-              setPhone("");
-              setStep1Done(false);
-            }}
-            phone={phone}
-            setPhone={setPhone}
-            phoneRules={phoneRules}
-            isPhoneValid={isPhoneValid}
-            step1Done={step1Done}
-            setStep1Done={setStep1Done}
-          />
+  countries={countries}
+  countriesLoading={countriesLoading}
+  selectedCountry={selectedCountry}
+  setSelectedCountry={(c) => {
+    setSelectedCountry(c);
+    setPhone("");
+    setStep1Done(false);
+  }}
+  step1Done={step1Done}
+  setStep1Done={setStep1Done}
+/>
 
           <Step2Operator
             step1Done={step1Done}
