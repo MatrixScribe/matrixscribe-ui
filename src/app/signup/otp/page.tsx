@@ -14,7 +14,10 @@ export default function OtpPage() {
   const flag = params.get("flag") || "";
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const inputsRef = useRef<HTMLInputElement[]>([]);
+
+  // ⭐ FIXED: allow null in the ref array
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
   const [timer, setTimer] = useState(30);
 
   const isComplete = otp.every((d) => d !== "");
@@ -48,19 +51,17 @@ export default function OtpPage() {
   const handleContinue = () => {
     if (!isComplete) return;
 
-    // For now, skip OTP verification
     router.push(
-  `/signup/pin?` +
-    `country=${encodeURIComponent(countryName)}` +
-    `&countryCode=${encodeURIComponent(params.get("countryCode") || "")}` +
-    `&dialCode=${encodeURIComponent(params.get("dialCode") || "")}` +
-    `&flag=${encodeURIComponent(flag)}` +
-    `&phone=${encodeURIComponent(phone)}` +
-    `&operatorLogo=${encodeURIComponent(operatorLogo)}` +
-    `&operatorName=${encodeURIComponent(params.get("operatorName") || "")}` +
-    `&operatorId=${encodeURIComponent(params.get("operatorId") || "")}`
-);
-
+      `/signup/pin?` +
+        `country=${encodeURIComponent(countryName)}` +
+        `&countryCode=${encodeURIComponent(params.get("countryCode") || "")}` +
+        `&dialCode=${encodeURIComponent(params.get("dialCode") || "")}` +
+        `&flag=${encodeURIComponent(flag)}` +
+        `&phone=${encodeURIComponent(phone)}` +
+        `&operatorLogo=${encodeURIComponent(operatorLogo)}` +
+        `&operatorName=${encodeURIComponent(params.get("operatorName") || "")}` +
+        `&operatorId=${encodeURIComponent(params.get("operatorId") || "")}`
+    );
   };
 
   // Purple Particle animation
@@ -86,7 +87,7 @@ export default function OtpPage() {
         y: Math.random() * canvas.height,
         r: Math.random() * 2 + 1,
         dx: (Math.random() - 0.5) * 0.4,
-        dy: (Math.random() - 0.5) * 0.4
+        dy: (Math.random() - 0.5) * 0.4,
       });
     }
 
@@ -102,7 +103,7 @@ export default function OtpPage() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(168, 85, 247, 0.45)"; // Purple particles
+        ctx.fillStyle = "rgba(168, 85, 247, 0.45)";
         ctx.fill();
       });
 
@@ -116,7 +117,6 @@ export default function OtpPage() {
 
   return (
     <main className="relative min-h-screen bg-white text-black overflow-hidden">
-
       {/* Purple Particle Background */}
       <div className="absolute inset-10 pointer-events-none">
         <canvas id="particleCanvas" className="w-full h-full opacity-100"></canvas>
@@ -124,7 +124,6 @@ export default function OtpPage() {
 
       {/* CONTENT */}
       <div className="relative z-10 px-6 py-16 flex flex-col items-center">
-
         {/* HEADER */}
         <img src="/logo3.png" className="h-12 opacity-90 mb-6" />
 
@@ -132,9 +131,7 @@ export default function OtpPage() {
           Verify Your Number
         </h1>
 
-        <p className="text-neutral-600 mt-2">
-          Enter the 6‑digit code sent to you
-        </p>
+        <p className="text-neutral-600 mt-2">Enter the 6‑digit code sent to you</p>
 
         {/* USER INFO CARD */}
         <div
@@ -145,9 +142,7 @@ export default function OtpPage() {
           "
         >
           <div className="flex items-center gap-4">
-            {flag && (
-              <img src={flag} className="h-10 w-10 rounded-md shadow-md" />
-            )}
+            {flag && <img src={flag} className="h-10 w-10 rounded-md shadow-md" />}
 
             <div className="flex flex-col">
               <p className="text-sm text-neutral-600">{countryName}</p>
@@ -155,10 +150,7 @@ export default function OtpPage() {
             </div>
 
             {operatorLogo && (
-              <img
-                src={operatorLogo}
-                className="h-10 w-10 ml-auto object-contain"
-              />
+              <img src={operatorLogo} className="h-10 w-10 ml-auto object-contain" />
             )}
           </div>
         </div>
@@ -168,7 +160,9 @@ export default function OtpPage() {
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputsRef.current[index] = el!)}
+              ref={(el) => {
+                inputsRef.current[index] = el; // ⭐ FIXED
+              }}
               type="password"
               maxLength={1}
               value={digit}
