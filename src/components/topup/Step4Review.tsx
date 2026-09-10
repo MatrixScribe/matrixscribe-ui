@@ -11,7 +11,12 @@ type Props = {
   selectedOperator: Operator | null;
   selectedProduct: Product | null;
   topupType: "airtime" | "data";
-  onContinue: () => void; // ⭐ aligned with TopupPageInner
+
+  // ⭐ REQUIRED FIX — TopUpSection passes these
+  preferredCurrency: string | null;
+  preferredRate: number | null;
+
+  onContinue: () => void;
 };
 
 export function Step4Review({
@@ -22,6 +27,11 @@ export function Step4Review({
   selectedOperator,
   selectedProduct,
   topupType,
+
+  // ⭐ NEW props
+  preferredCurrency,
+  preferredRate,
+
   onContinue,
 }: Props) {
   const [clicked, setClicked] = useState(false);
