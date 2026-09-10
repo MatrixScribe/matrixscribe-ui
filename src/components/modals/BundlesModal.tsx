@@ -21,6 +21,7 @@ interface BundlesModalProps {
   token: string | null;
   fxMidRate: number | null;
   countries: Country[];
+  count: number;
 }
 
 const FIRST_THREE = [
