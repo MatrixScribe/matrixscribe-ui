@@ -3,10 +3,20 @@
 import { useState, useRef, useEffect } from "react";
 
 import { LocalSimCard } from "./LocalSimCard";
-
-// Removed AddLocalSimModal import
 import { EditLocalSimModal } from "./EditLocalSimModal";
 import { DeleteLocalSimModal } from "./DeleteLocalSimModal";
+
+interface LocalSimSectionProps {
+  phone: string;
+  cardholderName: string;
+  simCategory: string;
+  operatorLogo: string;
+  flag: string;
+  country: string;
+  signupDate: string;
+  simStatus: string;
+  isActive?: boolean;
+}
 
 export function LocalSimSection({
   phone,
@@ -18,7 +28,7 @@ export function LocalSimSection({
   signupDate,
   simStatus,
   isActive,
-}) {
+}: LocalSimSectionProps) {
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE || "https://redatacom-end.onrender.com";
 
@@ -60,6 +70,7 @@ export function LocalSimSection({
       cardholderName,
       simStatus,
       isPrimary: true,
+      isActive,
     },
   ]);
 
@@ -68,7 +79,6 @@ export function LocalSimSection({
   /* ------------------------------------------------------------
      MODALS
   ------------------------------------------------------------ */
-  // Removed Add SIM modal state
   const [editingSim, setEditingSim] = useState<any | null>(null);
   const [deletingSim, setDeletingSim] = useState<any | null>(null);
 
@@ -137,8 +147,6 @@ export function LocalSimSection({
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">Local SIMs</h2>
-
-        {/* Removed Add Local SIM button */}
       </div>
 
       {/* SWIPEABLE SIM CARDS */}
