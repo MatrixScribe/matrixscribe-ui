@@ -298,7 +298,7 @@ useEffect(() => {
                     };
                   });
 
-                  const badges: string[] = [];
+                  const badges: any[] = [];
                   if (unlimited) badges.push(<img src="/infinityicon.png" className="w-auto h-5 opacity-100" />);
                   if (b.speed?.includes("5G")) badges.push("5G");
                   if (throttleSpeed) badges.push("Cosmic");
