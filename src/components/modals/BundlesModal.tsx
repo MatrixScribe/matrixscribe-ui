@@ -365,7 +365,7 @@ useEffect(() => {
 
                         <div>
                           <ul className="flex flex-col gap-2">
-                            {baseCountries.map((c) => (
+                            {baseCountries.map((c: any) => (
                               <li
                                 key={c.iso}
                                 className="flex items-center gap-2"
