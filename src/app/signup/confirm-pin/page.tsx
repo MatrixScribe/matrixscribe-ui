@@ -90,7 +90,9 @@ export default function ConfirmPin() {
             {pin.map((digit, index) => (
               <input
                 key={index}
-                ref={(el) => (inputsRef.current[index] = el!)}
+                ref={(el) => {
+  inputsRef.current[index] = el;
+}}
                 type="password"
                 maxLength={1}
                 value={digit}
