@@ -360,14 +360,15 @@ export default function TopupPageInner() {
 />
 
           <Step4Review
-            step3Done={step3Done}
-            selectedCountry={selectedCountry}
-            phone={phone}
-            selectedOperator={selectedOperator}
-            selectedProduct={selectedProduct}
-            topupType={topupType}
-            onContinue={handleContinue}
-          />
+  step3Done={step3Done}
+  selectedCountry={selectedCountry}
+  phone={phone}
+  setPhone={setPhone}          // ⭐ REQUIRED
+  selectedOperator={selectedOperator}
+  selectedProduct={selectedProduct}
+  topupType={topupType}
+  onContinue={handleContinue}
+/>
         </div>
       </div>
     </main>
