@@ -6,9 +6,13 @@ import { usePreferredCurrency } from "@/components/context/PreferredCurrencyCont
 
 interface PreferredCurrencyModalProps {
   onClose: () => void;
+  onSelect: (currency: string, rate: number) => void; // ⭐ added
 }
 
-export function PreferredCurrencyModal({ onClose }: PreferredCurrencyModalProps) {
+export function PreferredCurrencyModal({
+  onClose,
+  onSelect,
+}: PreferredCurrencyModalProps) {
   const [rates, setRates] = useState<FxRate[]>([]);
   const [search, setSearch] = useState("");
 
@@ -35,7 +39,9 @@ export function PreferredCurrencyModal({ onClose }: PreferredCurrencyModalProps)
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
     let particles: any[] = [];
     const count = 50;
 
@@ -134,7 +140,11 @@ export function PreferredCurrencyModal({ onClose }: PreferredCurrencyModalProps)
             <button
               key={r.currency}
               onClick={() => {
-                setPreferredCurrency(r.currency, r.sell_rate); // ⭐ GLOBAL UPDATE
+                // update global context
+                setPreferredCurrency(r.currency, r.sell_rate);
+                // notify parent (EsimShop)
+                onSelect(r.currency, r.sell_rate);
+                // close modal
                 onClose();
               }}
               className="
