@@ -19,8 +19,8 @@ export type Country = {
    OPERATOR (Step2Operator + useOperators)
 ------------------------------------------------------------ */
 export type Operator = {
-  id?: string;
-  operatorId?: string;
+  id?: string;               // normalized operator ID
+  operatorId?: string;       // backend sometimes uses operatorId
   name: string;
   logo?: string;
   logoUrls?: string[];
@@ -34,20 +34,18 @@ export type Product = {
   id: string;
   name: string;
 
-  // RANGE detection
+  /* ---------------- RANGE PRODUCTS ---------------- */
   type?: string;               // "RANGE"
   denominationType?: string;   // sometimes backend uses this
-
-  // RANGE amounts
   minAmount?: number;
   maxAmount?: number;
   currency?: string;
 
-  // FIXED bundles
-  price?: number;              // operator price
+  /* ---------------- FIXED PRODUCTS ---------------- */
+  price?: number;              // operator price (Step3 uses this)
   rawDescription?: string;     // bundle description
 
-  // Optional extras (Reloadly sometimes sends these)
+  /* ---------------- OPTIONAL BACKEND FIELDS ---------------- */
   label?: string;
   amount?: number;
   baseAmount?: number;
@@ -56,6 +54,6 @@ export type Product = {
   sell_rate?: number;
   updated_at?: string;
 
-  // Custom amount for RANGE when user enters value
-  customAmount?: number;
+  /* ---------------- RANGE CUSTOM AMOUNT ---------------- */
+  customAmount?: number;       // user-entered amount for RANGE
 };
