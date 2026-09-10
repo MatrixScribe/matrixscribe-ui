@@ -342,7 +342,6 @@ export default function TopupPageInner() {
 />
 
           <Step2Operator
-            step1Done={step1Done}
             operatorsLoading={operatorsLoading}
             displayOperators={displayOperators}
             selectedOperator={selectedOperator}
