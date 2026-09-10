@@ -83,22 +83,22 @@ export function AddLocalSimModal({
 
         {/* LIVE PREVIEW */}
         {selectedCountry && phone.length > 3 && (
-          <div className="mb-6">
-            <LocalSimCard
-              phone={phone}
-              cardholder=""
-              simCategory="Local SIM"
-              operatorLogo={
-                selectedOperator?.logo ||
-                selectedOperator?.logoUrls?.[0] ||
-                "/logo-ww.png"
-              }
-              flag={selectedCountry.flag}
-              signupDate="Preview"
-              simStatus="active"   // ⭐ REQUIRED FIX
-            />
-          </div>
-        )}
+  <div className="mb-6">
+    <LocalSimCard
+      phone={phone}
+      cardholder=""
+      simCategory="Local SIM"
+      operatorLogo={
+        selectedOperator?.logo ||
+        selectedOperator?.logoUrls?.[0] ||
+        "/logo-ww.png"
+      }
+      flag={selectedCountry.flag}
+      signupDate="Preview"
+      simStatus="active"   // ⭐ REQUIRED
+    />
+  </div>
+)}
 
         {/* COUNTRY SELECTOR */}
         <div className="mb-5">
