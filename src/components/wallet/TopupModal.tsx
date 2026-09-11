@@ -23,19 +23,24 @@ export function TopupModal({
     async function loadFx() {
       if (!preferredCurrency) return;
 
-      const res = await fetch("https://redatacom-end.onrender.com/api/fx");
-      const json = await res.json();
+      try {
+        const res = await fetch("https://redatacom-end.onrender.com/api/fx");
+        const json = await res.json();
 
-      const match = json.rates.find((r: FxRate) => r.currency === preferredCurrency);
-      const zar = json.rates.find((r: FxRate) => r.currency === "ZAR");
+        const match = json.rates.find((r: FxRate) => r.currency === preferredCurrency);
+        const zar = json.rates.find((r: FxRate) => r.currency === "ZAR");
 
-      setFx(match || null);
-      setFxZar(zar || null);
+        setFx(match || null);
+        setFxZar(zar || null);
+      } catch (err) {
+        console.error("FX load failed", err);
+      }
     }
 
     loadFx();
   }, [preferredCurrency]);
 
+  // Still loading?
   if (!preferredCurrency || !fx || !fxZar) {
     return (
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -46,46 +51,58 @@ export function TopupModal({
     );
   }
 
-  // Use backend SELL RATE directly
-  const localCost = usdAmount * fx.sell_rate;
-  const zarCost = usdAmount * fxZar.sell_rate;
+  // Safe fallback values
+  const sellRateLocal = fx.sell_rate ?? 0;
+  const sellRateZar = fxZar.sell_rate ?? 0;
+
+  const localCost = usdAmount * sellRateLocal;
+  const zarCost = usdAmount * sellRateZar;
 
   async function handleTopup() {
     setLoading(true);
 
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      "https://redatacom-end.onrender.com/api/wallet/topup/initiate",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          currency: preferredCurrency,
-          amount: usdAmount,
-        }),
+      const res = await fetch(
+        "https://redatacom-end.onrender.com/api/wallet/topup/initiate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currency: preferredCurrency,
+            amount: usdAmount,
+          }),
+        }
+      );
+
+      const json = await res.json();
+      setLoading(false);
+
+      if (!json.authorization_url) {
+        console.error("Topup failed:", json);
+        return;
       }
-    );
 
-    const json = await res.json();
-    setLoading(false);
-
-    if (!json.authorization_url) {
-      console.error("Topup failed:", json);
-      return;
+      window.location.href = json.authorization_url;
+    } catch (err) {
+      console.error("Topup error:", err);
+      setLoading(false);
     }
-
-    window.location.href = json.authorization_url;
   }
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 border border-neutral-400 rounded-3xl p-6 w-full max-w-md shadow-2xl">
 
-        <img src="/ReloadWallet.png" className="h-12 w-auto opacity-90" className="mb-3" />
+        {/* FIXED — removed duplicate className */}
+        <img
+          src="/ReloadWallet.png"
+          className="h-12 w-auto opacity-90 mb-3"
+        />
 
         {/* Preset USD buttons */}
         <div className="flex gap-2 mb-3">
@@ -110,10 +127,13 @@ export function TopupModal({
 
         {/* Preferred currency */}
         <p className="text-neutral-700 mb-2">
-          Estimated Charges: <strong>{preferredCurrency} {localCost.toFixed(2)}</strong>
+          Estimated Charges:{" "}
+          <strong>
+            {preferredCurrency} {localCost.toFixed(2)}
+          </strong>
         </p>
         <p className="text-xs text-neutral-600 mb-4">
-          Redatacom Rate: 1 USD = {fx.sell_rate.toFixed(4)} {preferredCurrency}
+          Redatacom Rate: 1 USD = {sellRateLocal.toFixed(4)} {preferredCurrency}
         </p>
 
         {/* ZAR charge */}
