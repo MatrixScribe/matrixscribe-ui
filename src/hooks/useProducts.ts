@@ -33,36 +33,52 @@ export function useProducts(
 
         const data = await res.json();
 
-        // -----------------------------
-        // RANGE (AIRTIME)
-        // -----------------------------
+        /* ------------------------------------------------------------
+           RANGE PRODUCT (AIRTIME)
+        ------------------------------------------------------------ */
         if (data.type === "RANGE") {
           const p: Product = {
             id: `${operator?.operatorId ?? "unknown"}-custom`,
             name: "Custom Airtime",
             label: "Airtime Amount",
+
+            // FIXED: these fields now exist in Product type
             kind: "custom",
             baseCurrency: data.currency,
             minBaseAmount: data.min,
-            maxBaseAmount: data.max
+            maxBaseAmount: data.max,
+
+            // also map backend fields for consistency
+            type: "RANGE",
+            minAmount: data.min,
+            maxAmount: data.max,
+            currency: data.currency,
           };
 
           setProducts([p]);
           return;
         }
 
-        // -----------------------------
-        // FIXED (DATA / PIN)
-        // -----------------------------
+        /* ------------------------------------------------------------
+           FIXED PRODUCT (DATA / PIN)
+        ------------------------------------------------------------ */
         if (data.type === "FIXED" && Array.isArray(data.bundles)) {
           const mapped: Product[] = data.bundles.map((b: any) => ({
             id: b.id,
             name: b.name,
             label: b.name,
+
+            // FIXED: these fields now exist in Product type
             kind: "fixed",
             baseAmount: b.price,
             baseCurrency: data.currency,
-            description: b.rawDescription || null
+            description: b.rawDescription || null,
+
+            // also map backend fields for consistency
+            type: "FIXED",
+            price: b.price,
+            currency: data.currency,
+            rawDescription: b.rawDescription,
           }));
 
           setProducts(mapped);
@@ -89,6 +105,6 @@ export function useProducts(
     selectedProduct,
     setSelectedProduct,
     step3Done,
-    setStep3Done
+    setStep3Done,
   };
 }
