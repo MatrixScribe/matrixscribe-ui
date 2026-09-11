@@ -57,3 +57,9 @@ export type Product = {
   /* ---------------- RANGE CUSTOM AMOUNT ---------------- */
   customAmount?: number;       // user-entered amount for RANGE
 };
+
+export type PhoneRules = {
+  minLength: number;
+  maxLength: number;
+  regex?: string;
+};
