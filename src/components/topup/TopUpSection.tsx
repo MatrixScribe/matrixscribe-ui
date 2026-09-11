@@ -12,7 +12,7 @@ import { Country, Operator, Product } from "@/components/topup/types";
 import { usePreferredCurrency } from "@/components/context/PreferredCurrencyContext";
 
 export default function TopUpSection() {
-  const router = useRouter(); // ⭐ FIXED
+  const router = useRouter();
 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE || "https://redatacom-end.onrender.com";
@@ -189,6 +189,13 @@ export default function TopUpSection() {
           preferredCurrency={preferredCurrency}
           preferredRate={preferredRate}
           onContinue={() => {
+            const baseAmount =
+              selectedProduct.customAmount ??
+              selectedProduct.price ??
+              selectedProduct.amount ??
+              selectedProduct.baseAmount ??
+              0;
+
             const payload = {
               country: selectedCountry.iso2,
               countryName: selectedCountry.name,
@@ -203,7 +210,10 @@ export default function TopUpSection() {
               productName: selectedProduct.name,
 
               phone: recipientPhone,
-              msisdn: `${selectedCountry.dialCode}${recipientPhone.replace(/\D/g, "")}`,
+              msisdn: `${selectedCountry.dialCode}${recipientPhone.replace(
+                /\D/g,
+                ""
+              )}`,
 
               amount: selectedProduct.customAmount ?? selectedProduct.price,
               currency: selectedProduct.currency,
@@ -212,15 +222,13 @@ export default function TopUpSection() {
               preferredRate,
               preferredAmount:
                 preferredCurrency && preferredRate
-                  ? (selectedProduct.customAmount
-                      ? selectedProduct.customAmount / preferredRate
-                      : selectedProduct.price / preferredRate)
+                  ? baseAmount / preferredRate
                   : null,
             };
 
             const encoded = encodeURIComponent(JSON.stringify(payload));
 
-            router.push(`/checkout?payload=${encoded}`); // ⭐ FIXED
+            router.push(`/checkout?payload=${encoded}`);
           }}
         />
       )}
