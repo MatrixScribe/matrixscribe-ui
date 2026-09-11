@@ -4,10 +4,28 @@ import { useEffect, useState } from "react";
 
 const API_BASE = "https://redatacom-end.onrender.com/api";
 
+/* ------------------------------------------------------------
+   TYPES — strict, safe, matches your backend + usage
+------------------------------------------------------------ */
 type Operator = {
   operatorId: number;
   name: string;
   logo: string | null;
+};
+
+type CountryLite = {
+  name: string;
+  flag?: string;
+};
+
+/* ------------------------------------------------------------
+   PROPS TYPE — fixes all implicit any errors
+------------------------------------------------------------ */
+type Props = {
+  userCountry: CountryLite;
+  userPhone: string;
+  setSelectedOperator: (op: Operator | null) => void;
+  setDisplayOperators: (ops: Operator[]) => void;
 };
 
 export default function AutoDetectSelf({
@@ -15,12 +33,7 @@ export default function AutoDetectSelf({
   userPhone,
   setSelectedOperator,
   setDisplayOperators,
-}: {
-  userCountry: { name: string; flag?: string };
-  userPhone: string;
-  setSelectedOperator: (op: Operator | null) => void;
-  setDisplayOperators: (ops: Operator[]) => void;
-}) {
+}: Props) {
   const [countryCode, setCountryCode] = useState<string>("");
   const [operators, setOperators] = useState<Operator[]>([]);
   const [loadingOps, setLoadingOps] = useState(false);
@@ -36,6 +49,9 @@ export default function AutoDetectSelf({
   console.log("AutoDetectSelf cleanPhone:", cleanPhone);
   console.log("AutoDetectSelf userCountry:", userCountry);
 
+  /* ------------------------------------------------------------
+     COUNTRY CODE DETECTION
+  ------------------------------------------------------------ */
   useEffect(() => {
     if (userCountry?.flag) {
       const match = userCountry.flag.match(/\/([a-z]{2})\.svg$/i);
@@ -50,6 +66,9 @@ export default function AutoDetectSelf({
     }
   }, [userCountry]);
 
+  /* ------------------------------------------------------------
+     LOAD OPERATORS FOR COUNTRY
+  ------------------------------------------------------------ */
   useEffect(() => {
     if (!countryCode) return;
 
@@ -58,7 +77,7 @@ export default function AutoDetectSelf({
     fetch(`${API_BASE}/operators?country=${countryCode}`)
       .then((r) => r.json())
       .then((data) => {
-        const ops = data?.operators || [];
+        const ops: Operator[] = data?.operators || [];
         setOperators(ops);
         setDisplayOperators(ops);
       })
@@ -69,6 +88,9 @@ export default function AutoDetectSelf({
       .finally(() => setLoadingOps(false));
   }, [countryCode]);
 
+  /* ------------------------------------------------------------
+     AUTO-DETECT OPERATOR FROM PHONE NUMBER
+  ------------------------------------------------------------ */
   useEffect(() => {
     if (!countryCode || !cleanPhone) return;
 
@@ -96,7 +118,7 @@ export default function AutoDetectSelf({
     <section className="relative w-full max-w-3xl mx-auto rounded-2xl overflow-hidden">
       <div className="relative z-10 bg-ffff border border-neutral-200 rounded-2xl p-4 shadow-sm">
 
-        {/* PHONE DISPLAY – top right, like before */}
+        {/* PHONE DISPLAY */}
         <div className="flex items-center justify-between text-xs text-neutral-600 mb-3">
           <img src="/icon-recharge.png" className="w-auto h-10 opacity-100" />
           <span className="text-lg font-mono text-purple-800">

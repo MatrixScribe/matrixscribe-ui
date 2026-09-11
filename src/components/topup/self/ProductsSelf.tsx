@@ -1,8 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Operator, Product } from "@/components/topup/types";
 
 const API_BASE = "https://redatacom-end.onrender.com/api";
+
+/* ------------------------------------------------------------
+   PROPS TYPE — strict, safe, matches your usage
+------------------------------------------------------------ */
+type Props = {
+  selectedOperator: Operator | null;
+  productsLoading: boolean;
+  setProductsLoading: (v: boolean) => void;
+  products: Product[];
+  setProducts: (p: Product[]) => void;
+
+  selectedProduct: any; // RANGE payload or FIXED payload
+  setSelectedProduct: (p: any) => void;
+
+  setStep3Done: (v: boolean) => void;
+};
 
 export default function ProductsSelf({
   selectedOperator,
@@ -13,10 +30,12 @@ export default function ProductsSelf({
   selectedProduct,
   setSelectedProduct,
   setStep3Done,
-}) {
+}: Props) {
   const [localSelectedId, setLocalSelectedId] = useState<string | number | null>(null);
 
-  // ⭐ Load products for selected operator
+  /* ------------------------------------------------------------
+     LOAD PRODUCTS
+  ------------------------------------------------------------ */
   useEffect(() => {
     if (!selectedOperator) return;
 
@@ -28,7 +47,7 @@ export default function ProductsSelf({
         if (res?.bundles || res?.type === "FIXED") {
           setProducts(res.bundles || []);
         } else if (res?.type === "RANGE") {
-          setProducts([res]); // range product
+          setProducts([res]);
         } else {
           setProducts([]);
         }
@@ -37,11 +56,13 @@ export default function ProductsSelf({
       .finally(() => setProductsLoading(false));
   }, [selectedOperator]);
 
-  // ⭐ Sorted bundles (best value first)
+  /* ------------------------------------------------------------
+     SORTED BUNDLES
+  ------------------------------------------------------------ */
   const sortedBundles = useMemo(() => {
     if (!products || products.length === 0) return [];
-    if (products[0]?.type === "RANGE") return products; // range product
-    return [...products].sort((a, b) => a.price - b.price);
+    if (products[0]?.type === "RANGE") return products;
+    return [...products].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
   }, [products]);
 
   const isRange = products.length > 0 && products[0]?.type === "RANGE";
@@ -86,11 +107,11 @@ export default function ProductsSelf({
             <p className="text-xs text-neutral-700 mb-2">
               Enter any amount between{" "}
               <span className="font-semibold">
-                {products[0].min} {products[0].currency}
+                {products[0].minAmount} {products[0].currency}
               </span>{" "}
               and{" "}
               <span className="font-semibold">
-                {products[0].max} {products[0].currency}
+                {products[0].maxAmount} {products[0].currency}
               </span>
               .
             </p>
@@ -98,14 +119,14 @@ export default function ProductsSelf({
             <input
               type="number"
               className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              placeholder={`${products[0].min} - ${products[0].max}`}
+              placeholder={`${products[0].minAmount} - ${products[0].maxAmount}`}
               onChange={(e) => {
                 const val = Number(e.target.value);
-                if (val >= products[0].min && val <= products[0].max) {
+                if (val >= (products[0].minAmount ?? 0) && val <= (products[0].maxAmount ?? 999999)) {
                   const payload = {
                     type: "RANGE",
-                    operatorId: selectedOperator.operatorId,
-                    operatorName: selectedOperator.name,
+                    operatorId: selectedOperator?.operatorId,
+                    operatorName: selectedOperator?.name,
                     amount: val,
                     currency: products[0].currency,
                   };
@@ -131,18 +152,14 @@ export default function ProductsSelf({
         </div>
       )}
 
-      {/* FIXED BUNDLES — GRID, MOBILE FRIENDLY */}
+      {/* FIXED BUNDLES */}
       {!productsLoading && !isRange && products.length > 0 && (
         <div className="mt-4 space-y-3">
           <p className="text-xs text-neutral-600">
             Choose a bundle — more visible, tap to select.
           </p>
 
-          <div
-            className="
-              grid grid-cols-2 sm:grid-cols-3 gap-3
-            "
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {sortedBundles.map((b) => {
               const isActive =
                 localSelectedId === b.id ||
@@ -164,8 +181,8 @@ export default function ProductsSelf({
                     setLocalSelectedId(b.id);
                     setSelectedProduct({
                       type: "FIXED",
-                      operatorId: selectedOperator.operatorId,
-                      operatorName: selectedOperator.name,
+                      operatorId: selectedOperator?.operatorId,
+                      operatorName: selectedOperator?.name,
                       bundle: b,
                     });
                     setStep3Done(true);
@@ -204,7 +221,6 @@ export default function ProductsSelf({
             })}
           </div>
 
-          {/* SELECTION SUMMARY */}
           {selectedProduct && selectedProduct.type === "FIXED" && (
             <div className="mt-3 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-xs text-neutral-700 flex items-center justify-between">
               <div>

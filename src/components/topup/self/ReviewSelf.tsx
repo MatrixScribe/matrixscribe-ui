@@ -2,13 +2,59 @@
 
 import { useEffect, useRef, useState } from "react";
 
+/* ------------------------------------------------------------
+   TYPES — strict, safe, matches your usage
+------------------------------------------------------------ */
+type CountryLite = {
+  name: string;
+  flag?: string;
+};
+
+type OperatorLite = {
+  name: string;
+  logo?: string | null;
+};
+
+type RangeProduct = {
+  type: "RANGE";
+  amount: number;
+  currency: string;
+};
+
+type FixedProduct = {
+  type: "FIXED";
+  bundle: {
+    name: string;
+    price: number;
+    currency: string;
+  };
+};
+
+type ProductLite = RangeProduct | FixedProduct;
+
+type WalletLite = {
+  usd_balance?: number;
+  currency?: string;
+};
+
+/* ------------------------------------------------------------
+   PROPS TYPE — fixes all implicit any errors
+------------------------------------------------------------ */
+type Props = {
+  userCountry: CountryLite | null;
+  userPhone: string;
+  selectedOperator: OperatorLite | null;
+  selectedProduct: ProductLite | null;
+  wallet: WalletLite | null;
+};
+
 export default function ReviewSelf({
   userCountry,
   userPhone,
   selectedOperator,
   selectedProduct,
-  wallet
-}) {
+  wallet,
+}: Props) {
   const [clicked, setClicked] = useState(false);
 
   const ready =
