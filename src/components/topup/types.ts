@@ -7,7 +7,6 @@ export type Country = {
   name: string;
   code?: string;
 
-  // backend returns "iso", UI sometimes expects "iso2"
   iso?: string;
   iso2?: string;
 
@@ -16,18 +15,18 @@ export type Country = {
 };
 
 /* ------------------------------------------------------------
-   OPERATOR (Step2Operator + useOperators)
+   OPERATOR
 ------------------------------------------------------------ */
 export type Operator = {
-  id?: string;               // normalized operator ID
-  operatorId?: string;       // backend sometimes uses operatorId
+  id?: string;
+  operatorId?: string;
   name: string;
   logo?: string;
   logoUrls?: string[];
 };
 
 /* ------------------------------------------------------------
-   PRODUCT (Step3Products cosmic version + useProducts)
+   PRODUCT
 ------------------------------------------------------------ */
 export type Product = {
   id: string;
@@ -40,27 +39,26 @@ export type Product = {
   maxAmount?: number;
   currency?: string;
 
-  /* RANGE custom fields (used in useProducts.ts) */
+  /* RANGE custom fields */
   kind?: string;               // "custom" or "fixed"
   minBaseAmount?: number;
   maxBaseAmount?: number;
-  baseCurrency?: string;
 
   /* ---------------- FIXED PRODUCTS ---------------- */
-  price?: number;              // operator price
-  rawDescription?: string;     // bundle description
+  price?: number;
+  rawDescription?: string;
 
   /* ---------------- OPTIONAL BACKEND FIELDS ---------------- */
   label?: string;
   amount?: number;
   baseAmount?: number;
-  baseCurrency?: string;
+  baseCurrency?: string;       // <-- KEEP ONLY THIS ONE
   description?: string;
   sell_rate?: number;
   updated_at?: string;
 
   /* ---------------- RANGE CUSTOM AMOUNT ---------------- */
-  customAmount?: number;       // user-entered amount for RANGE
+  customAmount?: number;
 };
 
 /* ------------------------------------------------------------
