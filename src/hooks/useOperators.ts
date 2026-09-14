@@ -5,7 +5,7 @@ import { Country, Operator } from "@/components/topup/types";
 import { getCountryCode } from "@/utils/topup";
 
 export function useOperators(
-  step1Done: boolean,
+  shouldLoad: boolean,
   country: Country | null,
   apiBase: string
 ) {
@@ -16,10 +16,27 @@ export function useOperators(
   const [step2Done, setStep2Done] = useState(false);
 
   useEffect(() => {
-    if (!step1Done || !country) return;
+    console.log("=== useOperators TRIGGERED ===");
+    console.log("shouldLoad =", shouldLoad);
+    console.log("country =", country);
+
+    if (!shouldLoad) {
+      console.log("STOP → shouldLoad is FALSE");
+      return;
+    }
+
+    if (!country) {
+      console.log("STOP → country is NULL");
+      return;
+    }
 
     const code = getCountryCode(country);
-    if (!code) return;
+    console.log("getCountryCode(country) =", code);
+
+    if (!code) {
+      console.log("STOP → NO COUNTRY CODE");
+      return;
+    }
 
     async function loadOperators() {
       try {
@@ -27,15 +44,18 @@ export function useOperators(
         setSelectedOperator(null);
         setStep2Done(false);
 
-        const res = await fetch(`${apiBase}/api/operators?country=${code}`);
+        const url = `${apiBase}/api/operators?country=${code}`;
+        console.log("FETCHING OPERATORS →", url);
+
+        const res = await fetch(url);
         const data = await res.json();
+
+        console.log("BACKEND RESPONSE =", data);
+
         const ops: Operator[] = data.operators || [];
 
-        // THIS MUST BE setAllOperators — NOT ssetAllOperators
         setAllOperators(ops);
-
-        // Do NOT show operators yet — wait for auto-detect
-        setDisplayOperators([]);
+        setDisplayOperators(ops);
       } catch (err) {
         console.error("Failed to load operators", err);
         setAllOperators([]);
@@ -46,7 +66,7 @@ export function useOperators(
     }
 
     loadOperators();
-  }, [step1Done, country, apiBase]);
+  }, [shouldLoad, country, apiBase]);
 
   return {
     allOperators,

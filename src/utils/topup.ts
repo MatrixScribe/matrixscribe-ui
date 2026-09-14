@@ -1,39 +1,17 @@
-import { Country, Product } from "@/components/topup/types";
-
-export function isoToEmoji(iso?: string | null) {
-  if (!iso) return "";
-  return iso
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
-}
-
-export function getCountryCode(c: Country | null): string | null {
+// src/utils/topup.ts
+export function getCountryCode(c: any): string | null {
   if (!c) return null;
-  return (c.code || c.iso2 || "").toString() || null;
-}
 
-export function groupProducts(products: Product[]) {
-  const groups: Record<string, Product[]> = {
-    DATA: [],
-    COMBO: [],
-    SOCIAL: [],
-    UNLIMITED: [],
-    OTHER: []
-  };
-
-  products.forEach((p) => {
-    if (p.kind === "custom") {
-      groups.OTHER.push(p);
-      return;
-    }
-
-    const k = (p.kind || "").toUpperCase();
-    if (k.includes("DATA")) groups.DATA.push(p);
-    else if (k.includes("COMBO")) groups.COMBO.push(p);
-    else if (k.includes("SOCIAL")) groups.SOCIAL.push(p);
-    else if (k.includes("UNLIMITED")) groups.UNLIMITED.push(p);
-    else groups.OTHER.push(p);
-  });
-
-  return groups;
+  // Signup countries ONLY have "code"
+  // Topup countries have iso2
+  // eSIM countries may have iso3 or countryCode
+  return (
+    c.code ||        // Signup (ZA)
+    c.iso2 ||        // Topup (ZA, KR, NG)
+    c.iso ||         // Some APIs return iso
+    c.countryCode || // eSIM backend
+    c.iso3 ||        // eSIM backend
+    c.id ||          // Some operator APIs use numeric IDs
+    null
+  );
 }
