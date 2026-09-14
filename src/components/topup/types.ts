@@ -27,22 +27,27 @@ export type Operator = {
 };
 
 /* ------------------------------------------------------------
-   PRODUCT (Step3Products cosmic version)
-   Matches EXACTLY how your current Step3 uses it.
+   PRODUCT (Step3Products cosmic version + useProducts)
 ------------------------------------------------------------ */
 export type Product = {
   id: string;
   name: string;
 
   /* ---------------- RANGE PRODUCTS ---------------- */
-  type?: string;               // "RANGE"
-  denominationType?: string;   // sometimes backend uses this
+  type?: "RANGE" | "FIXED";
+  denominationType?: string;
   minAmount?: number;
   maxAmount?: number;
   currency?: string;
 
+  /* RANGE custom fields (used in useProducts.ts) */
+  kind?: string;               // "custom" or "fixed"
+  minBaseAmount?: number;
+  maxBaseAmount?: number;
+  baseCurrency?: string;
+
   /* ---------------- FIXED PRODUCTS ---------------- */
-  price?: number;              // operator price (Step3 uses this)
+  price?: number;              // operator price
   rawDescription?: string;     // bundle description
 
   /* ---------------- OPTIONAL BACKEND FIELDS ---------------- */
@@ -58,6 +63,9 @@ export type Product = {
   customAmount?: number;       // user-entered amount for RANGE
 };
 
+/* ------------------------------------------------------------
+   PHONE RULES
+------------------------------------------------------------ */
 export type PhoneRules = {
   minLength: number;
   maxLength: number;
