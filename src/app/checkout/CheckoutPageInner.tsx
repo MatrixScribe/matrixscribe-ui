@@ -3,10 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
-// ⭐ Preferred currency context
 import { usePreferredCurrency } from "@/components/context/PreferredCurrencyContext";
-
-// ⭐ Auth store (token)
 import { useAuthStore } from "@/store/authStore";
 
 export default function CheckoutPageInner() {
@@ -14,8 +11,6 @@ export default function CheckoutPageInner() {
   const searchParams = useSearchParams();
 
   const { preferredCurrency, preferredRate } = usePreferredCurrency();
-
-  // ⭐ Get token from auth store
   const token = useAuthStore((s) => s.token);
 
   const API_BASE =
@@ -27,7 +22,6 @@ export default function CheckoutPageInner() {
 
   const [quote, setQuote] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
   const [agreed, setAgreed] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
 
@@ -73,13 +67,13 @@ export default function CheckoutPageInner() {
   const operatorAmount = payload.amount;
   const operatorCurrency = payload.currency;
 
-  /* ⭐ Preferred currency conversion */
+  /* Preferred currency conversion */
   const preferredAmount =
     preferredCurrency && preferredRate
       ? operatorAmount / preferredRate
       : null;
 
-  /* ⭐ Load quote using preferred currency */
+  /* Load quote */
   useEffect(() => {
     async function loadQuote() {
       try {
@@ -104,7 +98,7 @@ export default function CheckoutPageInner() {
     loadQuote();
   }, [API_BASE, operatorAmount, operatorCurrency, preferredCurrency]);
 
-  /* ⭐ Paystack → Reloadly → Dashboard */
+  /* Paystack → Reloadly → Dashboard */
   async function handlePay() {
     if (!quote || quote.error) return;
     if (!agreed) return;
@@ -118,7 +112,7 @@ export default function CheckoutPageInner() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ⭐ FIXED — REQUIRED
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           amountZar: finalZar,
@@ -138,6 +132,9 @@ export default function CheckoutPageInner() {
             productId: payload.productId,
             productName: payload.productName,
             operatorCostPreferred: quote.operatorCostUSD,
+
+            // ⭐ REQUIRED FIX — include dialCode
+            dialCode: payload.dialCode,
           },
         }),
       });
@@ -150,7 +147,6 @@ export default function CheckoutPageInner() {
         return;
       }
 
-      // ⭐ Redirect to Paystack
       window.location.href = payData.authorization_url;
     } catch (err) {
       console.error("PAYSTACK INIT ERROR", err);
@@ -166,7 +162,7 @@ export default function CheckoutPageInner() {
     typeof quote.serviceFeeUSD === "number" &&
     typeof quote.totalChargeUSD === "number" &&
     typeof quote.sellRate === "number";
-    
+
   return (
     <main className="min-h-screen bg-neutral-100 px-4 py-10 flex justify-center">
       <div className="w-full max-w-lg space-y-2">
@@ -297,12 +293,9 @@ export default function CheckoutPageInner() {
                 <div className="flex justify-between">
                   <span className="text-neutral-500">Rate</span>
                   <span className="font-medium">
-                    {quote.sellRate.toFixed(4)}{" "}
-                    {operatorCurrency}
+                    {quote.sellRate.toFixed(4)} {operatorCurrency}
                   </span>
                 </div>
-
-                
 
                 {/* Local currency */}
                 <div className="flex justify-between">

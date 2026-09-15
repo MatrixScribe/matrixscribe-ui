@@ -12,11 +12,14 @@ type Props = {
   selectedProduct: Product | null;
   topupType: "airtime" | "data";
 
-  // ⭐ REQUIRED FIX — TopUpSection passes these
+  // ⭐ TopUpSection passes these
   preferredCurrency: string | null;
   preferredRate: number | null;
 
   onContinue: () => void;
+
+  // ⭐ Optional dialCode (available from selectedCountry, but exposed if needed)
+  dialCode?: string;
 };
 
 export function Step4Review({
@@ -27,11 +30,8 @@ export function Step4Review({
   selectedOperator,
   selectedProduct,
   topupType,
-
-  // ⭐ NEW props
   preferredCurrency,
   preferredRate,
-
   onContinue,
 }: Props) {
   const [clicked, setClicked] = useState(false);
