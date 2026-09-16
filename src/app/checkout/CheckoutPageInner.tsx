@@ -122,20 +122,28 @@ export default function CheckoutPageInner() {
           preferredAmount,
 
           topupPayload: {
-            type: payload.type,
-            operatorId: payload.operatorId,
-            operatorName: payload.operatorName,
-            operatorAmount,
-            operatorCurrency,
-            phone: payload.phone,
-            countryCode: payload.country,
-            productId: payload.productId,
-            productName: payload.productName,
-            operatorCostPreferred: quote.operatorCostUSD,
+  type: payload.type,
+  operatorId: payload.operatorId,
+  operatorName: payload.operatorName,
 
-            // ⭐ REQUIRED FIX — include dialCode
-            dialCode: payload.dialCode,
-          },
+  // ⭐ FIXED — send correct operator amount & currency
+  operatorAmount: payload.amount,
+  operatorCurrency: payload.currency,
+
+  phone: payload.phone,
+
+  // ⭐ FIXED — correct countryCode
+  countryCode: payload.country,
+
+  productId: payload.productId,
+  productName: payload.productName,
+
+  operatorCostPreferred: quote.operatorCostUSD,
+
+  // ⭐ dialCode is correct
+  dialCode: payload.dialCode,
+},
+
         }),
       });
 
