@@ -40,13 +40,13 @@ export function CountrySelectorModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden shadow-xl"
+        className="w-full max-w-md max-h-[80vh] bg-black rounded-3xl overflow-hidden shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* HEADER */}
         <div className="p-5 border-b border-neutral-200">
-          <h2 className="text-lg font-semibold">Select Country</h2>
-          <p className="text-sm text-neutral-500">Search or scroll to choose</p>
+          <h2 className="text-lg text-white font-semibold">Select Country</h2>
+          <p className="text-sm text-white">Search or scroll to choose</p>
         </div>
 
         {/* SEARCH */}
@@ -55,8 +55,8 @@ export function CountrySelectorModal({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search country, ISO code, or dial code"
-            className="w-full px-4 py-3 rounded-xl border bg-white"
+            placeholder="Search country"
+            className="w-full px-4 py-3 rounded-xl border text-white bg-black"
           />
         </div>
 

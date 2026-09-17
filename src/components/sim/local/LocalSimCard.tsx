@@ -120,11 +120,7 @@ export function LocalSimCard({
 
       <div className="relative z-10">
 
-        {/* Category Badge */}
-        <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-purple-600/70 text-[10px] font-semibold tracking-wide">
-          {simCategory}
-        </div>
-
+        
         {/* Brand Row */}
         <div className="flex items-center justify-between mb-3">
           <img src="/logogrey.png" className="h-7 w-auto opacity-80" />
@@ -132,7 +128,7 @@ export function LocalSimCard({
 
         {/* Embossed Redatacom Logo */}
         <div className="absolute top-0 left-10 text-md font-extrabold tracking-widest opacity-30 select-none">
-          PRIMARY SIM
+          LINKED SIM
         </div>
 
         {/* Operator + Flag */}

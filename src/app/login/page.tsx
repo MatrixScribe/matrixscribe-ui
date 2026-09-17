@@ -191,7 +191,7 @@ export default function LoginPage() {
                   : "bg-ffff text-neutral-300"
               }`}
             >
-              Login with Email
+              Use Email
             </button>
           </div>
 
@@ -279,7 +279,7 @@ export default function LoginPage() {
             <div className="flex flex-col gap-4">
               <button
                 onClick={login}
-                className="w-full py-4 rounded-2xl bg-ffff text-purple-600 font-semibold hover:bg-purple-700 active:scale-[0.97] transition"
+                className="w-full py-4 rounded-2xl bg-ffff text-white font-semibold hover:bg-purple-700 active:scale-[0.97] transition"
               >
                 Login
               </button>
