@@ -64,7 +64,9 @@ export default function ProfileSection({ user, wallet }: { user: any; wallet: an
     animate();
   }, []);
 
-  // Load profile
+  /* -------------------------------------------
+     LOAD PROFILE
+  ------------------------------------------- */
   useEffect(() => {
     async function loadProfile() {
       const token = localStorage.getItem("token");
@@ -83,10 +85,18 @@ export default function ProfileSection({ user, wallet }: { user: any; wallet: an
     loadProfile();
   }, []);
 
-  // Change PIN
+  /* -------------------------------------------
+     CHANGE PIN (LOGGED-IN USER)
+  ------------------------------------------- */
   async function changePin() {
-    if (newPin.length !== 4) {
-      alert("PIN must be 4 digits");
+    // ⭐ Strong validation
+    if (!/^\d{4}$/.test(newPin)) {
+      alert("PIN must be exactly 4 digits");
+      return;
+    }
+
+    if (["0000", "1111", "2222", "1234", "5555"].includes(newPin)) {
+      alert("Choose a stronger PIN");
       return;
     }
 
@@ -106,7 +116,12 @@ export default function ProfileSection({ user, wallet }: { user: any; wallet: an
     const json = await res.json();
     setPinSaving(false);
 
-    alert(json.success ? "PIN updated" : "Failed to update PIN");
+    if (json.success) {
+      alert("PIN updated successfully");
+      setNewPin("");
+    } else {
+      alert("Failed to update PIN");
+    }
   }
 
   if (!profile) {
@@ -144,24 +159,11 @@ export default function ProfileSection({ user, wallet }: { user: any; wallet: an
         <div className="absolute -top-32 -right-32 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* ⭐ Magnetic Stripe with Particles + Logo */}
-      <div className="absolute top-0 left-0 w-full h-14 overflow-hidden border-b border-ffff">
-
-        {/* Gradient base */}
-        <div className="absolute inset-0 bg-gradient-to-r from-balck via-gray-500 to-purple-300 opacity-70" />
-
-        {/* Particle canvas */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full opacity-100"
-        />
-          {/* Logo + Badge */}
+        <div className="absolute top-0 left-0 w-full h-14 overflow-hidden border-b border-ffff">
+          <div className="absolute inset-0 bg-gradient-to-r from-balck via-gray-500 to-purple-300 opacity-70" />
+          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-100" />
           <div className="absolute inset-0 flex items-center justify-between px-4">
-            <img
-              src="/logogrey.png"
-              className="h-6 opacity-80"
-              alt="Redatacom Logo"
-            />
-              
+            <img src="/logogrey.png" className="h-6 opacity-80" alt="Redatacom Logo" />
           </div>
         </div>
 
@@ -241,7 +243,7 @@ export default function ProfileSection({ user, wallet }: { user: any; wallet: an
             pinSaving ? "bg-neutral-400" : "bg-ffff hover:bg-black"
           }`}
         >
-          {pinSaving ? "Updating..." : "Request OTP"}
+          {pinSaving ? "Updating..." : "Update PIN"}
         </button>
       </div>
     </div>
