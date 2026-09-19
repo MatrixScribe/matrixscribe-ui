@@ -80,7 +80,7 @@ export default function Dashboard() {
 
   /* LOADING / AUTH CHECK */
   if (loading) {
-    return <p className="text-black p-10">Loading dashboard...</p>;
+    return <img src="/loadingdashboard.png" className="h-auto w-50 opacity-100" />;
   }
 
   if (!user) {
@@ -160,7 +160,7 @@ export default function Dashboard() {
           <button
             onClick={() => setTab("profile")}
             className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
-              tab === "profile" ? "bg-purple-300 text-blue-700 shadow-md" : "bg-ffff text-neutral-700"
+              tab === "profile" ? "bg-purple-100 text-blue-700 shadow-md" : "bg-ffff text-neutral-700"
             }`}
           >
             <img src="/profile-icon.png" className="h-12 w-auto opacity-80" />
@@ -169,7 +169,7 @@ export default function Dashboard() {
           <button
             onClick={() => setTab("topup")}
             className={`flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center ${
-              tab === "topup" ? "bg-orange-400 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"
+              tab === "topup" ? "bg-orange-200 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"
             }`}
           >
             <img src="/topup-icon.png" className="h-12 w-auto opacity-80" />
@@ -178,7 +178,7 @@ export default function Dashboard() {
   onClick={() => setTab("wallet")}
   className={`
     flex-1 px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2
-    ${tab === "wallet" ? "bg-ffff text-purple-600 shadow-md" : "bg-ffff text-neutral-700"}
+    ${tab === "wallet" ? "bg-gray-100 text-purple-300 shadow-md" : "bg-ffff text-neutral-700"}
   `}
 >
   

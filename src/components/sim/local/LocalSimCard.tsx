@@ -128,7 +128,7 @@ export function LocalSimCard({
 
         {/* Embossed Redatacom Logo */}
         <div className="absolute top-0 left-10 text-md font-extrabold tracking-widest opacity-30 select-none">
-          LINKED SIM
+          LOCAL
         </div>
 
         {/* Operator + Flag */}
