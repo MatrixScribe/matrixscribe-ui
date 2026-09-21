@@ -1,295 +1,231 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-type Country = {
-  name: string;
-  isoName: string;
-  flag: string;
-};
-
-type Operator = {
-  operatorId: string;
-  name: string;
-  logo?: string;
-  operatorType?: string;
-};
-
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter();
 
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [operators, setOperators] = useState<Operator[]>([]);
-
-  // ------------------------------------
-  // ⭐ ADVANCED TYPING ENGINE (20 lines, multi-line)
-  // ------------------------------------
-  const [typedText, setTypedText] = useState("");
-  const [lineIndex, setLineIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const headlines = [
-    "its all here",
-    "recharge globally",
-    "do you need",
-    "quick",
-    "worldwide",
-    "boundry-less",
-    "the power of connectivity",
-    "700+ operators",
-    "fast",
-    "global",
-    "its a worldwide affair",
-    "from 150+ countries",
-    "hey there, get your fix ",
-    "looking for",
-    "no strings attached",
-    "powered by global telecom",
-    "be anywhere",
-    "recharge reborn",
-    "instantly global",
-    "you found"
-  ];
-
+  /* ------------------------------------------------------------
+     COSMIC PARTICLE BACKGROUND
+  ------------------------------------------------------------ */
   useEffect(() => {
-    const currentLine = headlines[lineIndex % headlines.length];
-    const typingSpeed = isDeleting ? 40 : 70;
+    const canvas = document.getElementById("cosmicCanvas") as HTMLCanvasElement;
+    if (!canvas) return;
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setTypedText(currentLine.slice(0, charIndex + 1));
-        setCharIndex((prev) => prev + 1);
+    const ctx = canvas.getContext("2d")!;
+    let particles: any[] = [];
+    const count = 80;
 
-        if (charIndex + 1 === currentLine.length) {
-          setTimeout(() => setIsDeleting(true), 1200);
-        }
-      } else {
-        setTypedText(currentLine.slice(0, charIndex - 1));
-        setCharIndex((prev) => prev - 1);
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
 
-        if (charIndex === 0) {
-          setIsDeleting(false);
-          setLineIndex((prev) => prev + 1);
-        }
-      }
-    }, typingSpeed);
+    resize();
+    window.addEventListener("resize", resize);
 
-    return () => clearTimeout(timeout);
-  }, [charIndex, isDeleting, lineIndex]);
-
-  // ------------------------------------
-  // Sub‑message typing (unchanged)
-  // ------------------------------------
-  const [subTyped, setSubTyped] = useState("");
-  const [subIndex, setSubIndex] = useState(0);
-
-  const subMessages = [
-    "no accounts. no friction. premium simplicity.",
-    "send airtime & data in seconds, globally...",
-    "click plans to check your country availability"
-  ];
-
-  useEffect(() => {
-    const current = subMessages[subIndex];
-    let i = 0;
-
-    setSubTyped("");
-
-    const interval = setInterval(() => {
-      setSubTyped(current.slice(0, i));
-      i++;
-
-      if (i > current.length) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setSubIndex((prev) => (prev + 1) % subMessages.length);
-        }, 1500);
-      }
-    }, 40);
-
-    return () => clearInterval(interval);
-  }, [subIndex]);
-
-  // ------------------------------------
-  // Load countries
-  // ------------------------------------
-  useEffect(() => {
-    async function loadCountries() {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE}/api/countries`
-        );
-        const data = await res.json();
-
-        const list: Country[] = data.countries || [];
-        setCountries(list);
-      } catch (err) {
-        console.error("Failed to load countries", err);
-      }
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 1,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3,
+        color: `rgba(${150 + Math.random() * 100}, ${50 + Math.random() * 50}, 255, 0.5)`
+      });
     }
 
-    loadCountries();
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p) => {
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+    return () => window.removeEventListener("resize", resize);
   }, []);
 
-  const countryCount = countries.length;
-  const operatorCount = countryCount > 0 ? countryCount * 5 : 0;
-
   return (
-    <main className="min-h-screen flex flex-col relative overflow-hidden bg-white text-neutral-900">
+    <main className="relative min-h-screen bg-[#0b0b0f] text-white overflow-hidden">
 
-      {/* HEADER — UNCHANGED */}
-      <header className="relative z-10 w-full border-b border-neutral-200 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+      {/* Cosmic Background */}
+      <canvas
+        id="cosmicCanvas"
+        className="absolute inset-0 w-full h-full opacity-60 pointer-events-none"
+      />
 
-          {/* LEFT: Networks */}
-          <button
-            onClick={() => router.push("/operators")}
-            className="
-              px-3 py-1.5 rounded-lg
-              bg-white
-              border border-black
-              text-purple-700 text-sm font-semibold
-              shadow-sm
-              animate-greenPulse
-              transition-all
-            "
-          >
-            Plans
-          </button>
+      {/* Nebula Glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-black opacity-40 pointer-events-none" />
 
-          <style>{`
-            @keyframes greenPulse {
-              0% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
-              50% { box-shadow: 0 0 14px rgba(16,185,129,0.55); }
-              100% { box-shadow: 0 0 0px rgba(16,185,129,0.0); }
-            }
-            .animate-greenPulse {
-              animation: greenPulse 2.2s ease-in-out infinite;
-            }
-          `}</style>
+      {/* TOP NAV */}
+      <header className="relative z-20 w-full px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <img src="/logo-signup.png" alt="Redatacom" className="h-8 opacity-90" />
 
-          {/* CENTER LOGO */}
-          <div className="
-            hidden md:block
-            text-[20px] font-semibold tracking-tight text-neutral-900 absolute left-1/2 -translate-x-1/2
-          ">
-            <img src="/logo3.png" alt="Redatacom" className="h-6 opacity-90" />
-          </div>
-
-          {/* RIGHT: Stats */}
-          <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-            <div className="flex items-center gap-1">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            </div>
-
-            <span className="font-semibold">{operatorCount} Operators</span>
-            <span className="text-neutral-400">|</span>
-            <span className="font-semibold">{countryCount} Countries</span>
-          </div>
-
-        </div>
-
-        {/* MOBILE LOGO */}
-        <div className="md:hidden w-full flex justify-center py-2">
-          <img src="/logo.png" alt="Redatacom" className="h-6 opacity-90" />
-        </div>
-      </header>
-
-      {/* HERO — TELECOM GLOBAL STYLE */}
-      <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20 bg-white">
-
-        {/* Background GIF / Map */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.10] flex items-center justify-center">
-          <img
-            src="/logo2.gif"
-            alt="background"
-            className="w-[900px] max-w-none"
-          />
-        </div>
-
-        {/* Soft glow */}
-        <div className="absolute top-32 left-1/2 -translate-x-1/2 h-80 w-80 bg-purple-300/20 blur-[140px] rounded-full pointer-events-none" />
-
-        {/* HEADLINE BLOCK */}
-        <div className="relative max-w-3xl w-full text-center mb-10 px-2">
-
-          {/* MULTI-LINE TYPING HEADLINE */}
-          <h1 className="text-[34px] md:text-[52px] font-semibold tracking-tight leading-tight text-neutral-900 whitespace-pre-line">
-            {typedText}
-            <span className="inline-block w-1 h-7 md:h-8 bg-neutral-900 ml-1 animate-pulse" />
-          </h1>
-
-          {/* PURPLE SUBHEAD — RESPONSIVE SIZE */}
-          <span className="
-            block mt-6 
-            text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-900
-            text-[20px] md:text-[32px] font-semibold tracking-tight
-          ">
-            Airtime • Data • Bundles • PIN
-          </span>
-        </div>
-
-        {/* CTA BUTTON */}
+        {/* Login Button */}
         <button
-          onClick={() => router.push("/topup")}
+          onClick={() => router.push("/login")}
           className="
-            relative z-10 w-full sm:w-56 mx-auto flex items-center justify-center gap-2 
-            rounded-xl border border-white bg-purple-900 backdrop-blur 
-            text-white py-3.5 text-[17px] font-medium 
-            hover:bg-black hover:border-yellow-700 
-            transition-all shadow-sm hover:shadow-md
+            px-5 py-2 rounded-xl 
+            bg-white/10 border border-white/20 
+            text-white font-medium text-sm 
+            backdrop-blur-xl 
+            hover:bg-white/20 transition
           "
         >
-          Start Recharge
+          Login
+        </button>
+      </header>
+
+      {/* HERO SECTION */}
+      <section className="relative z-10 flex flex-col items-center justify-center text-center px-6 py-32">
+
+        <h1 className="
+          text-4xl md:text-6xl font-bold tracking-tight mb-6
+          bg-gradient-to-r from-purple-300 via-white to-purple-300
+          bg-clip-text text-transparent drop-shadow-xl
+        ">
+          Your Gateway to Global Telecom
+        </h1>
+
+        <p className="text-neutral-300 text-lg md:text-xl max-w-2xl leading-relaxed mb-10">
+          Instant eSIM activation. Worldwide airtime & data top‑ups.  
+          One platform. One cosmic experience.
+        </p>
+
+        <button
+          onClick={() => router.push("/signup/number")}
+          className="
+            px-10 py-4 rounded-2xl bg-purple-600 hover:bg-purple-700
+            text-white font-semibold text-lg shadow-lg transition
+          "
+        >
+          Get Started
         </button>
 
-        {/* SUB MESSAGE */}
-        <div className="mt-6 text-center text-neutral-600 text-[15px] min-h-[22px]">
-          {subTyped}
-          <span className="inline-block w-1 h-4 bg-neutral-600 ml-1 animate-pulse" />
+        <div className="mt-10 flex gap-6 text-neutral-400 text-sm">
+          <div className="flex flex-col items-center">
+            <span className="text-purple-300 text-2xl font-bold">150+</span>
+            Countries
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-purple-300 text-2xl font-bold">700+</span>
+            Operators
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-purple-300 text-2xl font-bold">∞</span>
+            Connectivity
+          </div>
         </div>
-
       </section>
 
-      {/* FOOTER — UNCHANGED */}
-      <footer className="relative z-10 w-full bg-white/80 backdrop-blur-xl border-t border-neutral-200 py-4 text-neutral-700">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs">
+      {/* WHAT IS REDATACOM */}
+      <section className="relative z-10 px-6 py-24 flex justify-center">
+        <div className="
+          max-w-4xl w-full rounded-3xl p-10
+          bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700/40
+          border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)]
+          backdrop-blur-xl text-white
+        ">
+          <h2 className="text-3xl font-bold mb-6 
+                         bg-gradient-to-r from-purple-300 via-white to-purple-300 
+                         bg-clip-text text-transparent">
+            What is Redatacom?
+          </h2>
 
-          <div className="flex items-center gap-6">
-            <button onClick={() => router.push("/terms")} className="hover:text-neutral-900 transition">Terms</button>
-            <button onClick={() => router.push("/privacy")} className="hover:text-neutral-900 transition">Privacy</button>
-            <button onClick={() => router.push("/about")} className="hover:text-neutral-900 transition">About</button>
-            <button onClick={() => router.push("/support")} className="hover:text-neutral-900 transition">Support</button>
+          <p className="text-neutral-300 text-lg leading-relaxed mb-8">
+            Redatacom is your global connectivity hub — offering instant eSIM activation,
+            worldwide airtime & data top‑ups, and a secure telecom wallet.  
+            Built for travelers, families, businesses, and anyone who needs seamless
+            cross‑border communication.
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="p-4 bg-white/5 rounded-xl border border-white/10">eSIM</div>
+            <div className="p-4 bg-white/5 rounded-xl border border-white/10">Airtime</div>
+            <div className="p-4 bg-white/5 rounded-xl border border-white/10">Data</div>
+            <div className="p-4 bg-white/5 rounded-xl border border-white/10">Wallet</div>
+          </div>
+        </div>
+      </section>
+
+      {/* GLOBAL COVERAGE */}
+      <section className="relative z-10 px-6 py-24 text-center">
+        <h2 className="text-3xl font-bold mb-6 
+                       bg-gradient-to-r from-purple-300 via-white to-purple-300 
+                       bg-clip-text text-transparent">
+          Global Coverage
+        </h2>
+
+        <p className="text-neutral-300 max-w-2xl mx-auto mb-12">
+          Connect across 150+ countries with 700+ operators.  
+          From Africa to Europe, Asia to the Americas — Redatacom keeps you connected.
+        </p>
+
+        <img
+          src="/worldmap.png"
+          className="mx-auto w-full max-w-3xl opacity-80"
+        />
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="relative z-10 px-6 py-24 text-center">
+        <h2 className="text-3xl font-bold mb-10 
+                       bg-gradient-to-r from-purple-300 via-white to-purple-300 
+                       bg-clip-text text-transparent">
+          How It Works
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-4xl mx-auto text-neutral-300">
+          <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+            <span className="text-purple-300 text-4xl font-bold">1</span>
+            <p className="mt-4">Choose your country</p>
           </div>
 
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: "Redatacom",
-                  text: "Instant global airtime & data top‑ups.",
-                  url: window.location.href
-                });
-              } else {
-                alert("Sharing not supported on this device");
-              }
-            }}
-            className="
-              px-3 py-1.5 rounded-lg
-              bg-white
-              border border-black
-              text-purple-700 text-sm font-semibold
-              shadow-sm
-              animate-greenPulse
-              transition-all
-            "
-          >
-            Share
-          </button>
+          <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+            <span className="text-purple-300 text-4xl font-bold">2</span>
+            <p className="mt-4">Select your operator or eSIM plan</p>
+          </div>
 
+          <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+            <span className="text-purple-300 text-4xl font-bold">3</span>
+            <p className="mt-4">Recharge or activate instantly</p>
+          </div>
         </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="relative z-10 px-6 py-24 text-center">
+        <button
+          onClick={() => router.push("/signup/number")}
+          className="
+            px-12 py-4 rounded-2xl bg-purple-600 hover:bg-purple-700
+            text-white font-semibold text-xl shadow-lg transition
+          "
+        >
+          Start Your Global Connectivity Journey
+        </button>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="relative z-10 w-full bg-black/40 backdrop-blur-xl border-t border-white/10 py-6 text-neutral-400 text-center">
+        © {new Date().getFullYear()} Redatacom — Global Connectivity
       </footer>
     </main>
   );

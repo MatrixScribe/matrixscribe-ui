@@ -162,7 +162,7 @@ export default function LoginPage() {
       )}
 
       <div className="relative z-10 px-6 py-12 flex flex-col items-center">
-        <img src="/logo-signup.png" className="h-12 opacity-90 mb-6" />
+        <img src="/logo-signup.png" className=" w-auto h-7 opacity-90 mb-6" />
 
         <h1 className="text-center text-3xl font-bold mb-8 
                bg-gradient-to-r from-purple-300 via-white to-purple-300 
