@@ -5,8 +5,6 @@ export const dynamic = "force-dynamic";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import jsPDF from "jspdf";
-
-// ⭐ ADD THIS
 import { useAuthStore } from "@/store/authStore";
 
 function SuccessContent() {
@@ -14,16 +12,10 @@ function SuccessContent() {
   const router = useRouter();
 
   const ref = searchParams.get("reference");
-
-  // ⭐ GET TOKEN
   const token = useAuthStore((s) => s.token);
 
   const [wallet, setWallet] = useState<any>(null);
   const [loadingWallet, setLoadingWallet] = useState(true);
-  const [rating, setRating] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const [delivered, setDelivered] = useState(false);
-  const [showInvoice, setShowInvoice] = useState(false);
 
   /* ------------------------------
      FETCH UPDATED WALLET BALANCE
@@ -34,7 +26,7 @@ function SuccessContent() {
         const res = await fetch("/api/wallet", {
           cache: "no-store",
           headers: {
-            Authorization: `Bearer ${token}`, // ⭐ FIXED
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -47,21 +39,8 @@ function SuccessContent() {
       }
     }
 
-    if (token) {
-      fetchWallet();
-    }
+    if (token) fetchWallet();
   }, [token]);
-
-  /* ------------------------------
-     AUTO‑REDIRECT TO DASHBOARD
-  ------------------------------ */
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push("/dashboard");
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [router]);
 
   /* ------------------------------
      CONFETTI ON MOUNT
@@ -92,41 +71,6 @@ function SuccessContent() {
   }, []);
 
   /* ------------------------------
-     GOLD SPARKLE BURST
-  ------------------------------ */
-  const spawnSparkles = () => {
-    const count = 14;
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement("div");
-      s.className = "sparkle";
-      const offsetX = (Math.random() - 0.5) * 140;
-      const offsetY = (Math.random() - 0.5) * 90;
-      s.style.left = `50vw`;
-      s.style.top = `45vh`;
-      s.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-      document.body.appendChild(s);
-      setTimeout(() => s.remove(), 700);
-    }
-  };
-
-  /* ------------------------------
-     RATING LOGIC
-  ------------------------------ */
-  const handleRate = (value: number) => {
-    setRating(value);
-    setSubmitted(true);
-    spawnSparkles();
-
-    setTimeout(() => setDelivered(true), 600);
-
-    setTimeout(() => {
-      if (value >= 4) {
-        window.location.href = "https://g.page/r/PLACEHOLDER/review";
-      }
-    }, 1200);
-  };
-
-  /* ------------------------------
      LOAD LOGO AS DATA URL
   ------------------------------ */
   const loadLogoDataUrl = (src: string): Promise<string> => {
@@ -151,83 +95,101 @@ function SuccessContent() {
   };
 
   /* ------------------------------
-     PDF INVOICE DOWNLOAD
+     PDF INVOICE DOWNLOAD — FIXED
   ------------------------------ */
   const downloadInvoice = async () => {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
-    let y = 40;
 
+    /* TITANIUM HEADER BAR */
+    doc.setFillColor(30, 30, 35);
+    doc.rect(0, 0, pageWidth, 80, "F");
+
+    /* LOGO */
     try {
       const logoDataUrl = await loadLogoDataUrl("/logo.png");
-      doc.addImage(logoDataUrl, "PNG", 40, y, 140, 40);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.text("redatacom", pageWidth - 40, y + 18, { align: "right" });
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.text("connectivity is power", pageWidth - 40, y + 34, {
-        align: "right",
-      });
-      y += 60;
+      doc.addImage(logoDataUrl, "PNG", 40, 20, 120, 40);
     } catch {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("redatacom", 40, y);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.text("connectivity is power", 40, y + 16);
-      y += 50;
+      doc.setFontSize(22);
+      doc.setTextColor(255, 255, 255);
+      doc.text("REDATACOM", 40, 50);
     }
 
-    doc.setDrawColor(220, 220, 220);
-    doc.line(40, y, pageWidth - 40, y);
-    y += 25;
-
+    /* HEADER TEXT */
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("Invoice", 40, y);
+    doc.setFontSize(20);
+    doc.setTextColor(255, 255, 255);
+    doc.text("Invoice", pageWidth - 40, 45, { align: "right" });
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.text(`Date: ${new Date().toLocaleString()}`, pageWidth - 40, y, {
-      align: "right",
-    });
+    doc.text("connectivity is power", pageWidth - 40, 62, { align: "right" });
+
+    let y = 120;
+
+    /* COSMIC ACCENT LINE */
+    doc.setDrawColor(140, 90, 255);
+    doc.setLineWidth(1.2);
+    doc.line(40, y, pageWidth - 40, y);
     y += 30;
 
+    /* INVOICE CARD */
     const cardX = 40;
     const cardWidth = pageWidth - 80;
-    const cardHeight = 110;
 
-    doc.roundedRect(cardX, y, cardWidth, cardHeight, 6, 6, "FD");
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(cardX, y, cardWidth, 180, 10, 10, "F");
 
-    let innerY = y + 22;
+    y += 30;
 
     const rows = [
       { label: "Transaction Reference", value: ref || "-" },
       { label: "Status", value: "Completed" },
-      { label: "Service", value: "Wallet Top‑Up" },
+      { label: "Service", value: "Global Recharge" },
+      { label: "Date", value: new Date().toLocaleString() },
       {
         label: "New Wallet Balance",
         value: wallet ? `USD ${wallet.usd_balance.toFixed(2)}` : "-",
       },
     ];
 
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor(40, 40, 40);
+
     rows.forEach((row, index) => {
-      doc.text(row.label, cardX + 16, innerY);
-      doc.text(row.value, cardX + cardWidth - 16, innerY, { align: "right" });
-      innerY += 20;
+      doc.text(row.label, cardX + 20, y);
+      doc.text(row.value, cardX + cardWidth - 20, y, { align: "right" });
+
+      y += 22;
+
       if (index < rows.length - 1) {
-        doc.line(cardX + 12, innerY - 12, cardX + cardWidth - 12, innerY - 12);
+        doc.setDrawColor(220, 220, 220);
+        doc.line(cardX + 15, y - 12, cardX + cardWidth - 15, y - 12);
       }
     });
+
+    /* FOOTER */
+    y += 40;
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(10);
+    doc.setTextColor(120, 120, 120);
+    doc.text(
+      "Thank you for using Redatacom — global connectivity at your fingertips.",
+      pageWidth / 2,
+      y,
+      { align: "center" }
+    );
 
     doc.save(`invoice-${ref || "transaction"}.pdf`);
   };
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-gradient-to-b from-white to-emerald-50">
+      
       {/* Logo */}
-      <img src="/logo.png" alt="Redatacom Logo" className="w-32 mb-10 opacity-90" />
+      <img src="/logo.png" alt="Redatacom Logo" className="w-auto h-16 mb-5 opacity-100" />
 
       {/* Success Ring */}
       <div className="h-32 w-32 rounded-full bg-emerald-100 flex items-center justify-center animate-[glowRing_2s_ease-in-out_infinite] shadow-lg">
@@ -237,12 +199,8 @@ function SuccessContent() {
       </div>
 
       <h1 className="text-3xl font-semibold text-neutral-900 mt-6">
-        Wallet Top‑Up Completed!
+        Top‑Up Completed!
       </h1>
-
-      <p className="text-neutral-500 mt-2 text-base text-center">
-        Redirecting to your dashboard…
-      </p>
 
       <p className="text-neutral-400 mt-1 text-sm">
         Ref: <span className="font-medium">{ref}</span>
@@ -254,57 +212,64 @@ function SuccessContent() {
         </p>
       )}
 
+      {/* INLINE INVOICE DETAILS — TITANIUM COSMIC */}
+      <div className="
+        mt-10 w-full max-w-md 
+        rounded-2xl 
+        p-6 
+        bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700/40
+        border border-white/10 
+        shadow-[0_20px_60px_rgba(0,0,0,0.5)]
+        backdrop-blur-xl
+        text-white
+      ">
+        <h2 className="text-2xl font-bold mb-4 
+                       bg-gradient-to-r from-purple-300 via-white to-purple-300 
+                       bg-clip-text text-transparent">
+          Invoice Details
+        </h2>
+
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between border-b border-white/10 pb-2">
+            <span className="text-neutral-300">Transaction Reference</span>
+            <span className="font-semibold">{ref}</span>
+          </div>
+
+          <div className="flex justify-between border-b border-white/10 pb-2">
+            <span className="text-neutral-300">Status</span>
+            <span className="font-semibold text-emerald-400">Completed</span>
+          </div>
+
+          <div className="flex justify-between border-b border-white/10 pb-2">
+            <span className="text-neutral-300">Service</span>
+            <span className="font-semibold">Global Recharge</span>
+          </div>
+
+          <div className="flex justify-between border-b border-white/10 pb-2">
+            <span className="text-neutral-300">Date</span>
+            <span className="font-semibold">{new Date().toLocaleString()}</span>
+          </div>
+
+          
+        </div>
+      </div>
+
       {/* Buttons */}
-      <div className="mt-6 flex gap-4">
+      <div className="mt-8 flex flex-col gap-4 w-full max-w-xs">
         <button
-          onClick={() => setShowInvoice(true)}
-          className="pulse bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-purple-700 transition text-sm"
+          onClick={() => router.push("/dashboard")}
+          className="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold shadow hover:bg-purple-700 transition"
         >
-          View Invoice
+          Go to Dashboard
         </button>
 
         <button
           onClick={downloadInvoice}
-          className="pulse text-emerald-600 text-sm font-semibold underline px-4 py-2"
+          className="w-full text-emerald-600 font-semibold underline py-2"
         >
           Download Invoice
         </button>
       </div>
-
-      {/* Invoice Modal */}
-      {showInvoice && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-6 animate-[fadeIn_0.3s_ease-out] z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-              Invoice
-            </h2>
-
-            <p className="text-neutral-600 mb-2">
-              <strong>Transaction Reference:</strong> {ref}
-            </p>
-
-            <p className="text-neutral-600 mb-2">
-              <strong>Status:</strong> Completed
-            </p>
-
-            <p className="text-neutral-600 mb-2">
-              <strong>Service:</strong> Wallet Top‑Up
-            </p>
-
-            <p className="text-neutral-600 mb-4">
-              <strong>New Balance:</strong>{" "}
-              {wallet ? `USD ${wallet.usd_balance.toFixed(2)}` : "-"}
-            </p>
-
-            <button
-              onClick={() => setShowInvoice(false)}
-              className="pulse w-full bg-purple-600 text-white py-3 rounded-xl font-semibold shadow hover:bg-purple-700 transition"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

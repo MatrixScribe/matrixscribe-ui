@@ -115,9 +115,11 @@ export default function PinInner() {
       <div className="relative z-10 px-6 py-16 flex flex-col items-center">
         <img src="/logo3.png" className="h-12 opacity-90 mb-6" />
 
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Create Your PIN
-        </h1>
+        <h1 className="text-center text-3xl font-bold mb-8 
+               bg-gradient-to-r from-purple-300 via-white to-purple-300 
+               bg-clip-text text-transparent drop-shadow-lg tracking-wide">
+  Create Your PIN
+</h1>
 
         <p className="text-neutral-400 mt-2">Choose a 4‑digit PIN</p>
 

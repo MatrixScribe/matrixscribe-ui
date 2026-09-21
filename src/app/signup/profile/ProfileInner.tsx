@@ -64,11 +64,13 @@ export default function ProfileInner() {
       <div className="relative z-10 px-6 py-16 flex flex-col items-center">
         <img src="/logo3.png" className="h-12 opacity-90 mb-6" />
 
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Set Up Your Profile
-        </h1>
+        <h1 className="text-center text-3xl font-bold mb-8 
+               bg-gradient-to-r from-purple-300 via-white to-purple-300 
+               bg-clip-text text-transparent drop-shadow-lg tracking-wide">
+  Finish Your Setup
+</h1>
 
-        <p className="text-neutral-400 mt-2">Just your details to finish</p>
+        <p className="text-neutral-400 mt-2">We're Almost There...</p>
 
         <div className="mt-6 flex items-center gap-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-5 py-3 shadow-lg">
           {operatorLogo && (

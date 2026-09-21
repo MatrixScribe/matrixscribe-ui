@@ -89,20 +89,20 @@ export default function ResetPinPage() {
         <img src="/logo-signup.png" className="h-12 opacity-90 mb-6" />
 
         <h1 className="text-2xl font-semibold tracking-tight mb-6">
-          <img src="/loginicon.png" className="w-auto h-25 opacity-100" />
+          <img src="/resetpin.png" className="w-auto h-25 opacity-100" />
         </h1>
 
-        <div className="mt-6 w-full max-w-xl rounded-3xl p-8 bg-ffff shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+        <div className="mt-1 w-full max-w-xl rounded-3xl p-8 bg-ffff shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
 
           {/* STEP 1 — REQUEST OTP */}
           {step === "request" && (
             <>
-              <h2 className="text-xl font-semibold mb-6">Reset PIN</h2>
+              <h2 className="text-xl font-semibold mb-6">We'll send an OTP to your registered email address</h2>
 
               <input
                 type="text"
                 className="w-full rounded-2xl px-4 py-4 bg-ffff border border-white/20 text-white placeholder:text-neutral-400 mb-6"
-                placeholder="Enter email or phone number"
+                placeholder="Enter email address"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
               />

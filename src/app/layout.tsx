@@ -6,7 +6,7 @@ import Script from "next/script";
 import { PreferredCurrencyProvider } from "@/components/context/PreferredCurrencyContext";
 
 export const metadata = {
-  title: "Redatacom Global Recharge",
+  title: " Global Network",
   description: "Instant global airtime & data top-ups",
 };
 

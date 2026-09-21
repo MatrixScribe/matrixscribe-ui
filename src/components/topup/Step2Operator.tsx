@@ -96,7 +96,7 @@ export function Step2Operator({
           <img src="/networks.png" className="w-65 h-auto opacity-100"/>
         </h2>
         <p className="text-neutral-500 text-sm mt-1">
-          All top-ups are displayed in the local currency.
+          
         </p>
       </div>
 

@@ -164,9 +164,11 @@ export default function LoginPage() {
       <div className="relative z-10 px-6 py-12 flex flex-col items-center">
         <img src="/logo-signup.png" className="h-12 opacity-90 mb-6" />
 
-        <h1 className="text-2xl font-semibold tracking-tight">
-          <img src="/loginicon.png" className="w-auto h-25 opacity-100" />
-        </h1>
+        <h1 className="text-center text-3xl font-bold mb-8 
+               bg-gradient-to-r from-purple-300 via-white to-purple-300 
+               bg-clip-text text-transparent drop-shadow-lg tracking-wide">
+  Sign Into Your Account
+</h1>
 
         <div className="mt-6 w-full max-w-xl rounded-3xl p-8 bg-ffff shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
 
@@ -176,18 +178,18 @@ export default function LoginPage() {
               onClick={() => setMode("phone")}
               className={`px-4 py-2 rounded-xl ${
                 mode === "phone"
-                  ? "bg-purple-600 text-white"
+                  ? "bg-purple-700 text-white"
                   : "bg-ffff text-neutral-300"
               }`}
             >
-              Enter Phone Number
+              Phone Number
             </button>
 
             <button
               onClick={() => setMode("email")}
               className={`px-4 py-2 rounded-xl ${
                 mode === "email"
-                  ? "bg-purple-600 text-white"
+                  ? "bg-purple-6700 text-white"
                   : "bg-ffff text-neutral-300"
               }`}
             >
@@ -293,9 +295,9 @@ export default function LoginPage() {
 
               <button
                 onClick={() => router.push("/reset-pin")}
-                className="w-full py-3 text-neutral-300 text-sm underline hover:text-white transition"
+                className="w-full py-3 text-neutral-300 text-sm hover:text-white transition"
               >
-                Reset PIN
+                Forgot PIN
               </button>
             </div>
           </div>
