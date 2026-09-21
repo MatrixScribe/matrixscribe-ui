@@ -76,7 +76,7 @@ export default function LandingPage() {
       {/* TOP NAV */}
       <header className="relative z-20 w-full px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <img src="/logo-signup.png" alt="Redatacom" className="h-8 opacity-90" />
+        <img src="/logo-signup.png" alt="Redatacom" className="h-8 opacity-100" />
 
         {/* Login Button */}
         <button
@@ -104,9 +104,18 @@ export default function LandingPage() {
           Your Gateway to Global Telecom
         </h1>
 
-        <p className="text-neutral-300 text-lg md:text-xl max-w-2xl leading-relaxed mb-10">
-          Instant eSIM activation. Worldwide airtime & data top‑ups.  
-          One platform. One cosmic experience.
+        <p className="text-xl md:text-xl font-bold tracking-tight mb-1
+          bg-gradient-to-r from-white via-purple-300 to-blue-400
+          bg-clip-text text-transparent drop-shadow-xl">
+          Instant eSIM activation. Worldwide airtime & data top‑ups.
+        </p>
+
+        <img src="/cosmicicon2.png" className=" w-auto h-50 opacity-90 mb-1" />
+
+        <p className="text-xl md:text-xl font-bold tracking-tight mb-5
+          bg-gradient-to-r from-blue-400 via-white to-purple-300
+          bg-clip-text text-transparent drop-shadow-xl">
+          One Platform. One cosmic experience
         </p>
 
         <button
@@ -136,12 +145,11 @@ export default function LandingPage() {
       </section>
 
       {/* WHAT IS REDATACOM */}
-      <section className="relative z-10 px-6 py-24 flex justify-center">
+      <section className="relative z-10 px-6 py-10 flex justify-center">
         <div className="
           max-w-4xl w-full rounded-3xl p-10
-          bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700/40
-          border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)]
-          backdrop-blur-xl text-white
+          bg-ffff
+          
         ">
           <h2 className="text-3xl font-bold mb-6 
                          bg-gradient-to-r from-purple-300 via-white to-purple-300 
@@ -151,37 +159,48 @@ export default function LandingPage() {
 
           <p className="text-neutral-300 text-lg leading-relaxed mb-8">
             Redatacom is your global connectivity hub — offering instant eSIM activation,
-            worldwide airtime & data top‑ups, and a secure telecom wallet.  
-            Built for travelers, families, businesses, and anyone who needs seamless
-            cross‑border communication.
+            worldwide airtime & data top‑ups.  
+            Built for travelers, families, businesses & anyone who needs seamless
+            cross‑border or daily communication.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="p-4 bg-white/5 rounded-xl border border-white/10">eSIM</div>
-            <div className="p-4 bg-white/5 rounded-xl border border-white/10">Airtime</div>
-            <div className="p-4 bg-white/5 rounded-xl border border-white/10">Data</div>
-            <div className="p-4 bg-white/5 rounded-xl border border-white/10">Wallet</div>
+            <div className="p-4 bg-white/5 rounded-xl border-ffff"><img src="/sim-local1.png" className=" w-auto h-auto opacity-100" />Link Local</div>
+            <div className="p-4 bg-white/5 rounded-xl border-ffff"><img src="/sim-esim1.png" className=" w-auto h-auto opacity-100" />Get Esim</div>
+            <div className="p-4 bg-white/5 rounded-xl border-ffff"><img src="/airtimeicon.png" className=" w-auto h-auto opacity-100" />Airtime</div>
+            <div className="p-4 bg-white/5 rounded-xl border-ffff"><img src="/dataicon.png" className=" w-auto h-auto opacity-100" />Data</div>
+            
           </div>
+
         </div>
       </section>
 
+
       {/* GLOBAL COVERAGE */}
-      <section className="relative z-10 px-6 py-24 text-center">
+
+      <section className="relative z-10 px-6 py-10 text-center">
         <h2 className="text-3xl font-bold mb-6 
                        bg-gradient-to-r from-purple-300 via-white to-purple-300 
                        bg-clip-text text-transparent">
           Global Coverage
         </h2>
 
-        <p className="text-neutral-300 max-w-2xl mx-auto mb-12">
+        <p className="text-3xl md:text-xl font-bold tracking-tight mb-1
+          bg-gradient-to-r from-white via-purple-300 to-blue-400
+          bg-clip-text text-transparent drop-shadow-xl">
           Connect across 150+ countries with 700+ operators.  
-          From Africa to Europe, Asia to the Americas — Redatacom keeps you connected.
+          From Africa to Europe, Asia to the Americas.
         </p>
 
         <img
-          src="/worldmap.png"
-          className="mx-auto w-full max-w-3xl opacity-80"
+          src="/infinityicon1.png"
+          className="mx-auto w-auto h-40 opacity-100"
         />
+        <p className="text-xl md:text-xl font-bold tracking-tight mb-1
+          bg-gradient-to-r from-white via-purple-300 to-blue-400
+          bg-clip-text text-transparent drop-shadow-xl">
+          Redatacom keeps you connected.
+        </p>
       </section>
 
       {/* HOW IT WORKS */}
@@ -211,7 +230,7 @@ export default function LandingPage() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="relative z-10 px-6 py-24 text-center">
+      <section className="relative z-10 px-6 py-15 text-center">
         <button
           onClick={() => router.push("/signup/number")}
           className="
@@ -219,7 +238,7 @@ export default function LandingPage() {
             text-white font-semibold text-xl shadow-lg transition
           "
         >
-          Start Your Global Connectivity Journey
+          Get Started
         </button>
       </section>
 
