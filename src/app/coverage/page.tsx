@@ -166,85 +166,89 @@ export default function CoveragePage() {
       </div>
 
       {/* COUNTRY OPERATORS MODAL */}
-      {selectedCountry && (
-        <div className="
-          fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center
-        ">
-          <div className="
-            bg-[#0b0b0f] border border-white/10 rounded-2xl shadow-2xl 
-            p-6 w-full max-w-xl mx-4
+{selectedCountry && (
+  <div className="
+    fixed inset-0 bg-black/60 backdrop-blur-xl z-50 
+    flex items-center justify-center p-4
+  ">
+    <div className="
+      bg-[#0b0b0f] border border-white/10 rounded-2xl shadow-2xl 
+      w-full max-w-xl 
+      max-h-[80vh] overflow-y-auto
+      p-6
+    ">
+      {/* Modal Header */}
+      <div className="flex items-center justify-between mb-4 sticky top-0 bg-[#0b0b0f] pb-2">
+        <div className="flex items-center gap-3">
+          <img
+            src={selectedCountry.flag}
+            className="h-8 w-12 rounded shadow"
+          />
+          <h2 className="
+            text-xl font-semibold text-transparent bg-clip-text 
+            bg-gradient-to-r from-purple-300 via-white to-purple-300
           ">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
+            {selectedCountry.name}
+          </h2>
+        </div>
+
+        <button
+          onClick={closeModal}
+          className="
+            px-3 py-1 rounded-lg bg-white/10 border border-white/20 
+            text-white text-sm hover:bg-white/20 transition
+          "
+        >
+          Close
+        </button>
+      </div>
+
+      {/* Operators Loading */}
+      {loadingOps && (
+        <p className="text-neutral-400 text-sm animate-pulse">
+          Loading networks…
+        </p>
+      )}
+
+      {/* Operators Grid */}
+      {!loadingOps && operators.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 mt-4 pb-4">
+          {operators.map((op) => (
+            <button
+              key={op.operatorId}
+              onClick={() => (window.location.href = "/login")}
+              className="
+                bg-white/5 border border-white/10 rounded-xl p-3 
+                flex flex-col items-center text-center w-full
+                hover:bg-purple-900/20 hover:border-purple-400 
+                transition cursor-pointer
+              "
+            >
+              {op.logo && (
                 <img
-                  src={selectedCountry.flag}
-                  className="h-8 w-12 rounded shadow"
+                  src={op.logo}
+                  className="h-8 object-contain mb-2"
                 />
-                <h2 className="
-                  text-xl font-semibold text-transparent bg-clip-text 
-                  bg-gradient-to-r from-purple-300 via-white to-purple-300
-                ">
-                  {selectedCountry.name}
-                </h2>
-              </div>
-
-              <button
-                onClick={closeModal}
-                className="
-                  px-3 py-1 rounded-lg bg-white/10 border border-white/20 
-                  text-white text-sm hover:bg-white/20 transition
-                "
-              >
-                Close
-              </button>
-            </div>
-
-            {/* Operators Loading */}
-            {loadingOps && (
-              <p className="text-neutral-400 text-sm animate-pulse">
-                Loading networks…
+              )}
+              <p className="text-sm font-medium text-white">{op.name}</p>
+              <p className="text-xs text-neutral-400">
+                {op.operatorType || "Mobile Operator"}
               </p>
-            )}
-
-            {/* Operators Grid */}
-            {!loadingOps && operators.length > 0 && (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {operators.map((op) => (
-                  <button
-                    key={op.operatorId}
-                    onClick={() => (window.location.href = "/login")}
-                    className="
-                      bg-white/5 border border-white/10 rounded-xl p-3 
-                      flex flex-col items-center text-center w-full
-                      hover:bg-purple-900/20 hover:border-purple-400 
-                      transition cursor-pointer
-                    "
-                  >
-                    {op.logo && (
-                      <img
-                        src={op.logo}
-                        className="h-8 object-contain mb-2"
-                      />
-                    )}
-                    <p className="text-sm font-medium text-white">{op.name}</p>
-                    <p className="text-xs text-neutral-400">
-                      {op.operatorType || "Mobile Operator"}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* No Operators */}
-            {!loadingOps && operators.length === 0 && (
-              <p className="text-neutral-400 text-sm mt-4">
-                No operators found for this country.
-              </p>
-            )}
-          </div>
+            </button>
+          ))}
         </div>
       )}
+
+      {/* No Operators */}
+      {!loadingOps && operators.length === 0 && (
+        <p className="text-neutral-400 text-sm mt-4">
+          No operators found for this country.
+        </p>
+      )}
+    </div>
+  </div>
+)}
+
 
     </main>
   );
