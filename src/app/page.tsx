@@ -243,9 +243,64 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 w-full bg-black/40 backdrop-blur-xl border-t border-white/10 py-6 text-neutral-400 text-center">
-        © {new Date().getFullYear()} Redatacom — Global Connectivity
-      </footer>
+<footer className="relative z-10 w-full bg-black/40 backdrop-blur-xl border-t border-white/10 py-10 text-neutral-300">
+
+  <div className="
+    max-w-6xl mx-auto px-6 
+    grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 
+    gap-10
+  ">
+
+    {/* Column 1 — Logo */}
+    <div className="flex flex-col items-center md:items-start text-center md:text-left">
+      <img src="/icon-pin.png" className="h-20 w-auto opacity-100 mb-4" />
+      <p className="text-sm text-neutral-400 leading-relaxed max-w-xs">
+        
+      </p>
+    </div>
+
+    {/* Column 2 — Company */}
+    <div className="flex flex-col items-center md:items-start">
+      <h3 className="text-white font-semibold mb-3">Company</h3>
+      <ul className="space-y-2 text-sm text-center md:text-left">
+        <li><button onClick={() => router.push("/about")} className="hover:text-white transition">About</button></li>
+        <li><button onClick={() => router.push("/coverage")} className="hover:text-white transition">Coverage Map</button></li>
+        <li><button onClick={() => router.push("/compatibility")} className="hover:text-white transition">eSIM Compatibility</button></li>
+        <li><button onClick={() => router.push("/security")} className="hover:text-white transition">Security & Compliance</button></li>
+      </ul>
+    </div>
+
+    {/* Column 3 — Support */}
+    <div className="flex flex-col items-center md:items-start">
+      <h3 className="text-white font-semibold mb-3">Support</h3>
+      <ul className="space-y-2 text-sm text-center md:text-left">
+        <li><button onClick={() => router.push("/support")} className="hover:text-white transition">Support Center</button></li>
+        <li><button onClick={() => router.push("/faq")} className="hover:text-white transition">FAQ</button></li>
+        <li><button onClick={() => router.push("/contact")} className="hover:text-white transition">Contact Us</button></li>
+      </ul>
+    </div>
+
+    {/* Column 4 — Legal */}
+    <div className="flex flex-col items-center md:items-start">
+      <h3 className="text-white font-semibold mb-3">Legal</h3>
+      <ul className="space-y-2 text-sm text-center md:text-left">
+        <li><button onClick={() => router.push("/terms")} className="hover:text-white transition">Terms of Service</button></li>
+        <li><button onClick={() => router.push("/privacy")} className="hover:text-white transition">Privacy Policy</button></li>
+        <li><button onClick={() => router.push("/refunds")} className="hover:text-white transition">Refund Policy</button></li>
+        <li><button onClick={() => router.push("/cookies")} className="hover:text-white transition">Cookie Policy</button></li>
+      </ul>
+    </div>
+
+  </div>
+
+  {/* COPYRIGHT */}
+  <div className="mt-10 text-center text-neutral-500 text-sm">
+    © {new Date().getFullYear()} Redatacom
+  </div>
+
+</footer>
+
+
     </main>
   );
 }
