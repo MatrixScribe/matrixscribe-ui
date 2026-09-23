@@ -142,6 +142,16 @@ export default function LandingPage() {
             Connectivity
           </div>
         </div>
+
+        <button
+          onClick={() => router.push("/coverage")}
+          className="
+            px-10 py-4 rounded-2xl bg-ffff hover:bg-purple-700
+            text-white font-semibold text-lg shadow-lg transition
+          "
+        >
+          Check Networks
+        </button>
       </section>
 
       {/* WHAT IS REDATACOM */}
@@ -157,11 +167,13 @@ export default function LandingPage() {
             What is Redatacom?
           </h2>
 
-          <p className="text-neutral-300 text-lg leading-relaxed mb-8">
-            Redatacom is your global connectivity hub — offering instant eSIM activation,
+          <p className="text-xl font-bold mb-6 
+                         bg-gradient-to-r from-purple-300 via-white to-purple-300 
+                         bg-clip-text text-transparent">
+            Your global connectivity hub offering instant eSIM activation,
             worldwide airtime & data top‑ups.  
-            Built for travelers, families, businesses & anyone who needs seamless
-            cross‑border or daily communication.
+            Built for anyone who needs seamless
+            cross‑border or internal daily communication. Join the family Today!
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
