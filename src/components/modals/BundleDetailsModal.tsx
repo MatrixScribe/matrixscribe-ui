@@ -10,7 +10,7 @@ export default function BundleDetailsModal({
   groupName,
   countries,
   preferredCurrency,
-  fxMidRate,
+  fxSellRate,
   networksForIso,
 }: {
   open: boolean;
