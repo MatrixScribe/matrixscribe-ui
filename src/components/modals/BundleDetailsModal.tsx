@@ -19,7 +19,7 @@ export default function BundleDetailsModal({
   groupName: string;
   countries: Country[];
   preferredCurrency?: string | null;
-  fxMidRate?: number | null;
+  fxSellRate?: number | null;   // ⭐ use sell_rate everywhere
   networksForIso?: any[];
 }) {
   if (!open || !bundle) return null;
@@ -82,10 +82,10 @@ export default function BundleDetailsModal({
      DATA EXTRACTION
   --------------------------------------------------- */
   const safeCurrency = preferredCurrency || "USD";
-  const safeRate = fxMidRate ?? 1;
+  const safeRate = fxSellRate ?? 1;   // ⭐ correct rate
 
   const usd = Number(bundle.finalPrice ?? bundle.price ?? 0);
-  const converted = usd * safeRate;
+  const converted = usd * safeRate;   // stays same, but now uses sell_rate
 
   const regionName =
     bundle.countries?.[0]?.name ||

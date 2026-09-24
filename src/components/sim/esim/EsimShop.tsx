@@ -103,9 +103,11 @@ export default function EsimShop({
   const [countriesLoading, setCountriesLoading] = useState(true);
 
   const [preferredCurrency, setPreferredCurrency] = useState(
-    wallet?.preferred_currency ?? "USD"
-  );
-  const [fxMidRate, setFxMidRate] = useState(wallet?.fx_mid_rate ?? 1);
+  wallet?.preferred_currency ?? "USD"
+);
+
+const [fxSellRate, setFxSellRate] = useState(wallet?.fx_sell_rate ?? 1);
+
 
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
@@ -412,29 +414,29 @@ export default function EsimShop({
       {/* ⭐ BUNDLES MODAL */}
       {selectedGroup && (
         <BundlesModal
-          open={showBundlesModal}
-          onClose={() => setShowBundlesModal(false)}
-          groupName={selectedGroup.name}
-          bundles={groupBundles}
-          loading={bundlesLoading}
-          preferredCurrency={preferredCurrency}
-          fxMidRate={fxMidRate}
-          token={token}
-          countries={countries}
-          count={groupCount}
-        />
+  open={showBundlesModal}
+  onClose={() => setShowBundlesModal(false)}
+  groupName={selectedGroup.name}
+  bundles={groupBundles}
+  loading={bundlesLoading}
+  preferredCurrency={preferredCurrency}
+  fxSellRate={fxSellRate}    // ⭐ correct
+  token={token}
+  countries={countries}
+  count={groupCount}
+/>
       )}
 
       {/* ⭐ CURRENCY MODAL */}
       {showCurrencyModal && (
         <PreferredCurrencyModal
-          onClose={() => setShowCurrencyModal(false)}
-          onSelect={(currency, rate) => {
-            setPreferredCurrency(currency);
-            setFxMidRate(rate);
-            setShowCurrencyModal(false);
-          }}
-        />
+  onClose={() => setShowCurrencyModal(false)}
+  onSelect={(currency, rate) => {
+    setPreferredCurrency(currency);
+    setFxSellRate(rate);     // ⭐ correct
+    setShowCurrencyModal(false);
+  }}
+/>
       )}
     </div>
   );

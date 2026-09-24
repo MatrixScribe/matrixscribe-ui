@@ -73,7 +73,7 @@ export default function BundlesModal({
   const [isoNetworks, setIsoNetworks] = useState<any[]>([]);
 
   const safeCurrency = preferredCurrency || "USD";
-  const safeRate = fxMidRate ?? 1;
+  const safeRate = fxSellRate ?? 1;   // ⭐ use sell_rate everywhere
 
   const isFirstThree = FIRST_THREE.includes(groupName);
   const isLastThree = LAST_THREE.includes(groupName);
@@ -279,7 +279,7 @@ useEffect(() => {
                     "Unknown Region";
 
                   const usd = Number(b.finalPrice ?? b.price ?? 0);
-                  const converted = safeRate ? usd * safeRate : usd;
+                  const converted = usd * safeRate;   // ⭐ always use sell_rate
                   const formattedConverted = converted.toFixed(2);
 
                   const allowance = b.allowances?.[0] || {};
