@@ -6,9 +6,20 @@ interface Wallet {
   usd_balance: number;
   preferred_currency: string | null;
   local_equivalent: number | null;
-  fx_mid_rate: number | null;
+
+  // ⭐ Old field (keep optional if backend still sends it)
+  fx_mid_rate?: number | null;
+
+  // ⭐ NEW FIELD — required by WalletData and EsimShop
+  fx_sell_rate: number | null;
+
   fx_updated_at: string | null;
+
+  // ⭐ Optional metadata
+  user_id?: number;
+  wallet_id?: number;
 }
+
 
 interface UserState {
   loading: boolean;
