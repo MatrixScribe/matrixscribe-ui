@@ -15,7 +15,7 @@ interface BundleCheckoutModalProps {
   onClose: () => void;
   bundle: Bundle | null;
   preferredCurrency: string | null;
-  fxMidRate: number | null;
+  fxSellRate: number | null;   // ⭐ FIXED
   fxZarRate: number | null;
   token: string | null;
   countryIso: string | null;
@@ -26,7 +26,7 @@ export default function BundleCheckoutModal({
   onClose,
   bundle,
   preferredCurrency,
-  fxMidRate,
+  fxSellRate,        // ⭐ FIXED
   fxZarRate,
   token,
   countryIso,
@@ -87,7 +87,7 @@ export default function BundleCheckoutModal({
   }, []);
 
   /* ---------------------------------------------------
-     EARLY RETURN (after hooks)
+     EARLY RETURN
   --------------------------------------------------- */
   if (!open || !bundle) return null;
 
@@ -99,16 +99,16 @@ export default function BundleCheckoutModal({
   const hasPreferred =
     preferredCurrency &&
     preferredCurrency !== "USD" &&
-    fxMidRate;
+    fxSellRate;
 
-  const localCost = hasPreferred ? usd * (fxMidRate as number) : null;
+  const localCost = hasPreferred ? usd * (fxSellRate as number) : null;
   const zarCost = fxZarRate ? usd * fxZarRate : null;
 
   /* ---------------------------------------------------
      PAYSTACK INIT
   --------------------------------------------------- */
   async function handlePay() {
-    if (!bundle) return; // ⭐ TS safety
+    if (!bundle) return;
     if (!fxZarRate || !token) return;
 
     setLoading(true);
@@ -213,9 +213,9 @@ export default function BundleCheckoutModal({
             </p>
           )}
 
-          {fxMidRate && (
+          {fxSellRate && (
             <p className="text-purple-200 text-sm opacity-80">
-              FX: 1 USD = {fxMidRate.toFixed(4)} {preferredCurrency}
+              FX: 1 USD = {fxSellRate.toFixed(4)} {preferredCurrency}
             </p>
           )}
 
