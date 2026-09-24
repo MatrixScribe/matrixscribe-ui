@@ -19,7 +19,7 @@ interface BundlesModalProps {
   loading: boolean;
   preferredCurrency: string | null;
   token: string | null;
-  fxMidRate: number | null;
+  fxSellRate: number | null;
   countries: Country[];
   count: number;
 }
@@ -56,8 +56,9 @@ export default function BundlesModal({
   loading,
   preferredCurrency,
   token,
-  fxMidRate,
+  fxSellRate,
   countries,
+  count,
 }: BundlesModalProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<Bundle | null>(null);
@@ -431,7 +432,7 @@ useEffect(() => {
         groupName={groupName}
         countries={countries}
         preferredCurrency={safeCurrency}
-        fxMidRate={safeRate}
+        fxSellRate={safeRate}
         networksForIso={isoNetworks} // ⭐ networks from eSIMGo per selected ISO
       />
 
@@ -440,7 +441,7 @@ useEffect(() => {
   onClose={() => setCheckoutOpen(false)}
   bundle={selectedBundle}
   preferredCurrency={safeCurrency}
-  fxMidRate={safeRate}
+  fxSellRate={safeRate}
   fxZarRate={1}                 // ⭐ required by BundleCheckoutModalProps
   countryIso={selectedIso}      // ⭐ required by BundleCheckoutModalProps
   token={token}
