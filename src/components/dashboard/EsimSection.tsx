@@ -102,7 +102,7 @@ export function EsimSection({ flag, cardholderName }: any) {
   loading={false}
   preferredCurrency={null}
   token={null}
-  fxMidRate={1}
+  fxSellRate={1}
   countries={countries}
   count={pendingEsimConfig.bundles?.length ?? 0}
 />
