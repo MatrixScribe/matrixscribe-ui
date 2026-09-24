@@ -122,33 +122,34 @@ export default function BundlesModal({
 
   // LAST THREE GROUPS → backend catalogue filtering (ISO ONLY)
   useEffect(() => {
-    if (!open) return;
-    if (!isLastThree) return;
+  if (!open) return;
+  if (!isLastThree) return;
 
-    const iso = selectedIso === "ALL" ? "ALL" : selectedIso;
+  const iso = selectedIso === "ALL" ? "ALL" : selectedIso;
 
-    const fetchCatalogue = async () => {
-      try {
-        setCatalogueLoading(true);
+  const fetchCatalogue = async () => {
+    try {
+      setCatalogueLoading(true);
 
-        const url = `${API_BASE}/api/esim/catalogue/full?group=${encodeURIComponent(
-          groupName
-        )}&countries=${iso}`;
+      const url = `${API_BASE}/api/esim/catalogue/full?group=${encodeURIComponent(
+        groupName
+      )}&countries=${iso}`;
 
-        const res = await fetch(url);
-        const json = await res.json();
+      const res = await fetch(url);
+      const json = await res.json();
 
-        setCatalogueBundles(json.bundles?.bundles || []);
-      } catch (err) {
-        console.error("Failed to load catalogue bundles", err);
-        setCatalogueBundles([]);
-      } finally {
-        setCatalogueLoading(false);
-      }
-    };
+      setCatalogueBundles(json.bundles || []);
+    } catch (err) {
+      console.error("Failed to load catalogue bundles", err);
+      setCatalogueBundles([]);
+    } finally {
+      setCatalogueLoading(false);
+    }
+  };
 
-    fetchCatalogue();
-  }, [selectedIso, groupName, open, isLastThree]);
+  fetchCatalogue();
+}, [selectedIso, groupName, open, isLastThree]);
+
 
   // FIRST THREE GROUPS → local filtering
   const locallyFilteredBundles = useMemo(() => {
