@@ -421,10 +421,6 @@ export default function BundleDetailsModal({
             >
               Close
             </button>
-
-            <button className="flex-1 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition">
-              Checkout
-            </button>
           </div>
         </div>
       </div>

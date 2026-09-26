@@ -73,6 +73,31 @@ export default function BundlesModal({
   // eSIMGo networks per selected ISO
   const [isoNetworks, setIsoNetworks] = useState<any[]>([]);
 
+  // ⭐ ZAR sell rate from backend
+const [fxZarRate, setFxZarRate] = useState<number | null>(null);
+
+useEffect(() => {
+  async function loadZarRate() {
+    try {
+      const res = await fetch(`${API_BASE}/api/fx/sell/ZAR`);
+      const json = await res.json();
+
+      if (json.success && json.sell_rate) {
+        setFxZarRate(json.sell_rate);
+      } else {
+        console.warn("ZAR sell rate missing:", json);
+        setFxZarRate(null);
+      }
+    } catch (err) {
+      console.error("Failed to load ZAR FX rate", err);
+      setFxZarRate(null);
+    }
+  }
+
+  loadZarRate();
+}, []);
+
+
   const safeCurrency = preferredCurrency || "USD";
   const safeRate = fxSellRate ?? 1;   // ⭐ use sell_rate everywhere
 
@@ -387,24 +412,61 @@ useEffect(() => {
 
                         <div className="flex flex-col gap-2">
                           <button
-                            onClick={() => {
-                              setDetailsBundle(b);
-                              setDetailsOpen(true);
-                            }}
-                            className="w-full py-2 rounded-xl bg-ffff text-white text-xs font-bold hover:bg-gray-700 transition"
-                          >
-                            More Details
-                          </button>
+  onClick={() => {
+    const usd = Number(b.finalPrice ?? b.price ?? 0);
+
+    const normalizedBundle = {
+      ...b,
+      finalPriceUsd: usd,
+    };
+
+    setDetailsBundle(normalizedBundle);
+    setDetailsOpen(true);
+  }}
+  className="w-full py-2 rounded-xl bg-ffff text-white text-xs font-bold hover:bg-gray-700 transition"
+>
+  More Details
+</button>
 
                           <button
-                            onClick={() => {
-                              setSelectedBundle(b);
-                              setCheckoutOpen(true);
-                            }}
-                            className="w-full py-2 rounded-xl bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition"
-                          >
-                            Checkout
-                          </button>
+  onClick={() => {
+    const usd = Number(b.finalPrice ?? b.price ?? 0);
+
+    // ⭐ Determine correct country ISO
+    const primaryIso =
+      b.countries?.[0]?.iso ||
+      b.roamingEnabled?.[0]?.iso ||
+      b.countryNetworks?.[0]?.country?.iso ||
+      null;
+
+    const checkoutIso =
+      selectedIso === "ALL" ? primaryIso : selectedIso;
+
+    // ⭐ Normalize bundle fully
+    const normalizedBundle = {
+      id: b.id,
+      name: b.name,
+      description: b.description || "",
+      validityDays: b.duration ?? b.validityDays ?? 0,
+      finalPriceUsd: usd,
+
+      // ⭐ Add missing fields
+      countryIso: checkoutIso,
+      dataAmount: b.dataAmount,
+      speed: b.speed,
+      countries: b.countries,
+      roamingEnabled: b.roamingEnabled,
+      allowances: b.allowances,
+    };
+
+    setSelectedBundle(normalizedBundle);
+    setCheckoutOpen(true);
+  }}
+  className="w-full py-2 rounded-xl bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition"
+>
+  Checkout
+</button>
+
                         </div>
                       </div>
                     </div>
@@ -442,8 +504,8 @@ useEffect(() => {
   bundle={selectedBundle}
   preferredCurrency={safeCurrency}
   fxSellRate={safeRate}
-  fxZarRate={1}                 // ⭐ required by BundleCheckoutModalProps
-  countryIso={selectedIso}      // ⭐ required by BundleCheckoutModalProps
+  fxZarRate={fxZarRate}                 // ⭐ required by BundleCheckoutModalProps
+  countryIso={selectedBundle?.countryIso}      // ⭐ required by BundleCheckoutModalProps
   token={token}
 />
     </>

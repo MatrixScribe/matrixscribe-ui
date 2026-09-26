@@ -8,6 +8,7 @@ interface Bundle {
   description: string;
   finalPriceUsd: number;
   validityDays: number;
+  countryIso?: string | null;
 }
 
 interface BundleCheckoutModalProps {
@@ -15,7 +16,7 @@ interface BundleCheckoutModalProps {
   onClose: () => void;
   bundle: Bundle | null;
   preferredCurrency: string | null;
-  fxSellRate: number | null;   // ⭐ FIXED
+  fxSellRate: number | null;
   fxZarRate: number | null;
   token: string | null;
   countryIso: string | null;
@@ -26,7 +27,7 @@ export default function BundleCheckoutModal({
   onClose,
   bundle,
   preferredCurrency,
-  fxSellRate,        // ⭐ FIXED
+  fxSellRate,
   fxZarRate,
   token,
   countryIso,
@@ -34,9 +35,7 @@ export default function BundleCheckoutModal({
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  /* ---------------------------------------------------
-     PARTICLE SHIMMER BACKGROUND
-  --------------------------------------------------- */
+  /* PARTICLE BACKGROUND */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -45,7 +44,7 @@ export default function BundleCheckoutModal({
     if (!ctx) return;
 
     let particles: any[] = [];
-    const count = 45;
+    const count = 55;
 
     const resize = () => {
       canvas.width = canvas.offsetWidth;
@@ -59,8 +58,8 @@ export default function BundleCheckoutModal({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         r: Math.random() * 2 + 1,
-        dx: (Math.random() - 0.5) * 0.35,
-        dy: (Math.random() - 0.5) * 0.35,
+        dx: (Math.random() - 0.5) * 0.25,
+        dy: (Math.random() - 0.5) * 0.25,
       });
     }
 
@@ -76,7 +75,7 @@ export default function BundleCheckoutModal({
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255,0.25)";
+        ctx.fillStyle = "rgba(255,255,255,0.20)";
         ctx.fill();
       });
 
@@ -86,46 +85,36 @@ export default function BundleCheckoutModal({
     animate();
   }, []);
 
-  /* ---------------------------------------------------
-     EARLY RETURN
-  --------------------------------------------------- */
   if (!open || !bundle) return null;
 
-  /* ---------------------------------------------------
-     PRICE CALCULATIONS
-  --------------------------------------------------- */
-  const usd = bundle.finalPriceUsd;
+  /* PRICE CALCULATIONS */
+  const usd = Number(bundle.finalPriceUsd ?? 0);
 
   const hasPreferred =
     preferredCurrency &&
     preferredCurrency !== "USD" &&
-    fxSellRate;
+    fxSellRate !== null;
 
-  const localCost = hasPreferred ? usd * (fxSellRate as number) : null;
-  const zarCost = fxZarRate ? usd * fxZarRate : null;
+  const localCost =
+    hasPreferred && fxSellRate !== null ? usd * fxSellRate : null;
 
-  /* ---------------------------------------------------
-     PAYSTACK INIT
-  --------------------------------------------------- */
+  const hasZarRate = fxZarRate !== null && fxZarRate > 0;
+  const zarCost = hasZarRate ? usd * (fxZarRate as number) : null;
+
+  const effectiveCountryIso =
+    bundle.countryIso ?? countryIso ?? null;
+
   async function handlePay() {
     if (!bundle) return;
-    if (!fxZarRate || !token) return;
+    if (!hasZarRate || !token) return;
 
     setLoading(true);
 
     try {
-      const amountZar = Number((usd * fxZarRate).toFixed(2));
-
-      const payload = {
-        type: "esim_purchase",
-        bundleName: bundle.name,
-        priceUsd: usd,
-        countryIso: countryIso ?? "",
-        validityDays: bundle.validityDays,
-      };
+      const amountZar = Number((usd * (fxZarRate as number)).toFixed(2));
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paystack/initiate`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/esim/checkout`,
         {
           method: "POST",
           headers: {
@@ -134,16 +123,19 @@ export default function BundleCheckoutModal({
           },
           body: JSON.stringify({
             amountZar,
-            totalChargeUSD: Number(usd.toFixed(2)),
-            topupPayload: payload,
+            bundleId: bundle.id,
+            bundleName: bundle.name,
+            priceUsd: usd,
+            countryIso: effectiveCountryIso ?? "",
+            validityDays: bundle.validityDays,
           }),
         }
       );
 
       const json = await res.json();
 
-      if (!json.authorization_url) {
-        console.error("Failed to initiate Paystack:", json);
+      if (!json.success || !json.authorization_url) {
+        console.error("Failed to initiate eSIM checkout:", json);
         setLoading(false);
         return;
       }
@@ -155,85 +147,107 @@ export default function BundleCheckoutModal({
     }
   }
 
-  /* ---------------------------------------------------
-     UI
-  --------------------------------------------------- */
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-xl flex items-center justify-center p-4 z-[999]">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl flex items-center justify-center p-4 z-[999]">
       <div
-        className="
-          relative w-full max-w-md rounded-3xl p-6
-          bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700
-          border border-purple-400/30 shadow-2xl overflow-hidden
-        "
-      >
-        {/* Particle Canvas */}
+  className="
+    relative w-full max-w-md rounded-3xl p-6
+    bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700
+    border border-purple-400/30 shadow-2xl
+    max-h-[90vh] overflow-y-auto
+  "
+>
+
+        {/* PARTICLE CANVAS */}
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full opacity-30 pointer-events-none"
         />
 
-        {/* Shine */}
-        <div className="absolute inset-0 pointer-events-none shine-effect" />
+        {/* COSMIC SHINE */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-transparent via-purple-500/10 to-transparent animate-[pulse_4s_infinite]" />
 
         {/* HEADER */}
-        <div className="relative z-10 mb-5">
-          <h2 className="text-2xl font-bold text-white tracking-wide">
-            Confirm Your Purchase
+        <div className="relative z-10 mb-5 text-center">
+          <img src="/esimcheckout.png" className="w-auto h-10 opacity-100" />
+          <h2 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-lg">
+            Checkout
           </h2>
           <p className="text-sm text-purple-200 opacity-80 mt-1">
-            Review your bundle details before checkout.
+            The power of connectivity
           </p>
         </div>
 
-        {/* BUNDLE INFO */}
-        <div className="relative z-10 mb-4 p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner">
-          <p className="text-white font-semibold">{bundle.name}</p>
-          <p className="text-purple-200 text-sm opacity-80">
+        {/* BUNDLE CARD */}
+        <div className="relative z-10 mb-4 p-4 rounded-xl bg-white/10 border border-white/20 shadow-inner backdrop-blur-sm">
+          <p className="text-white font-bold text-lg">{bundle.name}</p>
+          <p className="text-purple-200 text-sm opacity-80 mt-1">
             {bundle.description}
           </p>
         </div>
 
-        {/* PRICING */}
-        <div className="relative z-10 space-y-2 mb-4">
-          <p className="text-white">
-            <strong>USD Price:</strong> ${usd.toFixed(2)}
-          </p>
+        {/* PRICE BLOCK */}
+        <div className="relative z-10 mb-4 p-4 rounded-xl bg-neutral-900/40 border border-purple-300/20 shadow-inner space-y-3">
+          <div className="flex justify-between text-white">
+            <span className="opacity-80">USD</span>
+            <span className="font-bold">${usd.toFixed(2)}</span>
+          </div>
 
           {hasPreferred && localCost !== null && (
-            <p className="text-white">
-              <strong>{preferredCurrency}:</strong>{" "}
-              {localCost.toFixed(2)}
+            <div className="flex justify-between text-white">
+              <span className="opacity-80">Your Currency: {preferredCurrency}</span>
+              <span className="font-bold">
+                {localCost.toFixed(2)} {preferredCurrency}
+              </span>
+            </div>
+          )}
+
+          {zarCost !== null && (
+            <div className="flex justify-between text-green-300">
+              <span className="opacity-80">You'll pay Redatcom in ZAR</span>
+              <span className="font-bold">{zarCost.toFixed(2)} ZAR</span>
+            </div>
+          )}
+
+          {/* FX BLOCK */}
+          <div className="pt-2 border-t border-purple-300/20 space-y-1">
+            {fxSellRate !== null && preferredCurrency && (
+              <p className="text-purple-200 text-xs opacity-80">
+                1 USD = {fxSellRate.toFixed(4)} {preferredCurrency}
+              </p>
+            )}
+
+            {hasZarRate && (
+              <p className="text-purple-200 text-xs opacity-80">
+                1 USD = {(fxZarRate as number).toFixed(4)} ZAR
+              </p>
+            )}
+          </div>
+
+          {/* COUNTRY */}
+          {effectiveCountryIso && (
+            <p className="text-purple-200 text-xs opacity-80">
+              Country: <strong>{effectiveCountryIso}</strong>
             </p>
           )}
 
-          {zarCost && (
-            <p className="text-white">
-              <strong>ZAR Charge:</strong> {zarCost.toFixed(2)}
-            </p>
-          )}
-
-          {fxSellRate && (
-            <p className="text-purple-200 text-sm opacity-80">
-              FX: 1 USD = {fxSellRate.toFixed(4)} {preferredCurrency}
-            </p>
-          )}
-
-          {fxZarRate && (
-            <p className="text-purple-200 text-sm opacity-80">
-              FX: 1 USD = {fxZarRate.toFixed(4)} ZAR
-            </p>
-          )}
-
-          <p className="text-purple-200 text-sm opacity-80">
+          {/* VALIDITY */}
+          <p className="text-purple-200 text-xs opacity-80">
             Valid for <strong>{bundle.validityDays} days</strong>
           </p>
+        </div>
 
-          {countryIso && (
-            <p className="text-purple-200 text-sm opacity-80">
-              Country: <strong>{countryIso}</strong>
-            </p>
-          )}
+        {/* VALUE SUMMARY */}
+        <div className="relative z-10 mb-4 p-4 rounded-xl bg-purple-900/40 border border-purple-300/30 shadow-inner">
+          <p className="text-purple-100 text-sm">
+            <strong className="text-white">After Payment:</strong>
+          </p>
+          <ul className="mt-2 text-xs text-purple-200 space-y-1">
+            <li>• Instant activation</li>
+            <li>• No roaming fees</li>
+            <li>• Premium network coverage</li>
+            <li>• Track usage, view & scan QR code</li>
+          </ul>
         </div>
 
         {/* BUTTONS */}
@@ -243,7 +257,9 @@ export default function BundleCheckoutModal({
           className="
             relative z-10 w-full px-4 py-3 rounded-xl
             bg-green-600 text-white font-semibold
-            hover:bg-green-700 transition
+            hover:bg-green-700 transition shadow-lg
+            disabled:opacity-40 disabled:cursor-not-allowed
+            animate-[pulse_2s_infinite]
           "
         >
           {loading ? "Processing…" : "Continue to Payment"}
