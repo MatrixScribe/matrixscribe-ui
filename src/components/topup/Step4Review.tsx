@@ -165,7 +165,7 @@ export function Step4Review({
             <div
               className="
                 w-28 rounded-2xl px-4 py-3 text-sm
-                bg-white/20 backdrop-blur-xl
+                bg-black backdrop-blur-xl
                 border border-white/30
                 flex items-center justify-center
                 text-white font-medium
@@ -178,14 +178,14 @@ export function Step4Review({
               type="tel"
               className="
                 flex-1 rounded-2xl px-4 py-3 text-sm
-                bg-white/20 backdrop-blur-xl
+                bg-black backdrop-blur-xl
                 border border-white/30
                 text-white
                 placeholder:text-white/50
                 focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300
                 transition-all duration-300
               "
-              placeholder="Enter phone number"
+              placeholder="Enter phone number as it appears internationally"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />

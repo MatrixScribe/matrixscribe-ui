@@ -174,80 +174,129 @@ export function Step3Products({
       )}
 
       {/* RANGE PRODUCT (AIRTIME) */}
-      {!productsLoading && isRange && (
-        <div className="mt-4 space-y-4">
-          {products.map((p, index) => {
-            const min = (p as any).minAmount ?? 0;
-            const max = (p as any).maxAmount ?? Number.MAX_SAFE_INTEGER;
-            const currency = (p as any).currency ?? "ZAR";
+{!productsLoading && isRange && (
+  <div className="mt-4 space-y-4">
+    {products.map((p, index) => {
+      // ⭐ Normalize backend fields safely
+      const min =
+        (p as any).minAmount ??
+        (p as any).min ??
+        0;
 
-            return (
-              <div
-                key={`range-${index}`}
-                className="
-                  rounded-2xl p-5 bg-indigo-900/40 backdrop-blur-xl
-                  border border-indigo-700/40 shadow-lg
-                  hover:shadow-[0_0_25px_rgba(88,101,242,0.5)]
-                  transition-all duration-300
-                "
-              >
-                <label className="text-sm text-indigo-200 font-medium">
-                  Enter Amount ({currency} {min} – {max})
-                </label>
+      const max =
+        (p as any).maxAmount ??
+        (p as any).max ??
+        Number.MAX_SAFE_INTEGER;
 
-                {preferredCurrency && preferredRate && (
-                  <p className="text-[11px] text-indigo-300 mt-1">
-                    ≈ {preferredCurrency} {(min / preferredRate).toFixed(2)} –{" "}
-                    {(max / preferredRate).toFixed(2)}
-                  </p>
-                )}
+      const currency =
+        (p as any).currency ??
+        (p as any).operatorCurrency ??
+        "ZAR";
 
-                <input
-                  type="number"
-                  className="
-                    w-full mt-3 rounded-2xl px-4 py-3 text-sm
-                    bg-indigo-800/40 backdrop-blur-xl
-                    border border-indigo-600/40 text-white
-                    focus:ring-2 focus:ring-purple-400 focus:border-purple-400
-                    transition-all duration-300
-                  "
-                  placeholder={`Enter amount (${currency})`}
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
+      const operatorId = (p as any).operatorId ?? "—";
+      const operatorName = (p as any).operatorName ?? "Unknown Operator";
+      const type = (p as any).type ?? (p as any).denominationType ?? "RANGE";
 
-                    if (!Number.isFinite(val)) {
-                      setSelectedProduct(null);
-                      setStep3Done(false);
-                      return;
-                    }
+      return (
+        <div
+          key={`range-${index}`}
+          className="
+            rounded-2xl p-5 bg-indigo-900/40 backdrop-blur-xl
+            border border-indigo-700/40 shadow-lg
+            hover:shadow-[0_0_25px_rgba(88,101,242,0.5)]
+            transition-all duration-300
+          "
+        >
+          {/* INPUT LABEL */}
+          <label className="text-sm text-indigo-200 font-medium">
+            Enter Amount ({currency} {min} – {max})
+          </label>
 
-                    if (val >= min && val <= max) {
-                      setSelectedProduct({
-                        ...(p as any),
-                        customAmount: val,
-                      });
-                      setStep3Done(true);
-                    } else {
-                      setSelectedProduct(null);
-                      setStep3Done(false);
-                    }
-                  }}
-                />
+          {/* Preferred currency conversion */}
+          {preferredCurrency && preferredRate && (
+            <p className="text-[11px] text-indigo-300 mt-1">
+              ≈ {preferredCurrency} {(min / preferredRate).toFixed(2)} –{" "}
+              {(max / preferredRate).toFixed(2)}
+            </p>
+          )}
 
-                {/* JSON DEBUG VIEW */}
-                <div className="mt-3 text-[11px] text-indigo-300 bg-black/30 rounded-xl p-3 font-mono">
-                  <div className="mb-1 text-indigo-200 font-semibold">
-                    Backend Range JSON
-                  </div>
-                  <pre className="whitespace-pre-wrap break-words">
-                    {JSON.stringify(p, null, 2)}
-                  </pre>
-                </div>
+          {/* INPUT FIELD */}
+          <input
+            type="number"
+            className="
+              w-full mt-3 rounded-2xl px-4 py-3 text-sm
+              bg-indigo-800/40 backdrop-blur-xl
+              border border-indigo-600/40 text-white
+              focus:ring-2 focus:ring-purple-400 focus:border-purple-400
+              transition-all duration-300
+            "
+            placeholder={`Enter amount (${currency})`}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+
+              if (!Number.isFinite(val)) {
+                setSelectedProduct(null);
+                setStep3Done(false);
+                return;
+              }
+
+              if (val >= min && val <= max) {
+                setSelectedProduct({
+                  ...(p as any),
+                  customAmount: val,
+                });
+                setStep3Done(true);
+              } else {
+                setSelectedProduct(null);
+                setStep3Done(false);
+              }
+            }}
+          />
+
+          {/* ⭐ CLEAN BACKEND JSON PANEL */}
+          <div className="mt-5 p-4 rounded-xl bg-black/30 border border-indigo-700/40 backdrop-blur-xl">
+            <p className="text-sm text-indigo-200 font-semibold mb-3">
+              Network Information
+            </p>
+
+            <div className="space-y-2 text-[12px] text-indigo-300 font-mono">
+              <div className="flex justify-between">
+                <span className="opacity-70">Network ID</span>
+                <span className="font-bold">{operatorId}</span>
               </div>
-            );
-          })}
+
+              <div className="flex justify-between">
+                <span className="opacity-70">Network Name</span>
+                <span className="font-bold">{operatorName}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="opacity-70">Airtime</span>
+                <span className="font-bold">{type}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="opacity-70">Currency</span>
+                <span className="font-bold">{currency}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="opacity-70">Min Amount</span>
+                <span className="font-bold">{min}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="opacity-70">Max Amount</span>
+                <span className="font-bold">{max}</span>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      );
+    })}
+  </div>
+)}
+
 
       {/* FIXED PRODUCTS (DATA BUNDLES) */}
       {!productsLoading && isFixed && (
