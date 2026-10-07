@@ -70,10 +70,10 @@ interface BundlesModalProps {
   open: boolean;
   onClose: () => void;
 
-  groupName: string; // "Country eSIMs" | "Regional eSIMs" | "Unlimited eSIMs"
+  groupName: string;
   groupKey: "country" | "region" | "unlimited_country" | "unlimited_region";
 
-  bundles: NormalizedBundle[]; // initially EMPTY (we won't use this for fetching)
+  bundles: NormalizedBundle[];
   loading: boolean;
 
   preferredCurrency: string;
@@ -98,14 +98,10 @@ export default function BundlesModal({
   count,
 }: BundlesModalProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [selectedBundle, setSelectedBundle] = useState<NormalizedBundle | null>(
-    null
-  );
+  const [selectedBundle, setSelectedBundle] = useState<NormalizedBundle | null>(null);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [detailsBundle, setDetailsBundle] = useState<NormalizedBundle | null>(
-    null
-  );
+  const [detailsBundle, setDetailsBundle] = useState<NormalizedBundle | null>(null);
 
   const [selectedIso, setSelectedIso] = useState<string>("NONE");
   const [filteredBundles, setFilteredBundles] = useState<NormalizedBundle[]>([]);
@@ -113,7 +109,6 @@ export default function BundlesModal({
 
   if (!open) return null;
 
-  // ⭐ Fetch plans ONLY after user selects a filter
   async function fetchPlansForIso(iso: string) {
     if (iso === "NONE") return;
 
@@ -122,40 +117,18 @@ export default function BundlesModal({
     try {
       let url = `${API_BASE}/api/esim/esimmerge/catalog`;
 
-      // COUNTRY PLANS
-if (groupKey === "country") {
-  url += `?scope=country&country=${iso}`;
-}
-
-// REGIONAL PLANS
-if (groupKey === "region") {
-  url += `?scope=regional&region=${iso}`;
-}
-
-// UNLIMITED BY COUNTRY
-if (groupKey === "unlimited_country") {
-  url += `?search=unlimited&country=${iso}`;
-}
-
-// UNLIMITED BY REGION
-if (groupKey === "unlimited_region") {
-  url += `?scope=unlimited&region=${iso}`;
-}
+      if (groupKey === "country") url += `?scope=country&country=${iso}`;
+      if (groupKey === "region") url += `?scope=regional&region=${iso}`;
+      if (groupKey === "unlimited_country") url += `?search=unlimited&country=${iso}`;
+      if (groupKey === "unlimited_region") url += `?scope=unlimited&region=${iso}`;
 
       const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error(`Backend returned ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Backend returned ${res.status}`);
 
       const json = await res.json();
       const plans = json.plans || json.data || [];
 
-      // IMPORTANT:
-      // normalizePlan lives in EsimShop; here we assume backend already returns
-      // normalized bundles OR you wire a shared normalizePlan helper.
       const normalized = plans.map((p: any) => normalizePlan(p, countries));
-
       setFilteredBundles(normalized);
     } catch (err) {
       console.error("Failed to fetch filtered plans", err);
@@ -165,43 +138,41 @@ if (groupKey === "unlimited_region") {
     }
   }
 
-  // ⭐ Filter options based on scope
   const REGION_OPTIONS = [
-  { iso: "EU", name: "Europe (EU)" },
-  { iso: "MENA", name: "Middle East & North Africa (MENA)" },
-  { iso: "AFR", name: "Africa (AFR)" },
-  { iso: "LATAM", name: "Latin America (LATAM)" },
-  { iso: "NAM", name: "North America (NAM)" },
-  { iso: "APAC", name: "Asia Pacific (APAC)" },
-  { iso: "SEA", name: "South‑East Asia (SEA)" },
-  { iso: "OCE", name: "Oceania (OCE)" },
-  { iso: "CIS", name: "Central Asia (CIS)" },
-  { iso: "GLOBAL", name: "Global (GLOBAL)" },
-];
+    { iso: "EU", name: "Europe (EU)" },
+    { iso: "MENA", name: "Middle East & North Africa (MENA)" },
+    { iso: "AFR", name: "Africa (AFR)" },
+    { iso: "LATAM", name: "Latin America (LATAM)" },
+    { iso: "NAM", name: "North America (NAM)" },
+    { iso: "APAC", name: "Asia Pacific (APAC)" },
+    { iso: "SEA", name: "South‑East Asia (SEA)" },
+    { iso: "OCE", name: "Oceania (OCE)" },
+    { iso: "CIS", name: "Central Asia (CIS)" },
+    { iso: "GLOBAL", name: "Global (GLOBAL)" },
+  ];
 
-const filterOptions = useMemo(() => {
-  let opts: { iso: string; name: string }[] = [];
+  const filterOptions = useMemo(() => {
+    if (groupKey === "country" || groupKey === "unlimited_country") {
+      return countries.map((c) => ({
+        iso: (c.iso || c.iso2).toUpperCase(),
+        name: c.name,
+      }));
+    }
 
-  // COUNTRY FILTERS
-  if (groupKey === "country" || groupKey === "unlimited_country") {
-    opts = countries.map((c) => ({
-      iso: (c.iso || c.iso2).toUpperCase(),
-      name: c.name,
-    }));
-  }
-
-  // REGION FILTERS
-  if (groupKey === "region" || groupKey === "unlimited_region") {
-    opts = REGION_OPTIONS;
-  }
-
-  return opts;
-}, [groupKey, countries]);
-
+    return REGION_OPTIONS;
+  }, [groupKey, countries]);
 
   const convertPrice = (usd: number) => {
-    const converted = usd * fxSellRate;
-    return converted.toFixed(2);
+    return (usd * fxSellRate).toFixed(2);
+  };
+
+  const computePrice = (b: NormalizedBundle) => {
+    const baseUsd = b.markupApplied
+      ? (b.finalPriceUsd ?? b.price_usd)
+      : b.price_usd;
+
+    const safeUsd = isNaN(baseUsd) ? 0 : baseUsd;
+    return convertPrice(safeUsd);
   };
 
   return (
@@ -260,10 +231,6 @@ const filterOptions = useMemo(() => {
                   const dataLabel = isUnlimited
                     ? "Unlimited"
                     : `${(b.data_mb || 0) / 1024} GB`;
-
-                  const baseUsd = b.markupApplied ? b.finalPriceUsd : b.price_usd;
-const priceConverted = convertPrice(baseUsd);
-
 
                   return (
                     <div
@@ -336,10 +303,9 @@ const priceConverted = convertPrice(baseUsd);
                       {/* PRICE */}
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-xl font-bold text-green-400">
-                          {preferredCurrency} {priceConverted}
+                          {preferredCurrency} {computePrice(b)}
                         </span>
                       </div>
-
 
                       {/* BUTTONS */}
                       <div className="flex flex-col gap-2 mt-3">
