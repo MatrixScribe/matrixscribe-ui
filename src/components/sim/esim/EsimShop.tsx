@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import BundlesModal from "@/components/modals/BundlesModal";
 import { PreferredCurrencyModal } from "@/components/wallet/PreferredCurrencyModal";
 import { WalletData } from "@/types/wallet";
+import { Country } from "@/types/country";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE || "https://redatacom-end.onrender.com";
@@ -16,13 +17,7 @@ type Group = {
   desc?: string;
 };
 
-type Country = {
-  name: string;
-  iso2: string;
-  iso?: string;
-  flag: string;
-  dialCode: string;
-};
+
 
 type EsimmergePlan = {
   id: string;

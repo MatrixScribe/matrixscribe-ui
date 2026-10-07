@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 
 import BundleCheckoutModal from "@/components/sim/esim/BundleCheckoutModal";
 import BundleDetailsModal from "@/components/modals/BundleDetailsModal";
-import { Country } from "@/components/topup/types";
+import { Country } from "@/types/country";
 import { normalizePlan } from "@/components/sim/esim/EsimShop";
 
 const API_BASE =
