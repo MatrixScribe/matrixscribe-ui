@@ -98,13 +98,19 @@ export function EsimSection({ flag, cardholderName }: any) {
   open={showBundles}
   onClose={() => setShowBundles(false)}
   groupName={pendingEsimConfig.label}
+  groupKey={
+    pendingEsimConfig.label === "Country eSIMs" ? "country" :
+    pendingEsimConfig.label === "Regional eSIMs" ? "region" :
+    pendingEsimConfig.label === "Unlimited eSIMs (Country)" ? "unlimited_country" :
+    "unlimited_region"
+  }
   bundles={pendingEsimConfig.bundles}
   loading={false}
-  preferredCurrency={wallet?.preferred_currency ?? "USD"}
+  preferredCurrency={"USD"}   // FIXED
   token={null}
   fxSellRate={1}
   countries={countries}
-  count={pendingEsimConfig.bundles?.length ?? 0}
+  count={pendingEsimConfig.bundles.length}
 />
       )}
 
