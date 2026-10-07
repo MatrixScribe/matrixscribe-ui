@@ -71,7 +71,7 @@ interface BundlesModalProps {
   onClose: () => void;
 
   groupName: string; // "Country eSIMs" | "Regional eSIMs" | "Unlimited eSIMs"
-  groupKey: "country" | "region" | "unlimited"; // from EsimShop
+  groupKey: "country" | "region" | "unlimited_country" | "unlimited_region";
 
   bundles: NormalizedBundle[]; // initially EMPTY (we won't use this for fetching)
   loading: boolean;
