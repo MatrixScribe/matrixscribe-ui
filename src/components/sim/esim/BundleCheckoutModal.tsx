@@ -2,19 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 
-interface Bundle {
-  id: string;
-  name: string;
-  description: string;
-  finalPriceUsd: number;
-  validityDays: number;
-  countryIso?: string | null;
-}
-
 interface BundleCheckoutModalProps {
   open: boolean;
   onClose: () => void;
-  bundle: Bundle | null;
+  bundle: any | null; // accepts NormalizedBundle from BundlesModal
   preferredCurrency: string | null;
   fxSellRate: number | null;
   fxZarRate: number | null;
@@ -87,8 +78,8 @@ export default function BundleCheckoutModal({
 
   if (!open || !bundle) return null;
 
-  /* PRICE CALCULATIONS */
-  const usd = Number(bundle.finalPriceUsd ?? 0);
+  /* PRICE + FIELD NORMALIZATION FROM NormalizedBundle */
+  const usd = Number(bundle.finalPriceUsd ?? bundle.price_usd ?? 0);
 
   const hasPreferred =
     preferredCurrency &&
@@ -102,7 +93,13 @@ export default function BundleCheckoutModal({
   const zarCost = hasZarRate ? usd * (fxZarRate as number) : null;
 
   const effectiveCountryIso =
-    bundle.countryIso ?? countryIso ?? null;
+    bundle.country?.iso ?? bundle.countryIso ?? countryIso ?? null;
+
+  const validityDays =
+    bundle.validity_days ?? bundle.validityDays ?? bundle.validity_days ?? 0;
+
+  const description =
+    bundle.description ?? bundle.fair_usage ?? "eSIM data bundle";
 
   async function handlePay() {
     if (!bundle) return;
@@ -127,7 +124,7 @@ export default function BundleCheckoutModal({
             bundleName: bundle.name,
             priceUsd: usd,
             countryIso: effectiveCountryIso ?? "",
-            validityDays: bundle.validityDays,
+            validityDays,
           }),
         }
       );
@@ -150,14 +147,13 @@ export default function BundleCheckoutModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xl flex items-center justify-center p-4 z-[999]">
       <div
-  className="
-    relative w-full max-w-md rounded-3xl p-6
-    bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700
-    border border-purple-400/30 shadow-2xl
-    max-h-[90vh] overflow-y-auto
-  "
->
-
+        className="
+          relative w-full max-w-md rounded-3xl p-6
+          bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-700
+          border border-purple-400/30 shadow-2xl
+          max-h-[90vh] overflow-y-auto
+        "
+      >
         {/* PARTICLE CANVAS */}
         <canvas
           ref={canvasRef}
@@ -182,7 +178,7 @@ export default function BundleCheckoutModal({
         <div className="relative z-10 mb-4 p-4 rounded-xl bg-white/10 border border-white/20 shadow-inner backdrop-blur-sm">
           <p className="text-white font-bold text-lg">{bundle.name}</p>
           <p className="text-purple-200 text-sm opacity-80 mt-1">
-            {bundle.description}
+            {description}
           </p>
         </div>
 
@@ -195,7 +191,9 @@ export default function BundleCheckoutModal({
 
           {hasPreferred && localCost !== null && (
             <div className="flex justify-between text-white">
-              <span className="opacity-80">Your Currency: {preferredCurrency}</span>
+              <span className="opacity-80">
+                Your Currency: {preferredCurrency}
+              </span>
               <span className="font-bold">
                 {localCost.toFixed(2)} {preferredCurrency}
               </span>
@@ -233,7 +231,7 @@ export default function BundleCheckoutModal({
 
           {/* VALIDITY */}
           <p className="text-purple-200 text-xs opacity-80">
-            Valid for <strong>{bundle.validityDays} days</strong>
+            Valid for <strong>{validityDays} days</strong>
           </p>
         </div>
 
