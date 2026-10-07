@@ -100,7 +100,7 @@ export function EsimSection({ flag, cardholderName }: any) {
   groupName={pendingEsimConfig.label}
   bundles={pendingEsimConfig.bundles}
   loading={false}
-  preferredCurrency={null}
+  preferredCurrency={wallet?.preferred_currency ?? "USD"}
   token={null}
   fxSellRate={1}
   countries={countries}
