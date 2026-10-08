@@ -16,7 +16,6 @@ export function EsimSection({ flag, cardholderName }: any) {
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  /* ⭐ Load ZAR FX Rate */
   useEffect(() => {
     async function loadZarRate() {
       try {
@@ -38,7 +37,6 @@ export function EsimSection({ flag, cardholderName }: any) {
     loadZarRate();
   }, [API_BASE]);
 
-  /* ⭐ Load + Normalize countries */
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -62,7 +60,6 @@ export function EsimSection({ flag, cardholderName }: any) {
     loadCountries();
   }, [API_BASE]);
 
-  /* ⭐ When user finishes CreateEsimModal */
   const handleCreateEsimContinue = (config: any) => {
     const fixedCountry = {
       ...config.country,
@@ -81,7 +78,6 @@ export function EsimSection({ flag, cardholderName }: any) {
     }, 0);
   };
 
-  /* ⭐ When checkout completes inside BundlesModal */
   const handleCheckoutComplete = (bundle: any) => {
     setShowBundles(false);
 
@@ -110,7 +106,6 @@ export function EsimSection({ flag, cardholderName }: any) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* ACTIONS */}
       <div className="flex gap-3">
         <button
           onClick={() => setShowCreate(true)}
@@ -120,7 +115,6 @@ export function EsimSection({ flag, cardholderName }: any) {
         </button>
       </div>
 
-      {/* BUNDLES MODAL */}
       {pendingEsimConfig && (
         <BundlesModal
           open={showBundles}
@@ -135,23 +129,21 @@ export function EsimSection({ flag, cardholderName }: any) {
               ? "unlimited_country"
               : "unlimited_region"
           }
-          bundles={[]} // BundlesModal fetches plans itself
+          bundles={[]}
           loading={false}
           preferredCurrency={"USD"}
           token={null}
           fxSellRate={1}
           countries={countries}
           count={0}
-          fxZarRate={fxZarRate}
+          fxZarRate={fxZarRate ?? 0}   {/* ⭐ FIXED */}
         />
       )}
 
-      {/* EMPTY STATE */}
       {eSims.length === 0 && (
         <p className="text-neutral-500 text-sm">No eSIMs added yet</p>
       )}
 
-      {/* RENDER ESIMS */}
       <div className="flex flex-col gap-6">
         {eSims.map((sim, i) => (
           <SIMCard key={i} {...sim} simCategory={sim.label} />
