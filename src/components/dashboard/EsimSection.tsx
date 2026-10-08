@@ -12,17 +12,31 @@ export function EsimSection({ flag, cardholderName }: any) {
   const [pendingEsimConfig, setPendingEsimConfig] = useState<any | null>(null);
 
   const [countries, setCountries] = useState<any[]>([]);
+  const [fxZarRate, setFxZarRate] = useState<number | null>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const [fxZarRate, setFxZarRate] = useState<number | null>(null);
+  /* ⭐ Load ZAR FX Rate */
+  useEffect(() => {
+    async function loadZarRate() {
+      try {
+        const res = await fetch(`${API_BASE}/api/fx/sell/zar`);
+        const json = await res.json();
 
-useEffect(() => {
-  async function loadZarRate() {
-    ...
-  }
-  loadZarRate();
-}, []);
+        if (json.success && json.sell_rate) {
+          setFxZarRate(Number(json.sell_rate));
+        } else {
+          console.warn("ZAR sell rate missing:", json);
+          setFxZarRate(null);
+        }
+      } catch (err) {
+        console.error("Failed to load ZAR FX rate", err);
+        setFxZarRate(null);
+      }
+    }
+
+    loadZarRate();
+  }, [API_BASE]);
 
   /* ⭐ Load + Normalize countries */
   useEffect(() => {
@@ -34,7 +48,7 @@ useEffect(() => {
         const normalized = (json.countries || []).map((c: any) => ({
           name: c.name,
           iso2: c.iso2 || c.iso || c.code,
-          iso: c.iso || c.iso2 || c.code,   // ⭐ REQUIRED FOR BundlesModal
+          iso: c.iso || c.iso2 || c.code,
           dialCode: c.dialCode || "",
           flag: c.flag || "",
         }));
@@ -46,14 +60,14 @@ useEffect(() => {
     }
 
     loadCountries();
-  }, []);
+  }, [API_BASE]);
 
   /* ⭐ When user finishes CreateEsimModal */
   const handleCreateEsimContinue = (config: any) => {
     const fixedCountry = {
       ...config.country,
       iso2: config.country.iso2 || config.country.iso,
-      iso: config.country.iso || config.country.iso2,   // ⭐ ensure iso exists
+      iso: config.country.iso || config.country.iso2,
     };
 
     setPendingEsimConfig({
@@ -121,7 +135,7 @@ useEffect(() => {
               ? "unlimited_country"
               : "unlimited_region"
           }
-          bundles={[]}              // ⭐ BundlesModal fetches plans itself
+          bundles={[]} // BundlesModal fetches plans itself
           loading={false}
           preferredCurrency={"USD"}
           token={null}
