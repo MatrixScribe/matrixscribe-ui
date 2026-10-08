@@ -213,22 +213,22 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
 export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
   const [groups] = useState<Group[]>([
   {
-    name: "Country eSIMs",
+    name: "eSIM by Country",
     key: "country",
     desc: "Local country bundles with focused coverage.",
   },
   {
-    name: "Regional eSIMs",
+    name: "eSIM by Region",
     key: "region",
     desc: "Multi-country regional roaming bundles.",
   },
   {
-    name: "Unlimited eSIMs (Country)",
+    name: "Unlimited eSIM by Country",
     key: "unlimited_country",
     desc: "Unlimited data plans by country.",
   },
   {
-    name: "Unlimited eSIMs (Region)",
+    name: "Unlimited eSIM by Region",
     key: "unlimited_region",
     desc: "Unlimited data plans by region.",
   },
