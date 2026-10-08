@@ -136,7 +136,7 @@ export function EsimSection({ flag, cardholderName }: any) {
           fxSellRate={1}
           countries={countries}
           count={0}
-          fxZarRate={fxZarRate ?? 0}   {/* ⭐ FIXED */}
+          fxZarRate={fxZarRate ?? 0}
         />
       )}
 
