@@ -519,7 +519,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
           token={token}
           countries={countries}
           count={groupCount}
-          fxZarRate={fxZarRate}
+          fxZarRate={fxZarRate ?? 0}
         />
       )}
 
