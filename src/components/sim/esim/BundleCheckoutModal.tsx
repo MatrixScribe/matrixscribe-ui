@@ -199,25 +199,26 @@ export default function BundleCheckoutModal({
         </div>
 
         {/* PRICE BLOCK */}
+
         <div className="relative z-10 mb-4 p-4 rounded-xl bg-neutral-900/40 border border-purple-300/20 shadow-inner space-y-3">
-          <div className="flex justify-between text-white">
+          <div className="flex justify-between text-xs text-white">
             <span className="opacity-80">USD</span>
             <span className="font-bold">${safeUsd.toFixed(2)}</span>
           </div>
 
           {hasPreferred && localCost !== null && (
             <div className="flex justify-between text-white">
-              <span className="opacity-80">
-                Your Currency: {preferredCurrency}
+              <span className="font-bold opacity-80">
+                {preferredCurrency}
               </span>
               <span className="font-bold">
-                {localCost.toFixed(2)} {preferredCurrency}
+                {localCost.toFixed(2)}
               </span>
             </div>
           )}
 
           {zarCost !== null && (
-            <div className="flex justify-between text-green-300">
+            <div className="flex justify-between text-xs text-green-300">
               <span className="opacity-80">You'll pay Redatcom in ZAR</span>
               <span className="font-bold">{zarCost.toFixed(2)} ZAR</span>
             </div>

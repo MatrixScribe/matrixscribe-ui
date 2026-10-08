@@ -142,16 +142,26 @@ export default function BundlesModal({
   }
 
   const REGION_OPTIONS = [
-    { iso: "EU", name: "Europe (EU)" },
-    { iso: "MENA", name: "Middle East & North Africa (MENA)" },
-    { iso: "AFR", name: "Africa (AFR)" },
-    { iso: "LATAM", name: "Latin America (LATAM)" },
-    { iso: "NAM", name: "North America (NAM)" },
-    { iso: "APAC", name: "Asia Pacific (APAC)" },
-    { iso: "SEA", name: "South‑East Asia (SEA)" },
-    { iso: "OCE", name: "Oceania (OCE)" },
-    { iso: "CIS", name: "Central Asia (CIS)" },
-    { iso: "GLOBAL", name: "Global (GLOBAL)" },
+    { iso: "AFR", name: "Africa" },
+    { iso: "ASL", name: "Asia Lite" },
+    { iso: "ASS", name: "Asia+" },
+    { iso: "ASSE", name: "South-East Asia" },
+    { iso: "ASSE4", name: "South-East Asia Lite" },
+    { iso: "ASSEP", name: "South-East Asia+ " },
+    { iso: "ASY", name: "Asia One Year" },
+    { iso: "AUNZ", name: "Australia & Asia" },
+    { iso: "BLK", name: "Balkans" },
+    { iso: "EU", name: "Europe" },
+    { iso: "EUL", name: "Europe Lite" },
+    { iso: "EUS", name: "Europe+" },
+    { iso: "EUUS", name: "Europe & US" },
+    { iso: "MED", name: "Mediterranean" },
+    { iso: "MENA", name: "Middle East & North Africa" },
+    { iso: "WTLNA", name: "North America" },
+    { iso: "NAM", name: "North America Lite" },
+    { iso: "OC", name: "Oceania" },
+    { iso: "LATAM", name: "South America" },
+    { iso: "WTLSA", name: "South America Lite" },
   ];
 
   const filterOptions = useMemo(() => {
@@ -223,7 +233,7 @@ export default function BundlesModal({
           <div className="p-5">
             {fetching && (
               <p className="text-xs text-purple-200 animate-pulse">
-                Loading plans…
+                Loading plans… sit tight while we scan the globe
               </p>
             )}
 
