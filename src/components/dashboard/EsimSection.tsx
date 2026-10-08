@@ -15,6 +15,15 @@ export function EsimSection({ flag, cardholderName }: any) {
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+  const [fxZarRate, setFxZarRate] = useState<number | null>(null);
+
+useEffect(() => {
+  async function loadZarRate() {
+    ...
+  }
+  loadZarRate();
+}, []);
+
   /* ⭐ Load + Normalize countries */
   useEffect(() => {
     async function loadCountries() {
@@ -119,6 +128,7 @@ export function EsimSection({ flag, cardholderName }: any) {
           fxSellRate={1}
           countries={countries}
           count={0}
+          fxZarRate={fxZarRate}
         />
       )}
 

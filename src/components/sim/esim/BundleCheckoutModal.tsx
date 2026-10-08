@@ -78,8 +78,12 @@ export default function BundleCheckoutModal({
 
   if (!open || !bundle) return null;
 
-  /* PRICE + FIELD NORMALIZATION FROM NormalizedBundle */
-  const usd = Number(bundle.finalPriceUsd ?? bundle.price_usd ?? 0);
+  /* ⭐ MATCH BUNDLESMODAL PRICE LOGIC EXACTLY */
+  const rawUsd = bundle.markupApplied
+    ? (bundle.finalPriceUsd ?? bundle.price_usd)
+    : bundle.price_usd;
+
+  const safeUsd = isNaN(rawUsd) ? 0 : rawUsd;
 
   const hasPreferred =
     preferredCurrency &&
@@ -87,10 +91,16 @@ export default function BundleCheckoutModal({
     fxSellRate !== null;
 
   const localCost =
-    hasPreferred && fxSellRate !== null ? usd * fxSellRate : null;
+    hasPreferred && fxSellRate !== null
+      ? Number((safeUsd * fxSellRate).toFixed(2))
+      : null;
 
   const hasZarRate = fxZarRate !== null && fxZarRate > 0;
-  const zarCost = hasZarRate ? usd * (fxZarRate as number) : null;
+
+  const zarCost =
+    hasZarRate
+      ? Number((safeUsd * (fxZarRate as number)).toFixed(2))
+      : null;
 
   const effectiveCountryIso =
     bundle.country?.iso ?? bundle.countryIso ?? countryIso ?? null;
@@ -101,6 +111,12 @@ export default function BundleCheckoutModal({
   const description =
     bundle.description ?? bundle.fair_usage ?? "eSIM data bundle";
 
+    const effectiveFxRate =
+  hasPreferred && localCost !== null && safeUsd > 0
+    ? localCost / safeUsd
+    : fxSellRate;
+
+
   async function handlePay() {
     if (!bundle) return;
     if (!hasZarRate || !token) return;
@@ -108,7 +124,7 @@ export default function BundleCheckoutModal({
     setLoading(true);
 
     try {
-      const amountZar = Number((usd * (fxZarRate as number)).toFixed(2));
+      const amountZar = Number((safeUsd * (fxZarRate as number)).toFixed(2));
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/esim/checkout`,
@@ -122,7 +138,7 @@ export default function BundleCheckoutModal({
             amountZar,
             bundleId: bundle.id,
             bundleName: bundle.name,
-            priceUsd: usd,
+            priceUsd: safeUsd,
             countryIso: effectiveCountryIso ?? "",
             validityDays,
           }),
@@ -186,7 +202,7 @@ export default function BundleCheckoutModal({
         <div className="relative z-10 mb-4 p-4 rounded-xl bg-neutral-900/40 border border-purple-300/20 shadow-inner space-y-3">
           <div className="flex justify-between text-white">
             <span className="opacity-80">USD</span>
-            <span className="font-bold">${usd.toFixed(2)}</span>
+            <span className="font-bold">${safeUsd.toFixed(2)}</span>
           </div>
 
           {hasPreferred && localCost !== null && (
@@ -209,18 +225,19 @@ export default function BundleCheckoutModal({
 
           {/* FX BLOCK */}
           <div className="pt-2 border-t border-purple-300/20 space-y-1">
-            {fxSellRate !== null && preferredCurrency && (
-              <p className="text-purple-200 text-xs opacity-80">
-                1 USD = {fxSellRate.toFixed(4)} {preferredCurrency}
-              </p>
-            )}
+  {effectiveFxRate !== null && preferredCurrency && (
+    <p className="text-purple-200 text-xs opacity-80">
+      1 USD = {effectiveFxRate.toFixed(4)} {preferredCurrency}
+    </p>
+  )}
 
-            {hasZarRate && (
-              <p className="text-purple-200 text-xs opacity-80">
-                1 USD = {(fxZarRate as number).toFixed(4)} ZAR
-              </p>
-            )}
-          </div>
+  {hasZarRate && (
+    <p className="text-purple-200 text-xs opacity-80">
+      1 USD = {(fxZarRate as number).toFixed(4)} ZAR
+    </p>
+  )}
+</div>
+
 
           {/* COUNTRY */}
           {effectiveCountryIso && (

@@ -20,22 +20,40 @@ export function normalizePlan(plan: any, countries: Country[]) {
     };
   });
 
+  // ⭐ Unified retail USD from backend
+  const retailUsd =
+    plan.finalPriceUsd ??
+    plan.price_usd ??
+    plan.basePrice ??
+    plan.original?.price_usd ??
+    0;
+
   return {
     id: plan.id,
     name: plan.name,
     type: plan.type,
     scope: plan.scope,
+
     data_mb: plan.data_mb,
     validity_days: plan.validity_days,
-    price_usd: plan.price_usd,
-    price_sar: plan.price_sar,
+
+    // ⭐ Retail USD everywhere
+    price_usd: retailUsd,
+    finalPriceUsd: retailUsd,
+
+    // ⭐ FX from backend (already converted)
+    finalPriceFx: plan.finalPriceFx ?? retailUsd,
+
     currency: plan.currency,
     quantity: plan.quantity,
+
     supports_topup: !!plan.supports_topup,
     fair_usage: plan.fair_usage,
+
     available_networks: plan.networks || [],
     coverage,
     coverage_count: plan.coverage_count || coverage.length,
+
     country: countryIso
       ? {
           iso: countryIso.toUpperCase(),
@@ -43,20 +61,25 @@ export function normalizePlan(plan: any, countries: Country[]) {
           flag: countryMeta?.flag,
         }
       : undefined,
+
     country_name: plan.country_name,
     region: plan.region_code,
     region_code: plan.region_code,
     global_code: plan.global_code,
+
     destination_code: plan.destination_code,
     destination_name: plan.destination_name,
+
     socials: plan.socials || {},
     minutes: plan.minutes,
     sms: plan.sms,
     updated_at: plan.updated_at,
     object: plan.object,
-    finalPriceUsd: plan.finalPriceUsd ?? plan.price_usd,
-    finalPriceFx: plan.finalPriceFx ?? plan.price_usd,
+
+    // ⭐ Markup always applied
     markupApplied: !!plan.markupApplied,
+
+    // ⭐ Keep original backend object
     original: plan,
   };
 }

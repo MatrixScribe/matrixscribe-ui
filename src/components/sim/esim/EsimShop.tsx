@@ -130,11 +130,9 @@ type EsimShopProps = {
   isActive: boolean;
 };
 
-export function normalizePlan(
-  plan: EsimmergePlan,
-  countries: Country[]
-): NormalizedBundle {
+export function normalizePlan(plan: EsimmergePlan, countries: Country[]): NormalizedBundle {
   const countryIso = plan.country_code || "";
+
   const countryMeta = countries.find(
     (c) => c.iso?.toUpperCase() === countryIso?.toUpperCase()
   );
@@ -152,6 +150,14 @@ export function normalizePlan(
     };
   });
 
+  // ⭐ Unified retail USD from backend
+  const retailUsd =
+    plan.finalPriceUsd ??
+    plan.price_usd ??
+    plan.basePrice ??
+    plan.original?.price_usd ??
+    0;
+
   return {
     id: plan.id,
     name: plan.name,
@@ -161,8 +167,11 @@ export function normalizePlan(
     data_mb: plan.data_mb,
     validity_days: plan.validity_days,
 
-    price_usd: plan.price_usd,
-    price_sar: plan.price_sar,
+    // ⭐ Retail USD everywhere
+    price_usd: retailUsd,
+    finalPriceUsd: retailUsd,
+    finalPriceFx: plan.finalPriceFx ?? retailUsd,
+
     currency: plan.currency,
     quantity: plan.quantity,
 
@@ -170,7 +179,6 @@ export function normalizePlan(
     fair_usage: plan.fair_usage,
 
     available_networks: plan.networks || [],
-
     coverage,
     coverage_count: plan.coverage_count || coverage.length,
 
@@ -191,16 +199,13 @@ export function normalizePlan(
     destination_name: plan.destination_name,
 
     socials: plan.socials || {},
-
     minutes: plan.minutes,
     sms: plan.sms,
-
     updated_at: plan.updated_at,
     object: plan.object,
 
-    finalPriceUsd: plan.finalPriceUsd ?? plan.price_usd,
-    finalPriceFx: plan.finalPriceFx ?? plan.price_usd,
-    markupApplied: !!plan.markupApplied,
+    // ⭐ Markup always applied
+    markupApplied: true,
 
     original: plan,
   };
@@ -246,6 +251,29 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
     wallet?.preferred_currency ?? "USD"
   );
   const [fxSellRate, setFxSellRate] = useState(wallet?.fx_sell_rate ?? 1);
+  const [fxZarRate, setFxZarRate] = useState<number | null>(null);
+  useEffect(() => {
+  async function loadZarRate() {
+    try {
+      const res = await fetch(`${API_BASE}/api/fx/sell/zar`);
+      const json = await res.json();
+
+      if (json.success && json.sell_rate) {
+        setFxZarRate(Number(json.sell_rate));
+      } else {
+        console.warn("ZAR sell rate missing:", json);
+        setFxZarRate(null);
+      }
+    } catch (err) {
+      console.error("Failed to load ZAR FX rate", err);
+      setFxZarRate(null);
+    }
+  }
+
+  loadZarRate();
+}, []);
+
+
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
   const token =
@@ -492,6 +520,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
           token={token}
           countries={countries}
           count={groupCount}
+          fxZarRate={fxZarRate}
         />
       )}
 

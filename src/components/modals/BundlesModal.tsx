@@ -82,6 +82,8 @@ interface BundlesModalProps {
 
   countries: Country[];
   count: number;
+
+  fxZarRate: number;
 }
 
 export default function BundlesModal({
@@ -96,6 +98,7 @@ export default function BundlesModal({
   token,
   countries,
   count,
+  fxZarRate,
 }: BundlesModalProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<NormalizedBundle | null>(null);
@@ -321,7 +324,8 @@ export default function BundlesModal({
 
                         <button
                           onClick={() => {
-                            setSelectedBundle(b);
+                            const normalized = normalizePlan(b, countries);
+                            setSelectedBundle(normalized);
                             setCheckoutOpen(true);
                           }}
                           className="w-full py-2 rounded-xl bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition"
@@ -364,7 +368,7 @@ export default function BundlesModal({
         bundle={selectedBundle}
         preferredCurrency={preferredCurrency}
         fxSellRate={fxSellRate}
-        fxZarRate={null}
+        fxZarRate={fxZarRate}
         countryIso={selectedBundle?.country?.iso ?? null}
         token={token}
       />
