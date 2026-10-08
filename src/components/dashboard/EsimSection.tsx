@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import SIMCard from "@/components/SIMCard";
 import BundlesModal from "@/components/modals/BundlesModal";
 
@@ -11,9 +12,10 @@ export function EsimSection({ flag, cardholderName }: any) {
   const [pendingEsimConfig, setPendingEsimConfig] = useState<any | null>(null);
 
   const [countries, setCountries] = useState<any[]>([]);
+
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  // ⭐ Load + Normalize countries
+  /* ⭐ Load + Normalize countries */
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -22,7 +24,8 @@ export function EsimSection({ flag, cardholderName }: any) {
 
         const normalized = (json.countries || []).map((c: any) => ({
           name: c.name,
-          iso2: c.iso || c.iso2 || c.code,
+          iso2: c.iso2 || c.iso || c.code,
+          iso: c.iso || c.iso2 || c.code,   // ⭐ REQUIRED FOR BundlesModal
           dialCode: c.dialCode || "",
           flag: c.flag || "",
         }));
@@ -32,14 +35,16 @@ export function EsimSection({ flag, cardholderName }: any) {
         console.error("Failed to load countries", err);
       }
     }
+
     loadCountries();
   }, []);
 
-  // ⭐ When user finishes CreateEsimModal
+  /* ⭐ When user finishes CreateEsimModal */
   const handleCreateEsimContinue = (config: any) => {
     const fixedCountry = {
       ...config.country,
       iso2: config.country.iso2 || config.country.iso,
+      iso: config.country.iso || config.country.iso2,   // ⭐ ensure iso exists
     };
 
     setPendingEsimConfig({
@@ -53,7 +58,7 @@ export function EsimSection({ flag, cardholderName }: any) {
     }, 0);
   };
 
-  // ⭐ When checkout completes inside BundlesModal
+  /* ⭐ When checkout completes inside BundlesModal */
   const handleCheckoutComplete = (bundle: any) => {
     setShowBundles(false);
 
@@ -92,26 +97,29 @@ export function EsimSection({ flag, cardholderName }: any) {
         </button>
       </div>
 
-      {/* BUNDLES MODAL — updated to match new API */}
+      {/* BUNDLES MODAL */}
       {pendingEsimConfig && (
         <BundlesModal
-  open={showBundles}
-  onClose={() => setShowBundles(false)}
-  groupName={pendingEsimConfig.label}
-  groupKey={
-    pendingEsimConfig.label === "Country eSIMs" ? "country" :
-    pendingEsimConfig.label === "Regional eSIMs" ? "region" :
-    pendingEsimConfig.label === "Unlimited eSIMs (Country)" ? "unlimited_country" :
-    "unlimited_region"
-  }
-  bundles={pendingEsimConfig.bundles}
-  loading={false}
-  preferredCurrency={"USD"}   // FIXED
-  token={null}
-  fxSellRate={1}
-  countries={countries}
-  count={pendingEsimConfig.bundles.length}
-/>
+          open={showBundles}
+          onClose={() => setShowBundles(false)}
+          groupName={pendingEsimConfig.label}
+          groupKey={
+            pendingEsimConfig.label === "Country eSIMs"
+              ? "country"
+              : pendingEsimConfig.label === "Regional eSIMs"
+              ? "region"
+              : pendingEsimConfig.label === "Unlimited eSIMs (Country)"
+              ? "unlimited_country"
+              : "unlimited_region"
+          }
+          bundles={[]}              // ⭐ BundlesModal fetches plans itself
+          loading={false}
+          preferredCurrency={"USD"}
+          token={null}
+          fxSellRate={1}
+          countries={countries}
+          count={0}
+        />
       )}
 
       {/* EMPTY STATE */}

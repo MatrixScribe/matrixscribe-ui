@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 
 import BundlesModal from "@/components/modals/BundlesModal";
 import { PreferredCurrencyModal } from "@/components/wallet/PreferredCurrencyModal";
+
 import { WalletData } from "@/types/wallet";
 import { Country } from "@/types/country";
 
@@ -17,124 +18,49 @@ type Group = {
   desc?: string;
 };
 
-
-
 type EsimmergePlan = {
   id: string;
   object: string;
   name: string;
   scope: "country" | "region" | "global";
-
   country_code?: string;
   country_name?: string;
-
   region_code?: string;
   global_code?: string;
-
   destination_code?: string;
   destination_name?: string;
-
   type: "fixed" | "unlimited";
   data_mb: number | null;
   minutes: number | null;
   sms: number | null;
   validity_days: number;
   quantity: number;
-
   price_usd: number;
   price_sar: number;
   currency: string;
-
   fair_usage?: string | null;
   supports_topup?: boolean;
-
   networks: string[];
-
   coverage: {
     country_code: string;
     country_name: string;
     networks: string[];
   }[];
-
   coverage_count: number;
-
   socials?: Record<string, { ios: boolean; android: boolean }>;
-
   updated_at?: string;
-
   basePrice?: number;
   finalPriceUsd?: number;
   finalPriceFx?: number;
   markupApplied?: boolean;
 };
 
-type NormalizedBundle = {
-  id: string;
-  name: string;
-  type: "fixed" | "unlimited";
-  scope: "country" | "region" | "global";
-
-  data_mb: number | null;
-  validity_days: number;
-
-  price_usd: number;
-  price_sar: number;
-  currency: string;
-  quantity: number;
-
-  supports_topup: boolean;
-  fair_usage?: string | null;
-
-  available_networks: string[];
-
-  coverage: {
-    country_code: string;
-    country_name: string;
-    flag?: string;
-    networks: string[];
-  }[];
-  coverage_count: number;
-
-  country?: {
-    iso: string;
-    name: string;
-    flag?: string;
-  };
-
-  country_name?: string;
-  region?: string | null;
-  region_code?: string | null;
-  global_code?: string | null;
-
-  destination_code?: string;
-  destination_name?: string;
-
-  socials?: Record<string, { ios: boolean; android: boolean }>;
-
-  minutes?: number | null;
-  sms?: number | null;
-
-  updated_at?: string;
-  object?: string;
-
-  finalPriceUsd?: number;
-  finalPriceFx?: number;
-  markupApplied?: boolean;
-
-  original?: any;
-};
-
-type EsimShopProps = {
-  cardholderName: string;
-  wallet: WalletData;
-  isActive: boolean;
-};
-
 export function normalizePlan(
   plan: EsimmergePlan,
   countries: Country[]
-): NormalizedBundle {
+) {
   const countryIso = plan.country_code || "";
+
   const countryMeta = countries.find(
     (c) => c.iso?.toUpperCase() === countryIso?.toUpperCase()
   );
@@ -157,23 +83,17 @@ export function normalizePlan(
     name: plan.name,
     type: plan.type,
     scope: plan.scope,
-
     data_mb: plan.data_mb,
     validity_days: plan.validity_days,
-
     price_usd: plan.price_usd,
     price_sar: plan.price_sar,
     currency: plan.currency,
     quantity: plan.quantity,
-
     supports_topup: !!plan.supports_topup,
     fair_usage: plan.fair_usage,
-
     available_networks: plan.networks || [],
-
     coverage,
     coverage_count: plan.coverage_count || coverage.length,
-
     country: countryIso
       ? {
           iso: countryIso.toUpperCase(),
@@ -181,64 +101,52 @@ export function normalizePlan(
           flag: countryMeta?.flag,
         }
       : undefined,
-
     country_name: plan.country_name,
     region: plan.region_code,
     region_code: plan.region_code,
     global_code: plan.global_code,
-
     destination_code: plan.destination_code,
     destination_name: plan.destination_name,
-
     socials: plan.socials || {},
-
     minutes: plan.minutes,
     sms: plan.sms,
-
     updated_at: plan.updated_at,
     object: plan.object,
-
     finalPriceUsd: plan.finalPriceUsd ?? plan.price_usd,
     finalPriceFx: plan.finalPriceFx ?? plan.price_usd,
     markupApplied: !!plan.markupApplied,
-
     original: plan,
   };
 }
 
-export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
+export default function EsimShop({ cardholderName, wallet }: { cardholderName: string; wallet: WalletData }) {
   const [groups] = useState<Group[]>([
-  {
-    name: "Country eSIMs",
-    key: "country",
-    desc: "Local country bundles with focused coverage.",
-  },
-  {
-    name: "Regional eSIMs",
-    key: "region",
-    desc: "Multi-country regional roaming bundles.",
-  },
-  {
-    name: "Unlimited eSIMs (Country)",
-    key: "unlimited_country",
-    desc: "Unlimited data plans by country.",
-  },
-  {
-    name: "Unlimited eSIMs (Region)",
-    key: "unlimited_region",
-    desc: "Unlimited data plans by region.",
-  },
-]);
-
+    {
+      name: "Country eSIMs",
+      key: "country",
+      desc: "Local country bundles with focused coverage.",
+    },
+    {
+      name: "Regional eSIMs",
+      key: "region",
+      desc: "Multi-country regional roaming bundles.",
+    },
+    {
+      name: "Unlimited eSIMs (Country)",
+      key: "unlimited_country",
+      desc: "Unlimited data plans by country.",
+    },
+    {
+      name: "Unlimited eSIMs (Region)",
+      key: "unlimited_region",
+      desc: "Unlimited data plans by region.",
+    },
+  ]);
 
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [countries, setCountries] = useState<Country[]>([]);
   const [countriesLoading, setCountriesLoading] = useState(true);
-
-  const [groupBundles, setGroupBundles] = useState<NormalizedBundle[]>([]);
-  const [groupCount, setGroupCount] = useState<number>(0);
-  const [bundlesLoading, setBundlesLoading] = useState(false);
 
   const [showBundlesModal, setShowBundlesModal] = useState(false);
 
@@ -246,6 +154,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
     wallet?.preferred_currency ?? "USD"
   );
   const [fxSellRate, setFxSellRate] = useState(wallet?.fx_sell_rate ?? 1);
+
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
   const token =
@@ -253,6 +162,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  /* ⭐ Particle background */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -282,6 +192,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       particles.forEach((p) => {
         p.x += p.dx;
         p.y += p.dy;
@@ -301,6 +212,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
     animate();
   }, []);
 
+  /* ⭐ Load countries */
   useEffect(() => {
     async function loadCountries() {
       try {
@@ -332,6 +244,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
       <div className="relative w-full rounded-3xl p-6 shadow-2xl bg-gradient-to-br from-neutral-950 via-purple-900 to-purple-600 text-white border border-purple-500/40 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/metal-texture.png')] opacity-25 mix-blend-overlay" />
         <div className="absolute inset-0 pointer-events-none shine-effect" />
+
         <div className="absolute top-6 left-6 text-xs tracking-[0.35em] uppercase opacity-60">
           REDATACOM ESIM
         </div>
@@ -341,9 +254,11 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
             <p className="text-[11px] uppercase tracking-[0.25em] text-purple-200/80">
               Welcome
             </p>
+
             <p className="text-xl font-semibold">
               <span className="text-purple-200">{cardholderName}</span>
             </p>
+
             <p className="text-xs text-purple-100/80 max-w-md">
               Live eSIM Catalog | Country • Region • Unlimited
             </p>
@@ -354,6 +269,7 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
               src="/sim-esim1.png"
               className="h-12 w-auto opacity-90 drop-shadow-lg"
             />
+
             <button
               onClick={() => setShowCurrencyModal(true)}
               className="text-[10px] px-3 py-1 rounded-full bg-purple-600/40 border border-purple-200/40 hover:bg-purple-700/50 transition"
@@ -386,83 +302,19 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
                 key={g.name}
                 onClick={() => {
                   setSelectedGroup(g);
-                  setGroupBundles([]);
-                  setGroupCount(0);
                   setShowBundlesModal(true);
                 }}
                 className="relative group w-full h-70 rounded-3xl overflow-hidden shadow-xl border border-purple-500/40 bg-gradient-to-r from-purple-600 via-black to-black opacity-100 text-white transition-all hover:scale-[1.02]"
               >
-                <canvas
-                  ref={(el) => {
-                    if (!el) return;
-                    const canvas = el;
-                    const ctx = canvas.getContext("2d");
-                    if (!ctx) return;
-
-                    let particles: any[] = [];
-                    const count = 200;
-
-                    const resize = () => {
-                      canvas.width = canvas.offsetWidth;
-                      canvas.height = canvas.offsetHeight;
-                    };
-
-                    resize();
-
-                    for (let i = 0; i < count; i++) {
-                      particles.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height,
-                        r: Math.random() * 1.8 + 0.8,
-                        dx: (Math.random() - 0.5) * 0.25,
-                        dy: (Math.random() - 0.5) * 0.25,
-                      });
-                    }
-
-                    const animate = () => {
-                      ctx.clearRect(0, 0, canvas.width, canvas.height);
-                      particles.forEach((p) => {
-                        p.x += p.dx;
-                        p.y += p.dy;
-
-                        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-                        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                        ctx.fillStyle = "rgba(255,255,255,0.30)";
-                        ctx.fill();
-                      });
-
-                      requestAnimationFrame(animate);
-                    };
-
-                    animate();
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-30 pointer-events-none"
-                />
-
                 <div className="absolute inset-0 bg-[url('/metal-texture.png')] opacity-30 mix-blend-overlay pointer-events-none" />
 
-                <div className="absolute top-0 left-0 w-full h-6 overflow-hidden border-b border-white/10">
-                  <div className="absolute inset-0 bg-gradient-black opacity-80" />
-                  <canvas className="absolute inset-0 w-full h-full opacity-100" />
-                  <div className="absolute inset-0 flex items-center justify-between px-4">
-                    <img
-                      src="/chip-gold.png"
-                      className="h-20 opacity-80"
-                      alt="Redatacom Logo"
-                    />
-                  </div>
-                </div>
-
                 <div className="absolute inset-0 pointer-events-none shine-effect" />
-                <div className="absolute -top-32 -right-32 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="relative z-10 mt-16 px-6 flex flex-col gap-1 text-left">
                   <span className="text-lg font-bold tracking-wide">
                     {g.name}
                   </span>
+
                   {g.desc && (
                     <span className="text-[11px] text-purple-200/80">
                       {g.desc}
@@ -485,13 +337,14 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
           }}
           groupName={selectedGroup.name}
           groupKey={selectedGroup.key}
-          bundles={groupBundles}
-          loading={bundlesLoading}
+          bundles={[]}          // ⭐ BundlesModal fetches plans itself
+          loading={false}
           preferredCurrency={preferredCurrency}
           fxSellRate={fxSellRate}
+          fxZarRate={null}
           token={token}
           countries={countries}
-          count={groupCount}
+          count={0}
         />
       )}
 

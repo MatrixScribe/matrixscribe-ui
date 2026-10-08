@@ -365,7 +365,7 @@ export default function BundlesModal({
         preferredCurrency={preferredCurrency}
         fxSellRate={fxSellRate}
         fxZarRate={null}
-        countryIso={selectedBundle?.country?.iso}
+        countryIso={selectedBundle?.country?.iso ?? null}
         token={token}
       />
     </>
