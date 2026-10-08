@@ -323,11 +323,10 @@ export default function BundlesModal({
                         </button>
 
                         <button
-                          onClick={() => {
-                            const normalized = normalizePlan(b, countries);
-                            setSelectedBundle(normalized);
-                            setCheckoutOpen(true);
-                          }}
+  onClick={() => {
+    setSelectedBundle(b);   // b is already normalized
+    setCheckoutOpen(true);
+  }}
                           className="w-full py-2 rounded-xl bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition"
                         >
                           Checkout
