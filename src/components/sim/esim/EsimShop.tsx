@@ -167,6 +167,7 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
     validity_days: plan.validity_days,
 
     price_usd: retailUsd,
+    price_sar: plan.price_sar ?? 0,
     finalPriceUsd: retailUsd,
     finalPriceFx: plan.finalPriceFx ?? retailUsd,
 
