@@ -18,6 +18,14 @@ type Group = {
   desc?: string;
 };
 
+type EsimShopProps = {
+  cardholderName: string;
+  wallet: WalletData;
+  isActive: boolean;
+};
+export default function EsimShop({ cardholderName, wallet, isActive }: EsimShopProps) {
+
+
 type EsimmergePlan = {
   id: string;
   object: string;
