@@ -155,7 +155,6 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
     plan.finalPriceUsd ??
     plan.price_usd ??
     plan.basePrice ??
-    plan.original?.price_usd ??
     0;
 
   return {
@@ -167,7 +166,6 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
     data_mb: plan.data_mb,
     validity_days: plan.validity_days,
 
-    // ⭐ Retail USD everywhere
     price_usd: retailUsd,
     finalPriceUsd: retailUsd,
     finalPriceFx: plan.finalPriceFx ?? retailUsd,
@@ -204,12 +202,12 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
     updated_at: plan.updated_at,
     object: plan.object,
 
-    // ⭐ Markup always applied
     markupApplied: true,
 
-    original: plan,
+    original: plan, // ⭐ this is fine — NormalizedBundle includes it
   };
 }
+
 
 export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
   const [groups] = useState<Group[]>([
