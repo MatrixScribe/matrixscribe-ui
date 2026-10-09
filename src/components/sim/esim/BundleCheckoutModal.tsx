@@ -127,7 +127,7 @@ export default function BundleCheckoutModal({
       const amountZar = Number((safeUsd * (fxZarRate as number)).toFixed(2));
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/esim/checkout`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/esim/checkout`,
         {
           method: "POST",
           headers: {

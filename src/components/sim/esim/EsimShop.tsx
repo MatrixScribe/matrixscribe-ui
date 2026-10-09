@@ -366,13 +366,13 @@ export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
         <div className="relative z-10 mt-10 flex items-center justify-between">
           <div className="flex flex-col gap-2">
             <p className="text-[11px] uppercase tracking-[0.25em] text-purple-200/80">
-              Welcome
+              Welcome To A Whole New World
             </p>
             <p className="text-xl font-semibold">
               <span className="text-purple-200">{cardholderName}</span>
             </p>
             <p className="text-xs text-purple-100/80 max-w-md">
-              Live eSIM Catalog | Country • Region • Unlimited
+              Cosmic eSIM Catalog | Country • Region • Unlimited
             </p>
           </div>
 
