@@ -9,7 +9,7 @@ const API_BASE =
 
 type MyEsimsProps = {
   cardholderName: string;
-  isActive: boolean;   // ⭐ REQUIRED
+  isActive: boolean;
 };
 
 type EsimItem = {
@@ -17,12 +17,18 @@ type EsimItem = {
   iccid: string;
   matching_id: string;
   smdp_address: string;
-  qr_base64: string | null;
-  bundle_name: string;
-  country_iso: string | null;
+  qr_url: string | null;
+  plan_name: string;
+  country_code: string | null;
   validity_days: number;
-  expiry: string | null;
-  status: "PENDING_ACTIVATION" | "ACTIVE" | "EXPIRED";
+  expires_at: string | null;
+  activated_at: string | null;
+  activation_status: string;
+  data_used_mb: number;
+  data_allowed_mb: number;
+  data_remaining_mb: number;
+  ios_install_url: string | null;
+  android_install_url: string | null;
 };
 
 export default function MyEsims({ cardholderName, isActive }: MyEsimsProps) {
@@ -37,11 +43,16 @@ export default function MyEsims({ cardholderName, isActive }: MyEsimsProps) {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        if (!token) return;
+        const userId = localStorage.getItem("user_id");
 
-        const res = await fetch(`${API_BASE}/api/esim/orders`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        if (!token || !userId) return;
+
+        const res = await fetch(
+          `${API_BASE}/api/esim/esimmerge/users/${userId}/esims`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         const json = await res.json();
         setEsims(json.esims || []);
@@ -57,7 +68,6 @@ export default function MyEsims({ cardholderName, isActive }: MyEsimsProps) {
 
   return (
     <div className="flex flex-col gap-8">
-
       {/* HEADER CARD */}
       <div className="
         relative w-full rounded-3xl p-6 shadow-2xl
@@ -114,14 +124,20 @@ export default function MyEsims({ cardholderName, isActive }: MyEsimsProps) {
             iccid={e.iccid}
             matchingId={e.matching_id}
             smdpAddress={e.smdp_address}
-            qrBase64={e.qr_base64}
-            bundleName={e.bundle_name}
-            countryIso={e.country_iso}
+            qrBase64={e.qr_url}
+            bundleName={e.plan_name}
+            countryIso={e.country_code}
             validityDays={e.validity_days}
-            expiry={e.expiry}
-            status={e.status}
+            expiry={e.expires_at}
+            activatedAt={e.activated_at}
+            status={e.activation_status}
+            dataUsed={e.data_used_mb}
+            dataAllowed={e.data_allowed_mb}
+            dataRemaining={e.data_remaining_mb}
+            iosUrl={e.ios_install_url}
+            androidUrl={e.android_install_url}
             onShowQR={() => {
-              setQrValue(e.qr_base64 || "");
+              setQrValue(e.qr_url || "");
               setQrOpen(true);
             }}
           />

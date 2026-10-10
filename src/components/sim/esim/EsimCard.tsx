@@ -13,7 +13,13 @@ type EsimCardProps = {
   countryIso: string | null;
   validityDays: number;
   expiry: string | null;
-  status: EsimStatus;
+  activatedAt: string | null;
+  status: string;
+  dataUsed: number;
+  dataAllowed: number;
+  dataRemaining: number;
+  iosUrl: string | null;
+  androidUrl: string | null;
   onShowQR: () => void;
 };
 
@@ -26,7 +32,13 @@ export function EsimCard({
   countryIso,
   validityDays,
   expiry,
+  activatedAt,
   status,
+  dataUsed,
+  dataAllowed,
+  dataRemaining,
+  iosUrl,
+  androidUrl,
   onShowQR,
 }: EsimCardProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -79,12 +91,28 @@ export function EsimCard({
     animate();
   }, []);
 
-  const statusColor =
+  const normalizedStatus =
     status === "ACTIVE"
-      ? "bg-green-500"
+      ? "ACTIVE"
       : status === "EXPIRED"
+      ? "EXPIRED"
+      : "PENDING ACTIVATION";
+
+  const statusColor =
+    normalizedStatus === "ACTIVE"
+      ? "bg-green-500"
+      : normalizedStatus === "EXPIRED"
       ? "bg-red-500"
       : "bg-neutral-500";
+
+  const expiresInDays = expiry
+    ? Math.ceil(
+        (new Date(expiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      )
+    : null;
+
+  const usagePercent =
+    dataAllowed > 0 ? Math.round((dataUsed / dataAllowed) * 100) : 0;
 
   return (
     <div className="relative w-full rounded-2xl p-4 bg-gradient-to-br from-neutral-900 via-neutral-800 to-purple-400 text-white border border-neutral-600 shadow-lg overflow-hidden">
@@ -97,17 +125,17 @@ export function EsimCard({
       {/* Particles */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-100 pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col gap-2">
+      <div className="relative z-10 flex flex-col gap-3">
 
         {/* STATUS */}
         <span className={`text-[10px] px-2 py-1 rounded-full ${statusColor} text-white`}>
-          {status.replace("_", " ")}
+          {normalizedStatus}
         </span>
 
-        {/* BUNDLE NAME */}
+        {/* PLAN BADGE */}
         <p className="text-sm font-semibold">{bundleName}</p>
 
-        {/* COUNTRY */}
+        {/* COUNTRY FLAG */}
         <p className="text-xs opacity-80">
           Country: {countryIso || "Global"}
         </p>
@@ -121,15 +149,54 @@ export function EsimCard({
         {/* SMDP+ */}
         <p className="text-xs opacity-80">SMDP+: {smdpAddress}</p>
 
-        {/* VALIDITY */}
+        {/* ACTIVATED ON */}
         <p className="text-xs opacity-80">
-          Validity: {validityDays} days
+          Activated: {activatedAt ? new Date(activatedAt).toLocaleString() : "Not activated"}
         </p>
 
         {/* EXPIRY */}
         <p className="text-xs opacity-80">
-          Expiry: {expiry ? new Date(expiry).toLocaleDateString() : "Unknown"}
+          Expires: {expiry ? new Date(expiry).toLocaleDateString() : "Unknown"}
         </p>
+
+        {/* EXPIRES IN */}
+        {expiresInDays !== null && (
+          <p className="text-xs opacity-80">
+            Expires in: {expiresInDays} days
+          </p>
+        )}
+
+        {/* USAGE BAR */}
+        <div className="w-full bg-neutral-700 rounded-full h-2 overflow-hidden">
+          <div
+            className="bg-purple-500 h-full"
+            style={{ width: `${usagePercent}%` }}
+          />
+        </div>
+        <p className="text-xs opacity-80">
+          Usage: {dataUsed}MB / {dataAllowed}MB ({dataRemaining}MB left)
+        </p>
+
+        {/* INSTALL BUTTONS */}
+        {iosUrl && (
+          <a
+            href={iosUrl}
+            target="_blank"
+            className="w-full py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition text-center"
+          >
+            Install on iPhone
+          </a>
+        )}
+
+        {androidUrl && (
+          <a
+            href={androidUrl}
+            target="_blank"
+            className="w-full py-2 rounded-xl bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition text-center"
+          >
+            Install on Android
+          </a>
+        )}
 
         {/* QR BUTTON */}
         {qrBase64 && (
