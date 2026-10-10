@@ -7,7 +7,7 @@ import { PreferredCurrencyProvider } from "@/components/context/PreferredCurrenc
 
 export const metadata = {
   title: " Global Network",
-  description: "Instant global airtime & data top-ups",
+  description: "eSims, Airtime, Data, PIN",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

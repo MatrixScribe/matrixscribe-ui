@@ -199,7 +199,7 @@ function SuccessContent() {
       </div>
 
       <h1 className="text-3xl font-semibold text-neutral-900 mt-6">
-        Top‑Up Completed!
+        Purchase Completed!
       </h1>
 
       <p className="text-neutral-400 mt-1 text-sm">
@@ -237,12 +237,12 @@ function SuccessContent() {
 
           <div className="flex justify-between border-b border-white/10 pb-2">
             <span className="text-neutral-300">Status</span>
-            <span className="font-semibold text-emerald-400">Completed</span>
+            <span className="font-semibold text-emerald-400">Successful</span>
           </div>
 
           <div className="flex justify-between border-b border-white/10 pb-2">
             <span className="text-neutral-300">Service</span>
-            <span className="font-semibold">Global Recharge</span>
+            <span className="font-semibold">eSim | Global Recharge</span>
           </div>
 
           <div className="flex justify-between border-b border-white/10 pb-2">
