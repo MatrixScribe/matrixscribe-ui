@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import SIMCard from "@/components/SIMCard";
 import BundlesModal from "@/components/modals/BundlesModal";
 
+// ⭐ NEW: Import MyEsims
+import MyEsims from "@/components/MyEsims";
+
 export function EsimSection({ flag, cardholderName }: any) {
   const [eSims, setESims] = useState<any[]>([]);
   const [showCreate, setShowCreate] = useState(false);
@@ -106,6 +109,7 @@ export function EsimSection({ flag, cardholderName }: any) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* CREATE BUTTON */}
       <div className="flex gap-3">
         <button
           onClick={() => setShowCreate(true)}
@@ -115,6 +119,7 @@ export function EsimSection({ flag, cardholderName }: any) {
         </button>
       </div>
 
+      {/* BUNDLES MODAL */}
       {pendingEsimConfig && (
         <BundlesModal
           open={showBundles}
@@ -140,6 +145,7 @@ export function EsimSection({ flag, cardholderName }: any) {
         />
       )}
 
+      {/* LOCAL TEMPORARY ESIMS */}
       {eSims.length === 0 && (
         <p className="text-neutral-500 text-sm">No eSIMs added yet</p>
       )}
@@ -149,6 +155,9 @@ export function EsimSection({ flag, cardholderName }: any) {
           <SIMCard key={i} {...sim} simCategory={sim.label} />
         ))}
       </div>
+
+      {/* ⭐ REAL ESIMS FROM BACKEND */}
+      <MyEsims cardholderName={cardholderName} isActive={true} />
     </div>
   );
 }
