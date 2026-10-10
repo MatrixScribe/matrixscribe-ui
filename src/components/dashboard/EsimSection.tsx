@@ -6,7 +6,7 @@ import SIMCard from "@/components/SIMCard";
 import BundlesModal from "@/components/modals/BundlesModal";
 
 // ⭐ NEW: Import MyEsims
-import MyEsims from "@/components/MyEsims";
+import MyEsims from "@/components/sim/esim/MyEsims";
 
 export function EsimSection({ flag, cardholderName }: any) {
   const [eSims, setESims] = useState<any[]>([]);
