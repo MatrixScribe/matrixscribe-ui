@@ -8,7 +8,17 @@ import BundlesModal from "@/components/modals/BundlesModal";
 // ⭐ NEW: Import MyEsims
 import MyEsims from "@/components/sim/esim/MyEsims";
 
-export function EsimSection({ flag, cardholderName }: any) {
+export function EsimSection({
+  flag,
+  cardholderName,
+  isActive,
+  wallet,
+}: {
+  flag?: string | null;
+  cardholderName: string;
+  isActive: boolean;
+  wallet: any;
+}) {
   const [eSims, setESims] = useState<any[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [showBundles, setShowBundles] = useState(false);
@@ -158,15 +168,15 @@ export function EsimSection({ flag, cardholderName }: any) {
 
       {/* ⭐ REAL ESIMS FROM BACKEND */}
       <MyEsims
-  cardholderName={cardholderName}
-  isActive={isActive}
-  userId={wallet.user_id ?? ""}     // ⭐ wallet gives us user_id
-  token={
-    typeof window !== "undefined"
-      ? localStorage.getItem("token") || ""
-      : ""
-  }                                 // ⭐ token comes from localStorage
-/>
+        cardholderName={cardholderName}
+        isActive={isActive}
+        userId={wallet.user_id ?? ""}
+        token={
+          typeof window !== "undefined"
+            ? localStorage.getItem("token") || ""
+            : ""
+        }
+      />
     </div>
   );
 }
