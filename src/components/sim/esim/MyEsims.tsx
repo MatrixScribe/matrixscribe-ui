@@ -211,56 +211,72 @@ export default function MyEsims({
 
           return (
             <EsimCard
-              key={e.id}
-              iccid={e.iccid}
-              matchingId={e.matching_id}
-              smdpAddress={e.smdp_address}
-              qrBase64={e.qr_url ?? e.metadata?.qr_code ?? null}
-              bundleName={e.plan_name || e.metadata?.plan?.name}
-              countryIso={
-                e.country_code || e.metadata?.coverage?.[0]?.country_code
-              }
-              validityDays={
-                e.validity_days || e.metadata?.plan?.validity_days
-              }
-              expiry={e.expires_at || e.metadata?.expires_at}
-              activatedAt={e.activated_at || e.metadata?.activated_at}
-              status={e.activation_status || e.metadata?.status}
-              dataUsed={
-                e.data_used_mb ??
-                e.metadata?.usage?.data_used_mb ??
-                0
-              }
-              dataAllowed={
-                e.data_allowed_mb ??
-                e.metadata?.usage?.data_allowed_mb ??
-                0
-              }
-              dataRemaining={
-                e.data_remaining_mb ??
-                e.metadata?.usage?.data_remaining_mb ??
-                0
-              }
-              iosUrl={e.ios_install_url || e.metadata?.ios_install_url}
-              androidUrl={
-                e.android_install_url || e.metadata?.android_install_url
-              }
-              metadata={e.metadata}
-              onShowQR={() => {
-  console.log("🔵 Opening QR modal for:", e.iccid);
+  key={e.id}
 
-  const rawQR = e.qr_url || e.metadata?.qr_code || "";
+  iccid={e.iccid ?? ""}
+  matchingId={e.matching_id ?? ""}
+  smdpAddress={e.smdp_address ?? ""}
 
-  // If it's a URL, use it directly
-  const normalizedQR =
-    rawQR.startsWith("http")
-      ? rawQR
-      : `data:image/png;base64,${rawQR}`;
+  qrBase64={e.qr_url ?? e.metadata?.qr_code ?? null}
 
-  setQrValue(normalizedQR);
-  setQrOpen(true);
-}}
-            />
+  bundleName={e.plan_name ?? e.metadata?.plan?.name ?? null}
+
+  countryIso={
+    e.country_code ??
+    e.metadata?.coverage?.[0]?.country_code ??
+    null
+  }
+
+  validityDays={
+    e.validity_days ??
+    e.metadata?.plan?.validity_days ??
+    null
+  }
+
+  expiry={e.expires_at ?? e.metadata?.expires_at ?? null}
+  activatedAt={e.activated_at ?? e.metadata?.activated_at ?? null}
+
+  status={e.activation_status ?? e.metadata?.status ?? "UNKNOWN"}
+
+  dataUsed={
+    e.data_used_mb ??
+    e.metadata?.usage?.data_used_mb ??
+    0
+  }
+
+  dataAllowed={
+    e.data_allowed_mb ??
+    e.metadata?.usage?.data_allowed_mb ??
+    0
+  }
+
+  dataRemaining={
+    e.data_remaining_mb ??
+    e.metadata?.usage?.data_remaining_mb ??
+    0
+  }
+
+  iosUrl={e.ios_install_url ?? e.metadata?.ios_install_url ?? null}
+  androidUrl={e.android_install_url ?? e.metadata?.android_install_url ?? null}
+
+  metadata={e.metadata ?? null}
+
+  onShowQR={() => {
+    console.log("🔵 Opening QR modal for:", e.iccid);
+
+    const rawQR = e.qr_url ?? e.metadata?.qr_code ?? "";
+
+    const normalizedQR =
+      rawQR.startsWith("http")
+        ? rawQR
+        : rawQR
+        ? `data:image/png;base64,${rawQR}`
+        : "";
+
+    setQrValue(normalizedQR);
+    setQrOpen(true);
+  }}
+/>
           );
         })}
       </div>
