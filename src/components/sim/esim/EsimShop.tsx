@@ -128,6 +128,7 @@ type EsimShopProps = {
   cardholderName: string;
   wallet: WalletData;
   isActive: boolean;
+  onCreateEsim?: (config: any) => void;
 };
 
 export function normalizePlan(plan: EsimmergePlan, countries: Country[]): NormalizedBundle {
@@ -210,7 +211,12 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
 }
 
 
-export default function EsimShop({ cardholderName, wallet }: EsimShopProps) {
+export default function EsimShop({
+  cardholderName,
+  wallet,
+  isActive,
+  onCreateEsim,    
+}: EsimShopProps) {
   const [groups] = useState<Group[]>([
   {
     name: "eSIM by Country",
