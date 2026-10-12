@@ -157,7 +157,16 @@ export function EsimSection({ flag, cardholderName }: any) {
       </div>
 
       {/* ⭐ REAL ESIMS FROM BACKEND */}
-      <MyEsims cardholderName={cardholderName} isActive={true} />
+      <MyEsims
+  cardholderName={cardholderName}
+  isActive={isActive}
+  userId={wallet.user_id ?? ""}     // ⭐ wallet gives us user_id
+  token={
+    typeof window !== "undefined"
+      ? localStorage.getItem("token") || ""
+      : ""
+  }                                 // ⭐ token comes from localStorage
+/>
     </div>
   );
 }
