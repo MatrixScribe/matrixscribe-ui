@@ -215,7 +215,7 @@ export default function MyEsims({
               iccid={e.iccid}
               matchingId={e.matching_id}
               smdpAddress={e.smdp_address}
-              qrBase64={e.qr_url || e.metadata?.qr_code ?? null}
+              qrBase64={e.qr_url ?? e.metadata?.qr_code ?? null}
               bundleName={e.plan_name || e.metadata?.plan?.name}
               countryIso={
                 e.country_code || e.metadata?.coverage?.[0]?.country_code
