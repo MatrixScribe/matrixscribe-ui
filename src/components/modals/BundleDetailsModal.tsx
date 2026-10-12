@@ -301,7 +301,7 @@ const converted = usd * fxSellRate;
                 <p>SMS: {bundle.sms ?? "0"}</p>
                 <p>Fair Usage: {bundle.fair_usage ?? "No Throttle"}</p>
                 <p>Quantity: {bundle.quantity}</p>
-                <p>Updated At: {bundle.updated_at}</p>
+                
               </div>
             )}
           </div>

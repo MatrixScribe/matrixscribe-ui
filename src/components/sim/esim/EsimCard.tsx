@@ -255,23 +255,7 @@ export function EsimCard(props: EsimCardProps) {
         {/* Action buttons */}
         <div className="flex flex-col gap-2 mt-2">
           {/* Install buttons */}
-          {iphoneLink && (
-            <a
-              href={iphoneLink}
-              className="w-full py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition text-center"
-            >
-              Install on iPhone
-            </a>
-          )}
-
-          {androidLink && (
-            <a
-              href={androidLink}
-              className="w-full py-2 rounded-xl bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition text-center"
-            >
-              Install on Android
-            </a>
-          )}
+          
 
           {/* QR button */}
           {qrBase64 && (

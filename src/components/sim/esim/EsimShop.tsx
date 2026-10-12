@@ -372,7 +372,7 @@ export default function EsimShop({
         <div className="relative z-10 mt-10 flex items-center justify-between">
           <div className="flex flex-col gap-2">
             <p className="text-[11px] uppercase tracking-[0.25em] text-purple-200/80">
-              Welcome To A Whole New World
+              The Power of Connectivity
             </p>
             <p className="text-xl font-semibold">
               <span className="text-purple-200">{cardholderName}</span>
