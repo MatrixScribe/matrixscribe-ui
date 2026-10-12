@@ -10,7 +10,8 @@ interface BundleCheckoutModalProps {
   fxSellRate: number | null;
   fxZarRate: number | null;
   token: string | null;
-  countryIso: string | null;
+  countryIso: string | null
+  onCheckoutComplete?: () => void;
 }
 
 export default function BundleCheckoutModal({
@@ -22,6 +23,7 @@ export default function BundleCheckoutModal({
   fxZarRate,
   token,
   countryIso,
+  onCheckoutComplete,
 }: BundleCheckoutModalProps) {
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -267,30 +269,33 @@ export default function BundleCheckoutModal({
         </div>
 
         {/* BUTTONS */}
-        <button
-          onClick={handlePay}
-          disabled={loading}
-          className="
-            relative z-10 w-full px-4 py-3 rounded-xl
-            bg-green-600 text-white font-semibold
-            hover:bg-green-700 transition shadow-lg
-            disabled:opacity-40 disabled:cursor-not-allowed
-            animate-[pulse_2s_infinite]
-          "
-        >
-          {loading ? "Processing…" : "Continue to Payment"}
-        </button>
+<button
+  onClick={async () => {
+    await handlePay();          // your existing payment logic
+    onCheckoutComplete?.();     // ⭐ Switch tab + cleanup
+  }}
+  disabled={loading}
+  className="
+    relative z-10 w-full px-4 py-3 rounded-xl
+    bg-green-600 text-white font-semibold
+    hover:bg-green-700 transition shadow-lg
+    disabled:opacity-40 disabled:cursor-not-allowed
+    animate-[pulse_2s_infinite]
+  "
+>
+  {loading ? "Processing…" : "Continue to Payment"}
+</button>
 
-        <button
-          onClick={onClose}
-          className="
-            relative z-10 mt-3 w-full px-4 py-3 rounded-xl
-            bg-white/10 text-white font-medium
-            hover:bg-white/20 transition
-          "
-        >
-          Cancel
-        </button>
+<button
+  onClick={onClose}
+  className="
+    relative z-10 mt-3 w-full px-4 py-3 rounded-xl
+    bg-white/10 text-white font-medium
+    hover:bg-white/20 transition
+  "
+>
+  Cancel
+</button>
       </div>
     </div>
   );

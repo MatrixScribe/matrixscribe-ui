@@ -84,6 +84,8 @@ interface BundlesModalProps {
   count: number;
 
   fxZarRate: number;
+
+  onCheckoutComplete?: () => void;
 }
 
 export default function BundlesModal({
@@ -99,6 +101,7 @@ export default function BundlesModal({
   countries,
   count,
   fxZarRate,
+  onCheckoutComplete,
 }: BundlesModalProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<NormalizedBundle | null>(null);
