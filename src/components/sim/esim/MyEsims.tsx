@@ -86,6 +86,7 @@ type EsimItem = {
   ios_install_url: string | null;
   android_install_url: string | null;
   metadata: EsimMetadata | null;
+  order_id: string | null;
 };
 
 type MyEsimsProps = {
@@ -149,6 +150,47 @@ export default function MyEsims({
   }, [userId, token]);
 
   console.log("🟣 Rendering MyEsims — esims length:", esims.length);
+
+  async function refreshUsage(orderId: string) {
+  try {
+    const url = `${API_BASE}/api/esim/esimmerge/orders/${orderId}/activation`;
+
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const json = await res.json();
+    if (!json.success) return;
+
+    const usage = json.usage || {};
+    const esim = json.esim || {};
+
+    // Update the correct eSIM in state
+    setEsims((prev) =>
+      prev.map((e) =>
+        e.matching_id === esim.activation_code
+          ? {
+              ...e,
+              activation_status: json.status ?? e.activation_status,
+              activated_at: esim.activated_at ?? e.activated_at,
+              expires_at: esim.expires_at ?? e.expires_at,
+
+              data_used_mb: usage.data_used_mb ?? e.data_used_mb,
+              data_allowed_mb: usage.data_allowed_mb ?? e.data_allowed_mb,
+              data_remaining_mb: usage.data_remaining_mb ?? e.data_remaining_mb,
+
+              metadata: {
+                ...e.metadata,
+                usage,
+              },
+            }
+          : e
+      )
+    );
+  } catch (err) {
+    console.error("❌ Usage refresh failed:", err);
+  }
+}
 
   return (
     <div className="flex flex-col gap-8">
@@ -276,6 +318,7 @@ export default function MyEsims({
     setQrValue(normalizedQR);
     setQrOpen(true);
   }}
+  onRefreshUsage={() => refreshUsage(e.metadata?.order_id)}
 />
           );
         })}

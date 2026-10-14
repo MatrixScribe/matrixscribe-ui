@@ -311,7 +311,7 @@ export default function BundlesModal({
 
                         {b.supports_topup && (
                           <span className="px-2 py-1 mt-1 text-[10px] rounded-md bg-green-700/40 border border-green-300/40 w-fit">
-                            Rechargeable eSim
+                            Beginner
                           </span>
                         )}
                       </div>

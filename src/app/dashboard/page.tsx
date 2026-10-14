@@ -80,7 +80,7 @@ export default function Dashboard() {
 
   /* LOADING / AUTH CHECK */
   if (loading) {
-    return <img src="/loadingdashboard.png" className="h-auto w-50 opacity-100" />;
+    return <img src="/loadingdashboard.png" className="h-auto w-auto opacity-100" />;
   }
 
   if (!user) {

@@ -151,10 +151,10 @@ export function WalletCard({
         {/* Preferred Currency Only — No Balance */}
         <div className="p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner">
           <p className="text-sm opacity-90">
-            Your preferred currency determines how bundle prices are displayed.
+            Your preferred currency determines how eSIM bundles are displayed
           </p>
           <p className="text-xs opacity-60 mt-1">
-            Direct checkout is used for all purchases.
+            Airtime and Data Top-Ups are displayed in the currency of the country you select
           </p>
         </div>
       </div>

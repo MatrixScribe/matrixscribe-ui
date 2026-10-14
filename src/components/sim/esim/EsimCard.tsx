@@ -27,6 +27,8 @@ type EsimCardProps = {
   metadata: any | null;
 
   onShowQR: () => void;
+
+  onRefreshUsage: () => void;
 };
 
 export function EsimCard(props: EsimCardProps) {
@@ -48,6 +50,7 @@ export function EsimCard(props: EsimCardProps) {
     androidUrl,
     metadata,
     onShowQR,
+    onRefreshUsage,
   } = props;
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -253,28 +256,34 @@ export function EsimCard(props: EsimCardProps) {
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col gap-2 mt-2">
-          {/* Install buttons */}
-          
+<div className="flex flex-col gap-2 mt-2">
 
-          {/* QR button */}
-          {qrBase64 && (
-            <button
-              onClick={onShowQR}
-              className="w-full py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700 transition"
-            >
-              Show QR Code
-            </button>
-          )}
+  {/* ⭐ Refresh Usage */}
+  <button
+    onClick={onRefreshUsage}
+    className="w-full py-2 rounded-xl bg-purple-500 text-white text-xs font-semibold hover:bg-purple-600 transition"
+  >
+    Refresh Usage
+  </button>
 
-          {/* Details button */}
-          <button
-            onClick={() => setDetailsOpen(true)}
-            className="w-full py-2 rounded-xl bg-neutral-700 text-white text-xs font-semibold hover:bg-neutral-600 transition"
-          >
-            View Details
-          </button>
-        </div>
+  {/* QR button */}
+  {qrBase64 && (
+    <button
+      onClick={onShowQR}
+      className="w-full py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700 transition"
+    >
+      Show QR Code
+    </button>
+  )}
+
+  {/* Details button */}
+  <button
+    onClick={() => setDetailsOpen(true)}
+    className="w-full py-2 rounded-xl bg-neutral-700 text-white text-xs font-semibold hover:bg-neutral-600 transition"
+  >
+    View Details
+  </button>
+</div>
       </div>
 
       {/* Details modal */}

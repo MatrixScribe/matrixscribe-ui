@@ -146,11 +146,7 @@ export function Step3Products({
             : "Select data bundle or enter airtime amount."}
         </p>
 
-        {preferredCurrency && preferredRate && (
-          <p className="text-[11px] text-indigo-300 mt-1">
-            Showing operator price + preferred {preferredCurrency}.
-          </p>
-        )}
+        
       </div>
 
       {/* LOADING */}
@@ -213,12 +209,7 @@ export function Step3Products({
           </label>
 
           {/* Preferred currency conversion */}
-          {preferredCurrency && preferredRate && (
-            <p className="text-[11px] text-indigo-300 mt-1">
-              ≈ {preferredCurrency} {(min / preferredRate).toFixed(2)} –{" "}
-              {(max / preferredRate).toFixed(2)}
-            </p>
-          )}
+          
 
           {/* INPUT FIELD */}
           <input
@@ -351,11 +342,7 @@ export function Step3Products({
                 </div>
 
                 {/* Preferred currency price */}
-                {converted && (
-                  <div className="text-[11px] text-indigo-300 mt-0.5">
-                    ≈ {preferredCurrency} {converted}
-                  </div>
-                )}
+                
 
                 {description && (
                   <div className="text-[12px] text-indigo-300 mt-3 line-clamp-2">
