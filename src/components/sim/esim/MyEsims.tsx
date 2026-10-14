@@ -179,10 +179,9 @@ export default function MyEsims({
               data_allowed_mb: usage.data_allowed_mb ?? e.data_allowed_mb,
               data_remaining_mb: usage.data_remaining_mb ?? e.data_remaining_mb,
 
-              metadata: {
-                ...e.metadata,
-                usage,
-              },
+              metadata: e.metadata
+  ? { ...e.metadata, usage }
+  : null,
             }
           : e
       )
