@@ -317,7 +317,10 @@ export default function MyEsims({
     setQrValue(normalizedQR);
     setQrOpen(true);
   }}
-  onRefreshUsage={() => refreshUsage(e.metadata?.order_id)}
+  onRefreshUsage={() => {
+  if (!e.metadata?.order_id) return;
+  refreshUsage(e.metadata.order_id);
+}}
 />
           );
         })}
