@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 
 export default function CountryPage({ params }: any) {
   // Unwrap dynamic params (Next.js App Router)
-  const resolvedParams = use(params);
+  const resolvedParams = use(params) as { iso2: string };
   const iso2 = resolvedParams.iso2.toUpperCase();
 
   const [country, setCountry] = useState<any | null>(null);
