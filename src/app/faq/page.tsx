@@ -11,44 +11,56 @@ export default function FAQPage() {
 
   const faq = [
     {
-      q: "What is Redatacom?",
-      a: "Redatacom is a global digital platform that enables instant mobile airtime, data bundles, eSIM plans, and digital top‑ups across 150+ countries and 700+ operators."
-    },
-    {
-      q: "How do mobile top‑ups work?",
-      a: "You select a country, choose an operator, pick a product, and complete payment. The value is delivered instantly to the recipient’s mobile number."
-    },
-    {
       q: "What is an eSIM?",
-      a: "An eSIM is a digital SIM card that allows you to activate mobile data plans without needing a physical SIM. Most modern smartphones support eSIM."
+      a: "An eSIM is a digital SIM card built into your device. It lets you activate mobile data plans instantly without inserting a physical SIM. All modern iPhones, Samsung Galaxy devices, Google Pixel phones, and many Xiaomi/Huawei models support eSIM."
     },
     {
-      q: "How long does delivery take?",
-      a: "Top‑ups and eSIM activations are usually delivered instantly. In rare cases, operators may take a few minutes to process the request."
+      q: "Which countries does Redatacom support?",
+      a: "Redatacom supports 150+ countries across Africa, Europe, Asia, the Middle East, Oceania, and the Americas. You can browse country‑specific plans on our Coverage page or explore region bundles like Africa, Europe+, Asia Lite, and Global."
     },
     {
-      q: "Can I send top‑ups internationally?",
-      a: "Yes. You can recharge numbers in any supported country from anywhere in the world."
+      q: "Which networks do Redatacom eSIMs use?",
+      a: "Our eSIM plans connect to top‑tier networks such as Vodacom, MTN, Orange, Airtel, Etisalat, Safaricom, Maroc Telecom, Telkom SA, and hundreds more. Network availability depends on the country and plan type."
+    },
+    {
+      q: "Do Redatacom eSIMs support 4G and 5G?",
+      a: "Yes. Most Redatacom eSIM plans support 4G LTE, and many countries also support 5G depending on the device and local operator."
+    },
+    {
+      q: "How do I activate an eSIM?",
+      a: "After purchasing a plan, you receive a QR code and activation instructions. Scan the QR code on your device, confirm installation, and your eSIM activates instantly. No physical SIM or store visit required."
+    },
+    {
+      q: "Can I use my eSIM across multiple countries?",
+      a: "Yes. Region plans (Africa, Europe, Asia+, Middle East, etc.) and Global plans allow seamless roaming across multiple supported countries without switching SIMs."
+    },
+    {
+      q: "Can I keep my WhatsApp number?",
+      a: "Yes. eSIM data does not affect your WhatsApp number or chats. You can continue using WhatsApp normally while traveling."
+    },
+    {
+      q: "Does Redatacom support unlimited data plans?",
+      a: "Yes. Many region and global plans include unlimited data options with fair‑usage policies depending on the operator."
+    },
+    {
+      q: "Which devices support eSIM?",
+      a: "Most modern smartphones support eSIM, including iPhone XR–16, Samsung S20–S25, Google Pixel 3–9, and many Xiaomi, Oppo, and Huawei models. Tablets and smartwatches may also support eSIM depending on the model."
+    },
+    {
+      q: "How long does activation take?",
+      a: "Activation is instant. In rare cases, operators may take a few minutes to process the request."
     },
     {
       q: "Do you store my card details?",
       a: "No. Payments are processed securely by our payment partners. Redatacom never sees or stores your full card number or CVV."
     },
     {
-      q: "What if I entered the wrong number?",
-      a: "Top‑ups are instant and irreversible once delivered. Always double‑check the number before confirming payment."
+      q: "Do you offer refunds?",
+      a: "Refunds are possible only if a transaction fails and the operator confirms that no value was delivered. Activated eSIMs cannot be refunded."
     },
     {
       q: "How do I contact support?",
-      a: "You can open a support ticket on our Support page or email us directly at support@redatacom.com."
-    },
-    {
-      q: "Is my data safe?",
-      a: "Yes. We use industry‑standard encryption, secure payment gateways, and fraud‑monitoring systems to protect your information."
-    },
-    {
-      q: "Do you offer refunds?",
-      a: "Refunds are only possible if a transaction fails and the operator confirms that no value was delivered."
+      a: "You can open a support ticket on our Support page or email us at support@redatacom.com."
     }
   ];
 
@@ -60,34 +72,58 @@ export default function FAQPage() {
 
       <div className="max-w-3xl mx-auto relative z-10">
 
-        {/* HEADER BUTTONS */}
-        <div className="flex items-center justify-between mb-6">
-          {/* HOME */}
-          <button
-            type="button"
+        {/* HEADER */}
+        <header className="
+          w-full flex items-center justify-between 
+          mb-10 py-4 px-2
+          bg-white/5 backdrop-blur-xl 
+          border border-white/10 
+          rounded-xl
+        ">
+          <div 
             onClick={() => (window.location.href = "/")}
-            className="
-              h-9 w-9 flex items-center justify-center rounded-full
-              border border-white/20 bg-white/10 backdrop-blur-xl
-              shadow-sm hover:bg-white/20 hover:border-white/40 transition
-            "
-            title="Home"
+            className="flex items-center gap-3 cursor-pointer"
           >
-            <img src="/favicon.ico" alt="Home" className="h-10 w-10 object-contain" />
-          </button>
+            <img 
+              src="/logo.png" 
+              alt="Redatacom" 
+              className="h-8 w-auto object-contain"
+            />
+            <span className="
+              text-white font-semibold tracking-wide 
+              text-sm sm:text-base
+            ">
+              Redatacom
+            </span>
+          </div>
 
-          {/* RECHARGE */}
-          <button
-            onClick={() => (window.location.href = "/topup")}
-            className="
-              px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 backdrop-blur-xl
-              text-white text-sm hover:bg-purple-700 hover:border-purple-500 
-              transition-all shadow-sm hover:shadow-md whitespace-nowrap
-            "
-          >
-            Recharge
-          </button>
-        </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => (window.location.href = "/login")}
+              className="
+                px-4 py-2 rounded-lg 
+                bg-white/10 border border-white/20 
+                text-white text-sm font-medium
+                hover:bg-purple-700 hover:border-purple-500 
+                transition-all
+              "
+            >
+              Login
+            </button>
+
+            <button
+              onClick={() => (window.location.href = "/signup")}
+              className="
+                px-4 py-2 rounded-lg 
+                bg-purple-700 text-white 
+                font-semibold text-sm
+                hover:bg-purple-800 transition-all
+              "
+            >
+              Sign Up
+            </button>
+          </div>
+        </header>
 
         {/* TITLE */}
         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-white to-purple-300 mb-2 flex items-center gap-2">
@@ -96,7 +132,7 @@ export default function FAQPage() {
 
         {/* SUBTITLE */}
         <p className="text-neutral-400 text-xs mb-10">
-          Global Airtime • Data • Bundles • eSIM 
+          eSIM • Global Coverage • Regions • Devices • Networks
         </p>
 
         {/* FAQ LIST */}
