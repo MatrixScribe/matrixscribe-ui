@@ -1,0 +1,271 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function GlobalPage() {
+  const [plans, setPlans] = useState<any[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load global plans + supported countries
+  useEffect(() => {
+    async function loadGlobal() {
+      try {
+        const res = await fetch(
+          "https://redatacom-end.onrender.com/api/esim/esimmerge/catalog?scope=global"
+        );
+        const data = await res.json();
+
+        const globalPlans = data.plans || [];
+        setPlans(globalPlans);
+
+        // Extract supported countries from coverage arrays
+        const countryMap: Record<string, any> = {};
+
+        globalPlans.forEach((plan: any) => {
+          plan.coverage?.forEach((c: any) => {
+            if (!countryMap[c.country_code]) {
+              countryMap[c.country_code] = {
+                iso2: c.country_code,
+                name: c.country_name,
+              };
+            }
+          });
+        });
+
+        setCountries(Object.values(countryMap));
+      } catch (err) {
+        console.error("Failed to load global data", err);
+      }
+
+      setLoading(false);
+    }
+
+    loadGlobal();
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-[#0b0b0f] text-neutral-200 px-6 py-10 relative">
+
+      {/* Cosmic Glow */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 h-72 w-72 
+        bg-purple-500/20 blur-[140px] rounded-full pointer-events-none" />
+
+      <div className="max-w-5xl mx-auto relative z-10">
+
+        {/* HEADER */}
+        <header className="
+          w-full flex items-center justify-between 
+          mb-10 py-4 px-2
+          bg-white/5 backdrop-blur-xl 
+          border border-white/10 
+          rounded-xl
+        ">
+          <div 
+            onClick={() => (window.location.href = "/")}
+            className="flex items-center gap-3 cursor-pointer"
+          >
+            <img 
+              src="/logo.png" 
+              alt="Redatacom" 
+              className="h-8 w-auto object-contain"
+            />
+            <span className="
+              text-white font-semibold tracking-wide 
+              text-sm sm:text-base
+            ">
+              Redatacom
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => (window.location.href = "/login")}
+              className="
+                px-4 py-2 rounded-lg 
+                bg-white/10 border border-white/20 
+                text-white text-sm font-medium
+                hover:bg-purple-700 hover:border-purple-500 
+                transition-all
+              "
+            >
+              Login
+            </button>
+
+            <button
+              onClick={() => (window.location.href = "/signup")}
+              className="
+                px-4 py-2 rounded-lg 
+                bg-purple-700 text-white 
+                font-semibold text-sm
+                hover:bg-purple-800 transition-all
+              "
+            >
+              Sign Up
+            </button>
+          </div>
+        </header>
+
+        {/* GLOBAL TITLE */}
+        <h1 className="
+          text-3xl font-bold text-transparent bg-clip-text 
+          bg-gradient-to-r from-purple-300 via-white to-purple-300 mb-6
+        ">
+          Global eSIM
+        </h1>
+
+        <p className="text-neutral-400 text-sm mb-10">
+          One eSIM. Worldwide coverage. Instant activation.
+        </p>
+
+        {/* SUPPORTED COUNTRIES */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold mb-3">Supported Countries</h2>
+
+          {loading && (
+            <p className="text-neutral-400 animate-pulse">Loading countries…</p>
+          )}
+
+          {!loading && countries.length === 0 && (
+            <p className="text-neutral-400">No countries found.</p>
+          )}
+
+          {!loading && countries.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+              {countries.map((c: any) => (
+                <div
+                  key={c.iso2}
+                  className="
+                    bg-white/5 border border-white/10 rounded-xl p-4 
+                    flex flex-col items-center text-center
+                    hover:bg-purple-900/20 hover:border-purple-400 transition
+                  "
+                >
+                  <img
+                    src={`https://s3.amazonaws.com/rld-flags/${c.iso2.toLowerCase()}.svg`}
+                    className="h-10 w-16 rounded shadow mb-2"
+                  />
+                  <p className="text-sm font-medium text-white">{c.name}</p>
+
+                  <button
+                    onClick={() => (window.location.href = `/country/${c.iso2}`)}
+                    className="
+                      mt-3 px-3 py-1.5 rounded-lg bg-purple-700 hover:bg-purple-800
+                      text-white text-xs font-medium transition
+                    "
+                  >
+                    View Country
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* GLOBAL PLANS */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold mb-3">Global eSIM Plans</h2>
+
+          {loading && (
+            <p className="text-neutral-400 animate-pulse">Loading plans…</p>
+          )}
+
+          {!loading && plans.length === 0 && (
+            <p className="text-neutral-400">No global plans available.</p>
+          )}
+
+          {!loading && plans.length > 0 && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {plans.slice(0, 5).map((p: any) => (
+                  <div
+                    key={p.id}
+                    className="
+                      bg-white/5 border border-white/10 rounded-xl p-5 
+                      hover:bg-purple-900/20 hover:border-purple-400 transition
+                    "
+                  >
+                    {/* Global Icon */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <img
+                        src="/logo.png"
+                        className="h-6 w-auto rounded"
+                      />
+                      <span className="text-xs text-neutral-400">
+                        Global Coverage
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      {p.name}
+                    </h3>
+
+                    <p className="text-neutral-300 text-sm mb-1">
+                      {p.type === "unlimited"
+                        ? "Unlimited Data"
+                        : `${(p.data_mb / 1024).toFixed(0)}GB`}
+                    </p>
+
+                    <p className="text-neutral-300 text-sm mb-1">
+                      {p.validity_days} day{p.validity_days > 1 ? "s" : ""}
+                    </p>
+
+                    <p className="text-neutral-400 text-xs mb-2">
+                      {p.networks.slice(0, 5).join(", ")}…
+                    </p>
+
+                    <button
+                      onClick={() => (window.location.href = "/login")}
+                      className="
+                        w-full px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-800
+                        text-white font-medium transition
+                      "
+                    >
+                      Select Plan
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {plans.length > 5 && (
+                <p className="text-neutral-400 text-sm mt-4">
+                  +{plans.length - 5} more plans available
+                </p>
+              )}
+            </>
+          )}
+        </section>
+
+        {/* SEO CONTENT */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold mb-3">
+            Why Choose Redatacom Global eSIM?
+          </h2>
+
+          <ul className="text-neutral-300 text-sm space-y-2">
+            <li>One eSIM for worldwide travel</li>
+            <li>Instant activation — no physical SIM needed</li>
+            <li>Works on all modern eSIM‑compatible devices</li>
+            <li>Keep your WhatsApp number while traveling</li>
+            <li>Secure online payments</li>
+          </ul>
+        </section>
+
+        {/* CTA */}
+        <div className="text-center mt-16 mb-20">
+          <p className="text-neutral-400 mb-2">Ready to activate?</p>
+          <button
+            onClick={() => (window.location.href = "/login")}
+            className="
+              px-6 py-3 rounded-xl bg-purple-700 hover:bg-purple-800
+              text-white font-semibold shadow-sm hover:shadow-md transition
+            "
+          >
+            Get Your Global eSIM
+          </button>
+        </div>
+
+      </div>
+    </main>
+  );
+}
