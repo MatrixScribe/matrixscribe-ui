@@ -2,6 +2,8 @@
 
 import { use } from "react";
 import { parseComparisonSlug, formatName } from "@/lib/compare";
+import InternalLinks from "@/components/InternalLinks";
+import { generateSEOText } from "@/lib/seo";
 
 export default function ComparePage({ params }: any) {
   const resolved = use(params) as { slug: string };
@@ -11,6 +13,10 @@ export default function ComparePage({ params }: any) {
 
   const leftName = formatName(left);
   const rightName = formatName(right);
+
+  // SEO title + location (comparison pages do not use location)
+  const title = `${leftName} vs ${rightName}`;
+  const location = undefined;
 
   return (
     <main className="px-6 py-10 relative">
@@ -25,22 +31,18 @@ export default function ComparePage({ params }: any) {
         <header className="
           w-full flex items-center justify-between 
           mb-10 py-4 px-2
-          bg-white/5 backdrop-blur-xl 
-          border border-white/10 
-          rounded-xl
+          bg-ffff
         ">
           <div 
             onClick={() => (window.location.href = "/")}
             className="flex items-center gap-3 cursor-pointer"
           >
             <img 
-              src="/logo.png" 
-              alt="Redatacom" 
-              className="h-8 w-auto object-contain"
+              src="/logo-signup.png" 
+               
+              className="h-6 w-auto object-contain"
             />
-            <span className="text-white font-semibold tracking-wide text-sm sm:text-base">
-              Redatacom
-            </span>
+            
           </div>
 
           <div className="flex items-center gap-3">
@@ -53,7 +55,7 @@ export default function ComparePage({ params }: any) {
             </button>
 
             <button
-              onClick={() => (window.location.href = "/signup")}
+              onClick={() => (window.location.href = "/signup/number")}
               className="px-4 py-2 rounded-lg bg-purple-700 text-white font-semibold text-sm hover:bg-purple-800 transition-all"
             >
               Sign Up
@@ -66,8 +68,13 @@ export default function ComparePage({ params }: any) {
           text-3xl font-bold text-transparent bg-clip-text 
           bg-gradient-to-r from-purple-300 via-white to-purple-300 mb-4
         ">
-          {leftName} vs {rightName}
+          {title}
         </h1>
+
+        {/* AUTO-GENERATED SEO TEXT */}
+        <p className="text-neutral-400 text-sm mb-10">
+          {generateSEOText(title, location)}
+        </p>
 
         <p className="text-neutral-400 text-sm mb-10">
           A complete comparison of features, coverage, pricing, and travel benefits.
@@ -132,6 +139,9 @@ export default function ComparePage({ params }: any) {
             </button>
           </div>
         </section>
+
+        {/* INTERNAL LINKS */}
+        <InternalLinks />
 
         {/* FAQ */}
         <section className="mb-20">

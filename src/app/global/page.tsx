@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import InternalLinks from "@/components/InternalLinks";
+import { generateSEOText } from "@/lib/seo";
 
 export default function GlobalPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [countries, setCountries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // SEO title + location
+  const title = "Global eSIM";
+  const location = "Worldwide";
 
   // Load global plans + supported countries
   useEffect(() => {
@@ -57,25 +63,17 @@ export default function GlobalPage() {
         <header className="
           w-full flex items-center justify-between 
           mb-10 py-4 px-2
-          bg-white/5 backdrop-blur-xl 
-          border border-white/10 
-          rounded-xl
+          bg-ffff
         ">
           <div 
             onClick={() => (window.location.href = "/")}
             className="flex items-center gap-3 cursor-pointer"
           >
             <img 
-              src="/logo.png" 
-              alt="Redatacom" 
-              className="h-8 w-auto object-contain"
+              src="/logo-signup.png" 
+               
+              className="h-6 w-auto object-contain"
             />
-            <span className="
-              text-white font-semibold tracking-wide 
-              text-sm sm:text-base
-            ">
-              Redatacom
-            </span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -93,7 +91,7 @@ export default function GlobalPage() {
             </button>
 
             <button
-              onClick={() => (window.location.href = "/signup")}
+              onClick={() => (window.location.href = "/signup/number")}
               className="
                 px-4 py-2 rounded-lg 
                 bg-purple-700 text-white 
@@ -113,6 +111,11 @@ export default function GlobalPage() {
         ">
           Global eSIM
         </h1>
+
+        {/* AUTO-GENERATED SEO TEXT */}
+        <p className="text-neutral-400 text-sm mb-10">
+          {generateSEOText(title, location)}
+        </p>
 
         <p className="text-neutral-400 text-sm mb-10">
           One eSIM. Worldwide coverage. Instant activation.
@@ -235,6 +238,9 @@ export default function GlobalPage() {
             </>
           )}
         </section>
+
+        {/* INTERNAL LINKS */}
+        <InternalLinks />
 
         {/* SEO CONTENT */}
         <section className="mb-16">

@@ -142,7 +142,7 @@ export default function Dashboard() {
               tab === "local" ? "bg-purple-100 text-purple-700 shadow-md" : "bg-white text-neutral-700"
             }`}
           >
-            <img src="/sim-local1.png" className="h-18 w-auto opacity-90 mx-auto" />
+            <img src="/cosmiclocal.png" className="h-18 w-auto opacity-90 mx-auto" />
           </button>
 
           <button
@@ -151,7 +151,7 @@ export default function Dashboard() {
               tab === "esim" ? "bg-purple-100 text-purple-700 shadow-md" : "bg-white text-neutral-700"
             }`}
           >
-            <img src="/sim-esim1.png" className="h-18 w-auto opacity-90 mx-auto" />
+            <img src="/cosmicesim.png" className="h-18 w-auto opacity-90 mx-auto" />
           </button>
         </div>
 

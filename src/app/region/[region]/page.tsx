@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import InternalLinks from "@/components/InternalLinks";
+import { generateSEOText } from "@/lib/seo";
 
 export default function RegionPage({ params }: any) {
   const resolvedParams = use(params) as { region: string };
@@ -35,6 +37,10 @@ export default function RegionPage({ params }: any) {
   };
 
   const regionName = regionNames[regionCode] || regionCode.toUpperCase();
+
+  // SEO title + location
+  const title = `${regionName} eSIM Region`;
+  const location = regionName;
 
   // Load region plans + supported countries
   useEffect(() => {
@@ -93,21 +99,18 @@ export default function RegionPage({ params }: any) {
             className="flex items-center gap-3 cursor-pointer"
           >
             <img 
-              src="/logo.png" 
-              alt="Redatacom" 
-              className="h-8 w-auto object-contain"
+              src="/logo-signup.png" 
+               
+              className="h-6 w-auto object-contain"
             />
-            
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => (window.location.href = "/login")}
               className="
-                px-4 py-2 rounded-lg 
-                bg-white/10 border border-white/20 
-                text-white text-sm font-medium
-                hover:bg-purple-700 hover:border-purple-500 
+                px-4 py-2 rounded-lg bg-white/10 border border-white/20
+                text-white text-sm font-medium hover:bg-purple-700 hover:border-purple-500
                 transition-all
               "
             >
@@ -115,12 +118,10 @@ export default function RegionPage({ params }: any) {
             </button>
 
             <button
-              onClick={() => (window.location.href = "/signup")}
+              onClick={() => (window.location.href = "/signup/number")}
               className="
-                px-4 py-2 rounded-lg 
-                bg-purple-700 text-white 
-                font-semibold text-sm
-                hover:bg-purple-800 transition-all
+                px-4 py-2 rounded-lg bg-purple-700 text-white
+                font-semibold text-sm hover:bg-purple-800 transition-all
               "
             >
               Sign Up
@@ -130,11 +131,16 @@ export default function RegionPage({ params }: any) {
 
         {/* REGION TITLE */}
         <h1 className="
-          text-3xl font-bold text-transparent bg-clip-text 
+          text-3xl font-bold text-transparent bg-clip-text
           bg-gradient-to-r from-purple-300 via-white to-purple-300 mb-6
         ">
           {regionName} eSIM Region
         </h1>
+
+        {/* AUTO-GENERATED SEO TEXT */}
+        <p className="text-neutral-400 text-sm mb-10">
+          {generateSEOText(title, location)}
+        </p>
 
         <p className="text-neutral-400 text-sm mb-10">
           Unlimited eSIM plans • Instant activation • Works across all supported countries
@@ -158,7 +164,7 @@ export default function RegionPage({ params }: any) {
                 <div
                   key={c.iso2}
                   className="
-                    bg-white/5 border border-white/10 rounded-xl p-4 
+                    bg-white/5 border border-white/10 rounded-xl p-4
                     flex flex-col items-center text-center
                     hover:bg-purple-900/20 hover:border-purple-400 transition
                   "
@@ -167,6 +173,7 @@ export default function RegionPage({ params }: any) {
                     src={`https://s3.amazonaws.com/rld-flags/${c.iso2.toLowerCase()}.svg`}
                     className="h-10 w-16 rounded shadow mb-2"
                   />
+
                   <p className="text-sm font-medium text-white">{c.name}</p>
 
                   <button
@@ -203,19 +210,14 @@ export default function RegionPage({ params }: any) {
                   <div
                     key={p.id}
                     className="
-                      bg-white/5 border border-white/10 rounded-xl p-5 
+                      bg-white/5 border border-white/10 rounded-xl p-5
                       hover:bg-purple-900/20 hover:border-purple-400 transition
                     "
                   >
                     {/* Region Flag */}
                     <div className="flex items-center gap-2 mb-3">
-                      <img
-                        src="/logo.png"
-                        className="h-6 w-auto rounded"
-                      />
-                      <span className="text-xs text-neutral-400">
-                        {regionName}
-                      </span>
+                      <img src="/logo.png" className="h-6 w-auto rounded" />
+                      <span className="text-xs text-neutral-400">{regionName}</span>
                     </div>
 
                     <h3 className="text-lg font-semibold text-white mb-2">
@@ -258,6 +260,9 @@ export default function RegionPage({ params }: any) {
           )}
         </section>
 
+        {/* INTERNAL LINKS */}
+        <InternalLinks />
+
         {/* SEO CONTENT */}
         <section className="mb-16">
           <h2 className="text-xl font-semibold mb-3">
@@ -276,6 +281,7 @@ export default function RegionPage({ params }: any) {
         {/* CTA */}
         <div className="text-center mt-16 mb-20">
           <p className="text-neutral-400 mb-2">Ready to activate?</p>
+
           <button
             onClick={() => (window.location.href = "/login")}
             className="
