@@ -152,11 +152,17 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
   });
 
   // ⭐ Unified retail USD from backend
-  const retailUsd =
-    plan.finalPriceUsd ??
-    plan.price_usd ??
-    plan.basePrice ??
-    0;
+  const wholesaleUsd =
+  plan.price_usd ??
+  plan.basePrice ??
+  plan.original?.price_usd ??
+  0;
+
+// ⭐ Apply markup directly on frontend
+let retailUsd = wholesaleUsd * 1.60;
+retailUsd = Math.floor(retailUsd) + 0.99;
+retailUsd = Number(retailUsd.toFixed(2));
+
 
   return {
     id: plan.id,

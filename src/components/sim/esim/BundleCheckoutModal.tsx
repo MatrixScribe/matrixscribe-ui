@@ -5,12 +5,12 @@ import { useState, useRef, useEffect } from "react";
 interface BundleCheckoutModalProps {
   open: boolean;
   onClose: () => void;
-  bundle: any | null; // accepts NormalizedBundle from BundlesModal
+  bundle: any | null;
   preferredCurrency: string | null;
   fxSellRate: number | null;
   fxZarRate: number | null;
   token: string | null;
-  countryIso: string | null
+  countryIso: string | null;
   onCheckoutComplete?: () => void;
 }
 
@@ -26,7 +26,25 @@ export default function BundleCheckoutModal({
   onCheckoutComplete,
 }: BundleCheckoutModalProps) {
   const [loading, setLoading] = useState(false);
+
+  // ⭐ Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [couponValid, setCouponValid] = useState(false);
+  const [discountPercent, setDiscountPercent] = useState(0);
+  const [sharePercent, setSharePercent] = useState(0);
+  const [validating, setValidating] = useState(false);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  /* ⭐ RESET COUPON WHEN MODAL OPENS */
+  useEffect(() => {
+    if (open) {
+      setCouponCode("");
+      setCouponValid(false);
+      setDiscountPercent(0);
+      setSharePercent(0);
+    }
+  }, [open]);
 
   /* PARTICLE BACKGROUND */
   useEffect(() => {
@@ -80,28 +98,30 @@ export default function BundleCheckoutModal({
 
   if (!open || !bundle) return null;
 
-  /* ⭐ MATCH BUNDLESMODAL PRICE LOGIC EXACTLY */
-  const rawUsd = bundle.markupApplied
-    ? (bundle.finalPriceUsd ?? bundle.price_usd)
-    : bundle.price_usd;
-
+  /* ⭐ PRICE LOGIC */
+  const rawUsd = bundle.finalPriceUsd ?? bundle.price_usd;
   const safeUsd = isNaN(rawUsd) ? 0 : rawUsd;
 
+  /* ⭐ DISCOUNT LOGIC — only applied if couponValid === true */
+  const appliedDiscount = couponValid ? discountPercent : 0;
+  const discountedUsd = safeUsd * (1 - appliedDiscount / 100);
+
+  /* ⭐ FX CONVERSION */
   const hasPreferred =
     preferredCurrency &&
     preferredCurrency !== "USD" &&
     fxSellRate !== null;
 
-  const localCost =
+  const preferredCurrencyPrice =
     hasPreferred && fxSellRate !== null
-      ? Number((safeUsd * fxSellRate).toFixed(2))
+      ? Number((discountedUsd * fxSellRate).toFixed(2))
       : null;
 
   const hasZarRate = fxZarRate !== null && fxZarRate > 0;
 
-  const zarCost =
+  const discountedZar =
     hasZarRate
-      ? Number((safeUsd * (fxZarRate as number)).toFixed(2))
+      ? Number((discountedUsd * (fxZarRate as number)).toFixed(2))
       : null;
 
   const effectiveCountryIso =
@@ -113,12 +133,41 @@ export default function BundleCheckoutModal({
   const description =
     bundle.description ?? bundle.fair_usage ?? "eSIM data bundle";
 
-    const effectiveFxRate =
-  hasPreferred && localCost !== null && safeUsd > 0
-    ? localCost / safeUsd
-    : fxSellRate;
+  /* ⭐ VALIDATE COUPON */
+  async function validateCoupon() {
+    setValidating(true);
+    setCouponValid(false);
+    setDiscountPercent(0);
+    setSharePercent(0);
 
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/affiliate/coupon/validate?code=${couponCode.trim()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      const json = await res.json();
+
+      if (json.success && json.coupon) {
+        setCouponValid(true);
+        setDiscountPercent(json.coupon.discount_percent);
+        setSharePercent(json.coupon.influencer_share_percent);
+      } else {
+        setCouponValid(false);
+      }
+    } catch (err) {
+      console.error("Coupon validation failed:", err);
+      setCouponValid(false);
+    }
+
+    setValidating(false);
+  }
+
+  /* ⭐ HANDLE PAYMENT */
   async function handlePay() {
     if (!bundle) return;
     if (!hasZarRate || !token) return;
@@ -126,8 +175,6 @@ export default function BundleCheckoutModal({
     setLoading(true);
 
     try {
-      const amountZar = Number((safeUsd * (fxZarRate as number)).toFixed(2));
-
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/api/esim/checkout`,
         {
@@ -137,12 +184,13 @@ export default function BundleCheckoutModal({
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            amountZar,
+            amountZar: discountedZar,
             bundleId: bundle.id,
             bundleName: bundle.name,
-            priceUsd: safeUsd,
+            priceUsd: discountedUsd,
             countryIso: effectiveCountryIso ?? "",
             validityDays,
+            couponCode: couponValid ? couponCode.trim() : null,
           }),
         }
       );
@@ -172,14 +220,10 @@ export default function BundleCheckoutModal({
           max-h-[90vh] overflow-y-auto
         "
       >
-        {/* PARTICLE CANVAS */}
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full opacity-30 pointer-events-none"
         />
-
-        {/* COSMIC SHINE */}
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-transparent via-purple-500/10 to-transparent animate-[pulse_4s_infinite]" />
 
         {/* HEADER */}
         <div className="relative z-10 mb-5 text-center">
@@ -187,60 +231,96 @@ export default function BundleCheckoutModal({
           <h2 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-lg">
             Checkout
           </h2>
-          <p className="text-sm text-purple-200 opacity-80 mt-1">
-            The power of connectivity
-          </p>
         </div>
 
-        {/* BUNDLE CARD */}
-        <div className="relative z-10 mb-4 p-4 rounded-xl bg-white/10 border border-white/20 shadow-inner backdrop-blur-sm">
-          <p className="text-white font-bold text-lg">{bundle.name}</p>
-          <p className="text-purple-200 text-sm opacity-80 mt-1">
-            {description}
-          </p>
+        {/* ⭐ COUPON FIELD */}
+        <div className="relative z-10 mb-4 p-4 rounded-xl bg-neutral-900/40 border border-purple-300/30 shadow-inner">
+          <label className="block text-xs text-purple-100 mb-1">
+            Enter Discount Code or Continue to Payment
+          </label>
+
+          <input
+            type="text"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            placeholder="Enter coupon code"
+            className="
+              w-full rounded-lg px-3 py-2 text-sm
+              bg-neutral-800 text-white border border-purple-300/40
+              focus:outline-none focus:ring-2 focus:ring-purple-400
+            "
+          />
+
+          <button
+            onClick={validateCoupon}
+            disabled={validating || !couponCode.trim()}
+            className="
+              mt-2 w-full px-3 py-2 rounded-lg
+              bg-purple-600 text-white text-sm font-semibold
+              hover:bg-purple-700 disabled:opacity-40
+            "
+          >
+            {validating ? "Validating…" : "Validate"}
+          </button>
+
+          {couponValid && (
+            <p className="mt-2 text-green-300 text-xs">
+              Valid! Discount Applied: {discountPercent}%
+            </p>
+          )}
+
+          {!couponValid && couponCode.trim() && !validating && (
+            <p className="mt-2 text-red-300 text-xs">
+              Invalid coupon code.
+            </p>
+          )}
         </div>
 
         {/* PRICE BLOCK */}
-
         <div className="relative z-10 mb-4 p-4 rounded-xl bg-neutral-900/40 border border-purple-300/20 shadow-inner space-y-3">
+
+          {/* ORIGINAL USD */}
           <div className="flex justify-between text-xs text-white">
             <span className="opacity-80">USD</span>
             <span className="font-bold">${safeUsd.toFixed(2)}</span>
           </div>
 
-          {hasPreferred && localCost !== null && (
-            <div className="flex justify-between text-white">
-              <span className="font-bold opacity-80">
-                {preferredCurrency}
-              </span>
+          {/* ORIGINAL PREFERRED CURRENCY */}
+          {hasPreferred && (
+            <div className="flex justify-between text-lg text-purple-200">
+              <span className="opacity-80">{preferredCurrency}</span>
               <span className="font-bold">
-                {localCost.toFixed(2)}
+                {(safeUsd * fxSellRate).toFixed(2)}
               </span>
             </div>
           )}
 
-          {zarCost !== null && (
+          {/* DISCOUNT */}
+          {couponValid && (
+            <div className="flex justify-between text-xs text-yellow-300">
+              <span className="opacity-80">Discount Applied</span>
+              <span className="font-bold">-{discountPercent}%</span>
+            </div>
+          )}
+
+          {/* FINAL USD */}
+          
+
+          {/* FINAL PREFERRED CURRENCY */}
+          {preferredCurrencyPrice !== null && (
+            <div className="flex justify-between text-lg text-purple-200">
+              <span className="opacity-80">{preferredCurrency} Total</span>
+              <span className="font-bold">{preferredCurrencyPrice.toFixed(2)}</span>
+            </div>
+          )}
+
+          {/* FINAL ZAR */}
+          {discountedZar !== null && (
             <div className="flex justify-between text-xs text-green-300">
               <span className="opacity-80">You'll pay Redatcom in ZAR</span>
-              <span className="font-bold">{zarCost.toFixed(2)} ZAR</span>
+              <span className="font-bold">{discountedZar.toFixed(2)} ZAR</span>
             </div>
           )}
-
-          {/* FX BLOCK */}
-          <div className="pt-2 border-t border-purple-300/20 space-y-1">
-  {effectiveFxRate !== null && preferredCurrency && (
-    <p className="text-purple-200 text-xs opacity-80">
-      1 USD = {effectiveFxRate.toFixed(4)} {preferredCurrency}
-    </p>
-  )}
-
-  {hasZarRate && (
-    <p className="text-purple-200 text-xs opacity-80">
-      1 USD = {(fxZarRate as number).toFixed(4)} ZAR
-    </p>
-  )}
-</div>
-
 
           {/* COUNTRY */}
           {effectiveCountryIso && (
@@ -255,47 +335,34 @@ export default function BundleCheckoutModal({
           </p>
         </div>
 
-        {/* VALUE SUMMARY */}
-        <div className="relative z-10 mb-4 p-4 rounded-xl bg-purple-900/40 border border-purple-300/30 shadow-inner">
-          <p className="text-purple-100 text-sm">
-            <strong className="text-white">After Payment:</strong>
-          </p>
-          <ul className="mt-2 text-xs text-purple-200 space-y-1">
-            <li>• Instant activation</li>
-            <li>• No roaming fees</li>
-            <li>• Premium network coverage</li>
-            <li>• Track usage, view & scan QR code</li>
-          </ul>
-        </div>
-
         {/* BUTTONS */}
-<button
-  onClick={async () => {
-    await handlePay();          // your existing payment logic
-    onCheckoutComplete?.();     // ⭐ Switch tab + cleanup
-  }}
-  disabled={loading}
-  className="
-    relative z-10 w-full px-4 py-3 rounded-xl
-    bg-green-600 text-white font-semibold
-    hover:bg-green-700 transition shadow-lg
-    disabled:opacity-40 disabled:cursor-not-allowed
-    animate-[pulse_2s_infinite]
-  "
->
-  {loading ? "Processing…" : "Continue to Payment"}
-</button>
+        <button
+          onClick={async () => {
+            await handlePay();
+            onCheckoutComplete?.();
+          }}
+          disabled={loading}
+          className="
+            relative z-10 w-full px-4 py-3 rounded-xl
+            bg-green-600 text-white font-semibold
+            hover:bg-green-700 transition shadow-lg
+            disabled:opacity-40 disabled:cursor-not-allowed
+            animate-[pulse_2s_infinite]
+          "
+        >
+          {loading ? "Processing…" : "Continue to Payment"}
+        </button>
 
-<button
-  onClick={onClose}
-  className="
-    relative z-10 mt-3 w-full px-4 py-3 rounded-xl
-    bg-white/10 text-white font-medium
-    hover:bg-white/20 transition
-  "
->
-  Cancel
-</button>
+        <button
+          onClick={onClose}
+          className="
+            relative z-10 mt-3 w-full px-4 py-3 rounded-xl
+            bg-white/10 text-white font-medium
+            hover:bg-white/20 transition
+          "
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
