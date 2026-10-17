@@ -155,7 +155,6 @@ export function normalizePlan(plan: EsimmergePlan, countries: Country[]): Normal
   const wholesaleUsd =
   plan.price_usd ??
   plan.basePrice ??
-  plan.original?.price_usd ??
   0;
 
 // ⭐ Apply markup directly on frontend
